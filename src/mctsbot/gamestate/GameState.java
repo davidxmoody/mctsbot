@@ -13,8 +13,9 @@ public class GameState {
 		
 	}
 	
-	public SimulatedGameState startSimulation() {
-		return null;
+	public double getAmountToCall() {
+		return 0.0;
 	}
 
+	
 }

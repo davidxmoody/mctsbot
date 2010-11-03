@@ -1,0 +1,16 @@
+# All plug-ins must run through the following class:
+PLAYER_CLASS=PlugInOpponent
+
+# put your bot's full class name here:
+BOT_PLAYER_CLASS=mctsbot.MCTSBot
+
+# put the path to your jar file here (relative to application root)
+PLAYER_JAR_FILE=data/bots/mctsbot.jar
+
+# Your Bot's name:
+PLAYER_NAME=MCTSBot
+
+# Your bot engine name:
+AI_NAME=MCTSBot
+
+# Options for your Bot:

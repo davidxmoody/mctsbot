@@ -46,7 +46,7 @@ public class MCTSBot implements Player {
 		
 		
 		
-		return null;
+		return Action.checkOrFoldAction(0);
 	}
 	
 	private void iterate(Node node) {
