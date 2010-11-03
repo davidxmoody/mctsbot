@@ -1,18 +1,25 @@
 package mctsbot.nodes;
 
-import mctsbot.actions.Action;
+import mctsbot.gamestate.GameState;
+
 
 public class RootNode extends Node {
 
-	public RootNode(Node parent, Action lastAction) {
-		super(parent, lastAction);
-		// TODO Auto-generated constructor stub
+	public RootNode(GameState gameState) {
+		super(null, gameState);
+		
+		
+		
 	}
 
 	@Override
 	public void generateChildren() {
 		// TODO Auto-generated method stub
 
+	}
+	
+	public Node selectRecursively() {
+		return null;
 	}
 
 }

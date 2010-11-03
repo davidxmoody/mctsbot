@@ -1,6 +1,8 @@
 package mctsbot;
 
+import mctsbot.gamestate.GameState;
 import mctsbot.nodes.Node;
+import mctsbot.nodes.RootNode;
 
 import com.biotools.meerkat.Action;
 import com.biotools.meerkat.Card;
@@ -14,6 +16,10 @@ public class MCTSBot implements Player {
 	private Card c1, c2;
 	private GameInfo gi;
 	private Preferences prefs;
+	
+	private GameState currentGameState;
+	
+	private static final long THINKING_TIME = 1000;
 
 	@Override
 	public void init(Preferences arg0) {
@@ -30,36 +36,59 @@ public class MCTSBot implements Player {
 	@Override
 	public Action getAction() {
 
-
-		//Make root node
+		// Make root node.
+		RootNode root = new RootNode(currentGameState);
+		
+		// Do iterations until time limit reached.
+		final long endTime = System.currentTimeMillis() + getThinkingTime();
+		int noIterations = 0;
+		
+		do {
+			iterate(root);
+			iterate(root);
+			iterate(root);
+			iterate(root);
+			iterate(root);
+			iterate(root);
+			iterate(root);
+			iterate(root);
+			
+			noIterations+=8;
+			
+		} while(endTime>System.currentTimeMillis());
+		
+		System.out.println("Performed " + noIterations);
+		
+		// Perform action.
 		
 		
 		
 		
-		//Do iterations until time limit reached
 		
-		
-		
-		
-		
-		//Perform action		
 		
 		
 		
 		return Action.checkOrFoldAction(0);
 	}
 	
-	private void iterate(Node node) {
-		//Selection until a leaf is reached
+	
+	private void iterate(RootNode node) {
+		// Selection until a leaf of the stored tree is reached.
+		Node selectedNode = node.selectRecursively();
 		
+		// Expand selected leaf node.
+		selectedNode.generateChildren();
 		
-		//Expand selected leaf node
+		// Simulate a game.
+		final double expectedValue = selectedNode.simulate();
 		
-		
-		//
+		// Propagate changes.
+		selectedNode.backpropagate(expectedValue);
 	}
 	
-	
+	private long getThinkingTime() {
+		return THINKING_TIME;
+	}
 	
 	
 	

@@ -2,7 +2,6 @@ package mctsbot.nodes;
 
 import java.util.List;
 
-import mctsbot.actions.Action;
 import mctsbot.gamestate.GameState;
 import mctsbot.strategies.BackpropagationStrategy;
 import mctsbot.strategies.SelectionStrategy;
@@ -10,24 +9,22 @@ import mctsbot.strategies.SimulationStrategy;
 
 public abstract class Node {
 	
-	protected double expectedValue = 0.0;
-	protected int visitCount = 0;
-	protected final Action lastAction;
+	protected double expectedValue;
+	protected int visitCount;
 	protected final Node parent;
-	protected List<Node> children;
 	protected GameState gameState;
-	
-	protected double probability;
+	protected List<Node> children = null;
 	
 	protected SelectionStrategy selectionStrategy;
 	protected BackpropagationStrategy backpropagationStrategy;
 	protected SimulationStrategy simulationStrategy;
 	
-	public Node(Node parent, Action lastAction, double probability) {
+	public Node(Node parent, GameState gameState) {
 		this.parent = parent;
-		this.lastAction = lastAction;
-		this.children = null;
-		this.probability = probability;
+		this.gameState = gameState;
+		
+		this.expectedValue = 0.0;
+		this.visitCount = 0;
 	}
 
 	public void setExpectedValue(long expectedValue) {
@@ -46,10 +43,6 @@ public abstract class Node {
 		return visitCount;
 	}
 
-	public Action getLastAction() {
-		return lastAction;
-	}
-
 	public Node getParent() {
 		return parent;
 	}
@@ -58,22 +51,22 @@ public abstract class Node {
 		return children;
 	}
 	
-	public void setProbability(double probability) {
-		this.probability= probability ;
+	public GameState getGameState() {
+		return gameState;
 	}
-	
-	public double getProbability() {
-		return probability;
-	}
-	
+
 	public abstract void generateChildren();
 	
 	public Node select() {
 		return null;
 	}
 	
-	public void backpropagate() {
+	public void backpropagate(double expectedValue) {
 		
+	}
+	
+	public double simulate() {
+		return 0.0;
 	}
 	
 	
