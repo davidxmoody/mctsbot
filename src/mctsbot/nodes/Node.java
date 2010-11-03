@@ -2,11 +2,14 @@ package mctsbot.nodes;
 
 import java.util.List;
 
+import mctsbot.actions.Action;
 import mctsbot.gamestate.GameState;
-
-import com.biotools.meerkat.Action;
+import mctsbot.strategies.BackpropagationStrategy;
+import mctsbot.strategies.SelectionStrategy;
+import mctsbot.strategies.SimulationStrategy;
 
 public abstract class Node {
+	
 	protected double expectedValue = 0.0;
 	protected int visitCount = 0;
 	protected final Action lastAction;
@@ -14,10 +17,17 @@ public abstract class Node {
 	protected List<Node> children;
 	protected GameState gameState;
 	
-	public Node(Node parent, Action lastAction) {
+	protected double probability;
+	
+	protected SelectionStrategy selectionStrategy;
+	protected BackpropagationStrategy backpropagationStrategy;
+	protected SimulationStrategy simulationStrategy;
+	
+	public Node(Node parent, Action lastAction, double probability) {
 		this.parent = parent;
 		this.lastAction = lastAction;
 		this.children = null;
+		this.probability = probability;
 	}
 
 	public void setExpectedValue(long expectedValue) {
@@ -31,7 +41,7 @@ public abstract class Node {
 	public void setVisitCount(int visitCount) {
 		this.visitCount = visitCount;
 	}
-
+	
 	public int getVisitCount() {
 		return visitCount;
 	}
@@ -48,12 +58,23 @@ public abstract class Node {
 		return children;
 	}
 	
-	/*public boolean isLeaf() {
-		if(children == null) generateChildren();
-		return children.size()==0;
-	}*/
+	public void setProbability(double probability) {
+		this.probability= probability ;
+	}
+	
+	public double getProbability() {
+		return probability;
+	}
 	
 	public abstract void generateChildren();
+	
+	public Node select() {
+		return null;
+	}
+	
+	public void backpropagate() {
+		
+	}
 	
 	
 

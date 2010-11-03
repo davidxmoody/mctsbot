@@ -1,6 +1,6 @@
 package mctsbot.nodes;
 
-import com.biotools.meerkat.Action;
+import mctsbot.actions.Action;
 
 public class RootNode extends Node {
 

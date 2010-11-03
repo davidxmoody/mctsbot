@@ -2,8 +2,7 @@ package mctsbot.nodes;
 
 import java.util.ArrayList;
 
-
-import com.biotools.meerkat.Action;
+import mctsbot.actions.Action;
 
 public class OpponentNode extends Node {
 
@@ -16,5 +15,6 @@ public class OpponentNode extends Node {
 		children = new ArrayList<Node>(3);
 
 	}
+
 
 }

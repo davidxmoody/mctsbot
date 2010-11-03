@@ -6,10 +6,11 @@ import com.biotools.meerkat.GameInfo;
 
 public class GameState {
 	
-	private double pot = 0.0;
+	private double pot;
 	private List<Player> activePlayers = null;
 	
 	public GameState(GameInfo gi) {
+		
 		
 	}
 	
