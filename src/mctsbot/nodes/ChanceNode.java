@@ -1,5 +1,7 @@
 package mctsbot.nodes;
 
+import java.util.LinkedList;
+
 import mctsbot.gamestate.GameState;
 import mctsbot.strategies.StrategyConfiguration;
 
@@ -11,8 +13,7 @@ public class ChanceNode extends Node {
 
 	@Override
 	public void generateChildren() {
-		// TODO Auto-generated method stub
-
+		children = new LinkedList<Node>();
 	}
 
 

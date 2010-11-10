@@ -11,6 +11,11 @@ import com.biotools.meerkat.Hand;
 
 public class GameState {
 	
+	public static final int PREFLOP = 1;
+	public static final int FLOP = 2;
+	public static final int TURN = 3;
+	public static final int RIVER = 4;
+	
 	private double pot;
 	
 	private Deck deck;
@@ -18,6 +23,7 @@ public class GameState {
 	private Hand table;
 	
 	private static Card c1,c2;
+	private static int botSeat;
 	
 	private List<Player> activePlayers;
 	
@@ -30,6 +36,8 @@ public class GameState {
 	private double betSize;
 	
 	private double maxBetThisRound;
+	
+	private int stage;
 	
 	
 	private GameState() {
@@ -100,6 +108,20 @@ public class GameState {
 			return 0.0;
 		}
 	}
+	
+	public int getStage() {
+		return stage;
+	}
+
+	public static int getBotSeat() {
+		return botSeat;
+	}
+	
+	public int getNoOfActivePlayers() {
+		return activePlayers.size();
+	}
+	
+	
 
 	
 }

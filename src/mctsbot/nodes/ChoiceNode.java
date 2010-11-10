@@ -7,6 +7,7 @@ import mctsbot.gamestate.GameState;
 import mctsbot.strategies.StrategyConfiguration;
 
 public class ChoiceNode extends Node {
+	
 	public ChoiceNode(Node parent, GameState gameState, StrategyConfiguration config) {
 		super(parent, gameState, config);
 	}
@@ -25,13 +26,17 @@ public class ChoiceNode extends Node {
 		if(newGameState.isNextPlayerToAct()) {
 			children.add(new OpponentNode(this, newGameState, config));
 		} else {
-			children.add(new ChanceNode(this, newGameState, config));
+			if(gameState.getStage()==GameState.RIVER) {
+				children.add(new ShowdownNode(this, newGameState, config));
+			} else {
+				children.add(new ChanceNode(this, newGameState, config));
+			}
 		}
 		
 		
 		// The bot folds:
 		newGameState = gameState.doAction(Action.FOLD);
-		children.add(new LeafNode(this, newGameState, config));
+		children.add(new BotFoldedNode(this, newGameState, config));
 		
 	}
 

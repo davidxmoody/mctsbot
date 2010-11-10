@@ -2,6 +2,7 @@ package mctsbot.nodes;
 
 import java.util.ArrayList;
 
+import mctsbot.actions.Action;
 import mctsbot.gamestate.GameState;
 import mctsbot.strategies.StrategyConfiguration;
 
@@ -14,6 +15,53 @@ public class OpponentNode extends Node {
 	@Override
 	public void generateChildren() {
 		children = new ArrayList<Node>(3);
+		
+		// The opponent raises:
+		GameState newGameState = gameState.doAction(Action.RAISE);
+		if(GameState.getBotSeat()==newGameState.getNextPlayerToAct()) {
+			children.add(new ChoiceNode(this, newGameState, config));
+		} else {
+			children.add(new OpponentNode(this, newGameState, config));
+		}
+		
+		
+		// The opponent calls:
+		newGameState = gameState.doAction(Action.CALL);
+		if(newGameState.isNextPlayerToAct()) {
+			if(GameState.getBotSeat()==newGameState.getNextPlayerToAct()) {
+				children.add(new ChoiceNode(this, newGameState, config));
+			} else {
+				children.add(new OpponentNode(this, newGameState, config));
+			}
+		} else {
+			if(gameState.getStage()==GameState.RIVER) {
+				children.add(new ShowdownNode(this, newGameState, config));
+			} else {
+				children.add(new ChanceNode(this, newGameState, config));
+			}
+		}
+		
+		
+		// The opponent folds:
+		newGameState = gameState.doAction(Action.FOLD);
+		if(newGameState.isNextPlayerToAct()) {
+			if(GameState.getBotSeat()==newGameState.getNextPlayerToAct()) {
+				children.add(new ChoiceNode(this, newGameState, config));
+			} else {
+				children.add(new OpponentNode(this, newGameState, config));
+			}
+		} else {
+			if(newGameState.getNoOfActivePlayers()==1) {
+				children.add(new AllOpponentsFoldedNode(this, newGameState, config));
+			} else {
+				if(gameState.getStage()==GameState.RIVER) {
+					children.add(new ShowdownNode(this, newGameState, config));
+				} else {
+					children.add(new ChanceNode(this, newGameState, config));
+				}
+			}
+
+		}
 
 	}
 
