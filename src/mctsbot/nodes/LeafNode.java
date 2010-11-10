@@ -1,7 +1,5 @@
 package mctsbot.nodes;
 
-import java.util.LinkedList;
-
 import mctsbot.gamestate.GameState;
 import mctsbot.strategies.StrategyConfiguration;
 
@@ -13,8 +11,7 @@ public class LeafNode extends Node {
 
 	@Override
 	public void generateChildren() {
-		if(children!=null) return;
-		children = new LinkedList<Node>();
+		// Do nothing.
 	}
 	
 	@Override

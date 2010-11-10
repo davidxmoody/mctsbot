@@ -7,11 +7,12 @@ import mctsbot.strategies.StrategyConfiguration;
 
 public abstract class Node {
 	
-	protected double expectedValue;
-	protected int visitCount;
-	protected final Node parent;
+	private double expectedValue;
+	private int visitCount;
+	private final Node parent;
+	
 	protected final GameState gameState;
-	protected List<Node> children = null;
+	protected List<Node> children;
 	
 	protected final StrategyConfiguration config;
 	
@@ -22,6 +23,8 @@ public abstract class Node {
 		
 		this.expectedValue = 0.0;
 		this.visitCount = 0;
+		
+		this.children = null;
 	}
 
 	public void setExpectedValue(double expectedValue) {
@@ -69,7 +72,6 @@ public abstract class Node {
 	}
 	
 	public abstract void generateChildren();
-
 	
 	
 }

@@ -1,15 +1,15 @@
 package mctsbot.gamestate;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import mctsbot.actions.Action;
 
 import com.biotools.meerkat.Card;
-import com.biotools.meerkat.Deck;
 import com.biotools.meerkat.GameInfo;
 import com.biotools.meerkat.Hand;
 
-public class GameState {
+public class GameState implements Cloneable {
 	
 	public static final int PREFLOP = 1;
 	public static final int FLOP = 2;
@@ -17,8 +17,6 @@ public class GameState {
 	public static final int RIVER = 4;
 	
 	private double pot;
-	
-	private Deck deck;
 	
 	private Hand table;
 	
@@ -44,39 +42,42 @@ public class GameState {
 		
 	}
 	
-	public GameState initialise(GameInfo gi, Card c1, Card c2) {
+	public static GameState initialise(GameInfo gi, Card c1, Card c2) {
+		final GameState newGameState = new GameState();
+		
 		//TODO
-		return null;
+		
+		return newGameState;
 	}
 	
 	public GameState update(GameInfo gi) {
+		final GameState newGameState = this.clone();
+		
 		//TODO
-		return null;
+		
+		return newGameState;
+	}
+	
+	public GameState doAction(int actionType) {
+		final GameState newGameState = this.clone();
+		
+		//TODO
+		
+		return newGameState;
+	}
+	
+	public GameState dealCard(Card card) {
+		final GameState newGameState = this.clone();
+		
+		newGameState.table = new Hand(table);
+		newGameState.table.addCard(card);
+		
+		return newGameState;
 	}
 	
 	public Action getLastAction() {
 		return lastAction;
 	}
-	
-	public GameState doAction(int actionType) {
-		return null;
-	}
-	
-	/**
-	 * @return a new GameState with 1 new shared card.
-	 */
-	/*public GameState dealRandomCard() {
-		final GameState newGameState = new GameState();
-		
-		newGameState.pot = pot;
-		newGameState.activePlayers = activePlayers;
-		newGameState.table = new Hand(table);
-		newGameState.table.addCard(deck.dealCard());
-		newGameState.deck = new Deck();
-		newGameState.deck.copy(deck);
-		
-		return newGameState;
-	}*/
 	
 	public boolean isNextPlayerToAct() {
 		return nextPlayerToAct!=-1;
@@ -87,6 +88,10 @@ public class GameState {
 	}
 	
 	public int getNextActivePlayer() {
+		return 0; //TODO
+	}
+	
+	public int getNextActivePlayer(int seat) {
 		return 0; //TODO
 	}
 	
@@ -113,15 +118,65 @@ public class GameState {
 		return stage;
 	}
 
-	public static int getBotSeat() {
+	public int getBotSeat() {
 		return botSeat;
+	}
+	
+	public int getDealerSeat() {
+		return dealerSeat;
 	}
 	
 	public int getNoOfActivePlayers() {
 		return activePlayers.size();
 	}
 	
+	public Card getC1() {
+		return c1;
+	}
 	
+	public Card getC2() {
+		return c2;
+	}
+	
+	public Hand getTable() {
+		return table;
+	}
+	
+	public GameState goToNextStage() {
+		final GameState newGameState = this.clone();
+		
+		if(stage==FLOP) newGameState.betSize = betSize*2;
+		newGameState.stage = stage+1;
+		
+		newGameState.activePlayers = new LinkedList<Player>();
+		for(Player p: activePlayers) {
+			newGameState.activePlayers.add(p.newRound());
+		}
+		
+		newGameState.nextPlayerToAct = getNextActivePlayer(dealerSeat);
+		
+		newGameState.maxBetThisRound = 0.0;
+		
+		return newGameState;
+	}
+	
+	public GameState clone() {
+		final GameState newGameState = new GameState();
+		
+		newGameState.pot = pot;
+		newGameState.table = table;
+		newGameState.activePlayers = activePlayers;
+		newGameState.nextPlayerToAct = nextPlayerToAct;
+		newGameState.lastAction = lastAction;
+		newGameState.betSize = betSize;
+		newGameState.maxBetThisRound = maxBetThisRound;
+		newGameState.stage = stage;
+		
+		return newGameState;
+	}
 
 	
 }
+
+
+

@@ -11,10 +11,10 @@ public class Player {
 	
 	private final double money;
 	private final List<Action> pastActions;
-	private int seat;
+	private final int seat;
 	
-	private double amountInPot;
-	private double amountInPotInCurrentRound;
+	private final double amountInPot;
+	private final double amountInPotInCurrentRound;
 	
 	protected Player(double money, double amountInPot, 
 			double amountInPotInCurrentRound, 
@@ -65,6 +65,10 @@ public class Player {
 
 	public double getAmountInPotInCurrentRound() {
 		return amountInPotInCurrentRound;
+	}
+	
+	public Player newRound() {
+		return new Player(money, amountInPot, 0.0, pastActions, seat);
 	}
 
 }

@@ -4,6 +4,6 @@ import mctsbot.nodes.Node;
 
 public interface SimulationStrategy {
 	
-	public long simulate(Node node);
+	public double simulate(Node node);
 
 }
