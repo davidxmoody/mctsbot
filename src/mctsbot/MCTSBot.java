@@ -11,7 +11,6 @@ import mctsbot.strategies.StrategyConfiguration;
 
 import com.biotools.meerkat.Action;
 import com.biotools.meerkat.Card;
-import com.biotools.meerkat.Deck;
 import com.biotools.meerkat.GameInfo;
 import com.biotools.meerkat.Player;
 import com.biotools.meerkat.util.Preferences;
@@ -21,8 +20,10 @@ public class MCTSBot implements Player {
 	private static final long THINKING_TIME = 500;
 	
 	private int seat;
+	@SuppressWarnings("unused")
 	private Card c1, c2;
 	private GameInfo gi;
+	@SuppressWarnings("unused")
 	private Preferences prefs;
 	
 	protected GameState currentGameState;
@@ -128,24 +129,30 @@ public class MCTSBot implements Player {
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	@Override
-	public void actionEvent(int arg0, Action arg1) {
-		// TODO Auto-generated method stub
+	public void actionEvent(int seat, Action action) {
+		if(action.isBetOrRaise()) {
+			currentGameState = currentGameState.doAction(1);
+		} else if(action.isCheckOrCall()) {
+			currentGameState = currentGameState.doAction(2);
+		} else if(action.isFold()) {
+			currentGameState = currentGameState.doAction(3);
+		} else if(action.isSmallBlind()) {
+			currentGameState = currentGameState.doAction(2);
+		} else if(action.isBigBlind()) {
+			currentGameState = currentGameState.doAction(2);
+		}
+		
 		
 	}
-
+	
+	
+	
+	
+	
+	
+	
+	
 	@Override
 	public void dealHoleCardsEvent() {
 		// TODO Auto-generated method stub

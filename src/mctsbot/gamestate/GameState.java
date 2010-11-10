@@ -10,6 +10,7 @@ import mctsbot.actions.RaiseAction;
 import com.biotools.meerkat.Card;
 import com.biotools.meerkat.GameInfo;
 import com.biotools.meerkat.Hand;
+import com.biotools.meerkat.PlayerInfo;
 
 public class GameState implements Cloneable {
 	
@@ -80,10 +81,34 @@ public class GameState implements Cloneable {
 		return newGameState;
 	}
 	
-	public static GameState initialise(GameInfo gi, Card c1, Card c2) {
+	public static GameState initialise(GameInfo gi, Card c1, Card c2, int seat) {
+		GameState.c1 = c1;
+		GameState.c2 = c2;
+		GameState.botSeat = seat;
+		//GameState.dealerSeat = 
+		
 		final GameState newGameState = new GameState();
 		
-		//TODO
+		newGameState.pot = 0.0;
+		newGameState.betSize = gi.getCurrentBetSize();
+		newGameState.lastAction = null;
+		newGameState.maxBetThisRound = 0;
+		newGameState.stage = PREFLOP;
+		newGameState.table = new Hand();
+		newGameState.nextPlayerToAct = gi.nextActivePlayer(gi.getButtonSeat());
+		newGameState.activePlayers = new LinkedList<Player>();
+		
+		
+		
+		
+		int s = seat;
+		do {
+			PlayerInfo pi = gi.getPlayer(s);
+			newGameState.activePlayers.add(new Player(
+					pi.getBankRoll(), 0.0, 0.0, new LinkedList<Action>(), s));
+		} while((s=gi.nextActivePlayer(s))!=seat);
+		
+		
 		
 		return newGameState;
 	}
