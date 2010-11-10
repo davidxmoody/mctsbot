@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import mctsbot.actions.Action;
-import mctsbot.actions.AllInException;
 import mctsbot.actions.FoldAction;
 
 public class Player {
@@ -27,7 +26,7 @@ public class Player {
 	}
 	
 	
-	public Player doCallOrRaiseAction(Action action) throws AllInException {
+	public Player doCallOrRaiseAction(Action action) /*throws AllInException*/ {
 		//if(money<=action.getAmount()) throw new AllInException();
 		
 		//This allows players to have negative amounts of money.

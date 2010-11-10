@@ -4,6 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import mctsbot.actions.Action;
+import mctsbot.actions.CallAction;
+import mctsbot.actions.RaiseAction;
 
 import com.biotools.meerkat.Card;
 import com.biotools.meerkat.GameInfo;
@@ -16,6 +18,8 @@ public class GameState implements Cloneable {
 	public static final int TURN = 3;
 	public static final int RIVER = 4;
 	
+	private static final int MAX_BET_MULTIPLE_ALLOWED = 4;
+	
 	private double pot;
 	
 	private Hand table;
@@ -27,6 +31,7 @@ public class GameState implements Cloneable {
 	
 	private static int dealerSeat;
 	
+	//TODO make sure this will update correctly
 	private int nextPlayerToAct;
 	
 	private Action lastAction;
@@ -38,8 +43,41 @@ public class GameState implements Cloneable {
 	private int stage;
 	
 	
-	private GameState() {
+	//TODO: remove unnecessary methods
+	
+	
+	private GameState() { }
+	
+	// Used for testing 
+	// TODO: remove this
+	public static GameState demo(Card c1, Card c2) {
 		
+		GameState.c1 = c1;
+		GameState.c2 = c2;
+		GameState.botSeat = 0;
+		GameState.dealerSeat = 0;
+		
+		GameState newGameState = new GameState();
+		
+		newGameState.pot = 0.0;
+		newGameState.betSize = 1.0;
+		newGameState.lastAction = null;
+		newGameState.maxBetThisRound = 0;
+		newGameState.stage = PREFLOP;
+		newGameState.table = new Hand();
+		newGameState.nextPlayerToAct = 1;
+		newGameState.activePlayers = new LinkedList<Player>();
+		
+		// The Bot.
+		newGameState.activePlayers.add(new Player(1000, 0, 0, new LinkedList<Action>(), 0));
+		
+		// Opponent #1
+		newGameState.activePlayers.add(new Player(1000, 0, 0, new LinkedList<Action>(), 1));
+		
+		// Opponent #2
+		newGameState.activePlayers.add(new Player(1000, 0, 0, new LinkedList<Action>(), 2));
+		
+		return newGameState;
 	}
 	
 	public static GameState initialise(GameInfo gi, Card c1, Card c2) {
@@ -50,18 +88,79 @@ public class GameState implements Cloneable {
 		return newGameState;
 	}
 	
+	
 	public GameState update(GameInfo gi) {
 		final GameState newGameState = this.clone();
 		
-		//TODO
+		//TODO is this needed?
 		
 		return newGameState;
 	}
 	
+	
 	public GameState doAction(int actionType) {
 		final GameState newGameState = this.clone();
 		
-		//TODO
+		// TODO: check input.
+		
+		final Player nextPlayer = getPlayer(nextPlayerToAct);
+		
+		// Raise.
+		if(actionType==Action.RAISE) {
+			
+			// Check to see if raising is allowed.
+			if(MAX_BET_MULTIPLE_ALLOWED*betSize<maxBetThisRound+betSize) {
+				return doAction(Action.CALL);
+			}
+			
+			final RaiseAction raiseAction = 
+				new RaiseAction(maxBetThisRound+betSize-nextPlayer.getAmountInPotInCurrentRound());
+			
+			newGameState.activePlayers = new LinkedList<Player>(activePlayers);
+			newGameState.activePlayers.remove(nextPlayer);
+			newGameState.activePlayers.add(nextPlayer.doCallOrRaiseAction(raiseAction));
+			
+			newGameState.nextPlayerToAct = getNextActivePlayerSeat(nextPlayer.getSeat());
+			
+			newGameState.pot += raiseAction.getAmount();
+			newGameState.maxBetThisRound += betSize;
+			
+		// Call.
+		} else if(actionType==Action.CALL) {
+			
+			final CallAction callAction = 
+				new CallAction(maxBetThisRound-nextPlayer.getAmountInPotInCurrentRound());
+			
+			newGameState.activePlayers = new LinkedList<Player>(activePlayers);
+			newGameState.activePlayers.remove(nextPlayer);
+			newGameState.activePlayers.add(nextPlayer.doCallOrRaiseAction(callAction));
+			
+			final Player nextNextPlayer = getNextActivePlayer(nextPlayer.getSeat());
+			newGameState.nextPlayerToAct = 
+				(nextNextPlayer.getAmountInPotInCurrentRound()==maxBetThisRound)? 
+						-1 : nextNextPlayer.getSeat() ;
+			
+			newGameState.pot += callAction.getAmount();
+			
+			
+		// Fold.
+		} else if(actionType==Action.FOLD) {
+			
+			newGameState.activePlayers = new LinkedList<Player>(activePlayers);
+			newGameState.activePlayers.remove(nextPlayer);
+			// TODO: Add folded player to inactive player list?
+			
+			final Player nextNextPlayer = getNextActivePlayer(nextPlayer.getSeat());
+			newGameState.nextPlayerToAct = 
+				(nextNextPlayer.getAmountInPotInCurrentRound()==maxBetThisRound)? 
+						-1 : nextNextPlayer.getSeat() ;
+			
+			
+		// Invalid actionType?
+		} else {
+			System.err.println("Invalid actionType passed to doAction: " + actionType);
+			return null;
+		}
 		
 		return newGameState;
 	}
@@ -83,18 +182,57 @@ public class GameState implements Cloneable {
 		return nextPlayerToAct!=-1;
 	}
 	
-	public int getNextPlayerToAct() {
-		return 0; //TODO
+	public boolean isBotNextPlayerToAct() {
+		return botSeat==nextPlayerToAct;
 	}
 	
-	public int getNextActivePlayer() {
-		return 0; //TODO
+	
+	//TODO: make this more efficient.
+	public int getNextActivePlayerSeat(int seat) {
+		if(activePlayers.size()==1) return activePlayers.get(0).getSeat();
+		if(activePlayers.size()<=0) return -1;
+		
+		int nextSeat = seat;
+		for(Player p: activePlayers) {
+			final int pSeat = p.getSeat();
+			if(nextSeat>seat) {
+				if(pSeat>seat && pSeat<nextSeat) {
+					nextSeat = pSeat;
+				}
+			} else
+				if(pSeat<=nextSeat || pSeat>seat) {
+					nextSeat = pSeat;
+				} 
+			}
+		return nextSeat;
 	}
 	
-	public int getNextActivePlayer(int seat) {
-		return 0; //TODO
-	}
 	
+	//TODO: make this more efficient.
+	public Player getNextActivePlayer(int seat) {
+		if(activePlayers.size()==1) return getPlayer(seat);
+		if(activePlayers.size()<=0) return null;
+		
+		Player nextPlayer = null;
+		int nextSeat = seat;
+		for(Player p: activePlayers) {
+			final int pSeat = p.getSeat();
+			if(nextSeat>seat) {
+				if(pSeat>seat && pSeat<nextSeat) {
+					nextSeat = pSeat;
+					nextPlayer = p;
+				}
+			} else
+				if(pSeat<=nextSeat || pSeat>seat) {
+					nextSeat = pSeat;
+					nextPlayer = p;
+				} 
+			}
+		return nextPlayer;
+	}
+		
+	
+	//TODO: make this more efficient.
 	public Player getPlayer(int seat) {
 		for(Player p:activePlayers) {
 			if(p.getSeat()==seat) return p;
@@ -153,7 +291,7 @@ public class GameState implements Cloneable {
 			newGameState.activePlayers.add(p.newRound());
 		}
 		
-		newGameState.nextPlayerToAct = getNextActivePlayer(dealerSeat);
+		newGameState.nextPlayerToAct = getNextActivePlayerSeat(dealerSeat);
 		
 		newGameState.maxBetThisRound = 0.0;
 		

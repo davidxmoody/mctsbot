@@ -49,8 +49,8 @@ public class RandomSelectionStrategy implements SelectionStrategy {
 			
 		// Unknown node type?
 		} else {
-			System.err.println("A simulation strategy was used on an unknown node type: "
-					+ node.getClass().toString());
+			//System.err.println("A simulation strategy was used on an unknown node type: "
+			//		+ node.getClass().toString());
 			return null;
 		}
 		

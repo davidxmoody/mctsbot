@@ -11,6 +11,7 @@ import mctsbot.strategies.StrategyConfiguration;
 
 import com.biotools.meerkat.Action;
 import com.biotools.meerkat.Card;
+import com.biotools.meerkat.Deck;
 import com.biotools.meerkat.GameInfo;
 import com.biotools.meerkat.Player;
 import com.biotools.meerkat.util.Preferences;
@@ -24,10 +25,10 @@ public class MCTSBot implements Player {
 	private GameInfo gi;
 	private Preferences prefs;
 	
-	private GameState currentGameState;
+	protected GameState currentGameState;
 	private StrategyConfiguration config;
 	
-
+	
 	@Override
 	public void init(Preferences prefs) {
 		this.prefs = prefs;
@@ -119,7 +120,7 @@ public class MCTSBot implements Player {
 		if(action instanceof mctsbot.actions.FoldAction) return Action.foldAction(toCall);
 		
 		// Else something went wrong.
-		System.err.println("Received invalid action type: " + action.getClass().toString());
+		System.err.println("Received invalid action type: " + action.toString());
 		return Action.checkOrFoldAction(toCall);
 	}
 	

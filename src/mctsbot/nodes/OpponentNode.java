@@ -19,7 +19,7 @@ public class OpponentNode extends Node {
 		
 		// The opponent raises:
 		GameState newGameState = gameState.doAction(Action.RAISE);
-		if(newGameState.getBotSeat()==newGameState.getNextPlayerToAct()) {
+		if(newGameState.isBotNextPlayerToAct()) {
 			children.add(new ChoiceNode(this, newGameState, config));
 		} else {
 			children.add(new OpponentNode(this, newGameState, config));
@@ -29,7 +29,7 @@ public class OpponentNode extends Node {
 		// The opponent calls:
 		newGameState = gameState.doAction(Action.CALL);
 		if(newGameState.isNextPlayerToAct()) {
-			if(newGameState.getBotSeat()==newGameState.getNextPlayerToAct()) {
+			if(newGameState.isBotNextPlayerToAct()) {
 				children.add(new ChoiceNode(this, newGameState, config));
 			} else {
 				children.add(new OpponentNode(this, newGameState, config));
@@ -46,7 +46,7 @@ public class OpponentNode extends Node {
 		// The opponent folds:
 		newGameState = gameState.doAction(Action.FOLD);
 		if(newGameState.isNextPlayerToAct()) {
-			if(newGameState.getBotSeat()==newGameState.getNextPlayerToAct()) {
+			if(newGameState.isBotNextPlayerToAct()) {
 				children.add(new ChoiceNode(this, newGameState, config));
 			} else {
 				children.add(new OpponentNode(this, newGameState, config));
