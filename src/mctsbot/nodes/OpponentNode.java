@@ -14,6 +14,7 @@ public class OpponentNode extends Node {
 
 	@Override
 	public void generateChildren() {
+		if(children!=null) return;
 		children = new ArrayList<Node>(3);
 		
 		// The opponent raises:

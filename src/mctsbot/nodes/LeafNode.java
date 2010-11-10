@@ -13,7 +13,13 @@ public class LeafNode extends Node {
 
 	@Override
 	public void generateChildren() {
+		if(children!=null) return;
 		children = new LinkedList<Node>();
+	}
+	
+	@Override
+	public Node select() {
+		return this;
 	}
 
 }

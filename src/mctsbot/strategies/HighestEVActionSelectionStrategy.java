@@ -13,7 +13,7 @@ public class HighestEVActionSelectionStrategy implements
 	public Action select(RootNode root) {
 		final List<Node> children = root.getChildren();
 		
-		double currentMaxEV = 0.0;
+		double currentMaxEV = children.get(0).getExpectedValue();
 		Node currentBestChoice = children.get(0);
 		for(Node child: children) {
 			if(child.getExpectedValue()>currentMaxEV) {

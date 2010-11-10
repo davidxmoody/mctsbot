@@ -13,6 +13,7 @@ public class ChanceNode extends Node {
 
 	@Override
 	public void generateChildren() {
+		if(children!=null) return;
 		children = new LinkedList<Node>();
 	}
 

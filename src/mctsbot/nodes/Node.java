@@ -10,7 +10,7 @@ public abstract class Node {
 	protected double expectedValue;
 	protected int visitCount;
 	protected final Node parent;
-	protected GameState gameState;
+	protected final GameState gameState;
 	protected List<Node> children = null;
 	
 	protected final StrategyConfiguration config;
@@ -24,7 +24,7 @@ public abstract class Node {
 		this.visitCount = 0;
 	}
 
-	public void setExpectedValue(long expectedValue) {
+	public void setExpectedValue(double expectedValue) {
 		this.expectedValue = expectedValue;
 	}
 
