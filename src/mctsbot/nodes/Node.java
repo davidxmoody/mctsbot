@@ -3,9 +3,7 @@ package mctsbot.nodes;
 import java.util.List;
 
 import mctsbot.gamestate.GameState;
-import mctsbot.strategies.BackpropagationStrategy;
-import mctsbot.strategies.SelectionStrategy;
-import mctsbot.strategies.SimulationStrategy;
+import mctsbot.strategies.StrategyConfiguration;
 
 public abstract class Node {
 	
@@ -15,13 +13,12 @@ public abstract class Node {
 	protected GameState gameState;
 	protected List<Node> children = null;
 	
-	protected SelectionStrategy selectionStrategy;
-	protected BackpropagationStrategy backpropagationStrategy;
-	protected SimulationStrategy simulationStrategy;
+	protected final StrategyConfiguration config;
 	
-	public Node(Node parent, GameState gameState) {
+	public Node(Node parent, GameState gameState, StrategyConfiguration config) {
 		this.parent = parent;
 		this.gameState = gameState;
+		this.config = config;
 		
 		this.expectedValue = 0.0;
 		this.visitCount = 0;
@@ -54,22 +51,20 @@ public abstract class Node {
 	public GameState getGameState() {
 		return gameState;
 	}
-
-	public abstract void generateChildren();
 	
 	public Node select() {
-		return null;
+		return config.getSelectionStrategy().select(this);
 	}
 	
 	public void backpropagate(double expectedValue) {
-		
+		config.getBackpropagationStrategy().propagate(this, expectedValue);
 	}
 	
 	public double simulate() {
-		return 0.0;
+		return config.getSimulationStrategy().simulate(this);
 	}
 	
-	
+	public abstract void generateChildren();
 
 	
 	

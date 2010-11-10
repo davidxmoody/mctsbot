@@ -5,7 +5,7 @@ import mctsbot.gamestate.GameState;
 public class LeafNode extends Node {
 
 	public LeafNode(Node parent, GameState gameState) {
-		super(parent, gameState);
+		super(parent, gameState, null);
 		// TODO Auto-generated constructor stub
 	}
 

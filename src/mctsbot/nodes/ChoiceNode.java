@@ -7,7 +7,7 @@ import mctsbot.gamestate.GameState;
 
 public class ChoiceNode extends Node {
 	public ChoiceNode(Node parent, GameState gameState) {
-		super(parent, gameState);
+		super(parent, gameState, null);
 		// TODO Auto-generated constructor stub
 	}
 

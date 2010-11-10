@@ -4,6 +4,6 @@ import mctsbot.nodes.Node;
 
 public interface BackpropagationStrategy {
 	
-	public Node propagate(Node node, double expectedValue);
+	public void propagate(Node node, double expectedValue);
 
 }
