@@ -38,7 +38,7 @@ public class GameState {
 	}
 	
 	/**
-	 * @return a new GameState with 1 (or 3) new shared card(s).
+	 * @return a new GameState with 1 new shared card.
 	 */
 	public GameState dealRandomCard() {
 		final GameState newGameState = new GameState();
@@ -53,7 +53,11 @@ public class GameState {
 		return newGameState;
 	}
 	
-	public GameState initialise(GameInfo gi) {
+	public GameState initialise(GameInfo gi, Card c1, Card c2) {
+		return null;
+	}
+	
+	public GameState update(GameInfo gi) {
 		return null;
 	}
 
