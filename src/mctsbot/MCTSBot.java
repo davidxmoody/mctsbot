@@ -3,6 +3,12 @@ package mctsbot;
 import mctsbot.gamestate.GameState;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.RootNode;
+import mctsbot.strategies.ActionSelectionStrategy;
+import mctsbot.strategies.AveragingBackpropagationStrategy;
+import mctsbot.strategies.HighestEVActionSelectionStrategy;
+import mctsbot.strategies.RandomSelectionStrategy;
+import mctsbot.strategies.RandomSimulationStrategy;
+import mctsbot.strategies.StrategyConfiguration;
 
 import com.biotools.meerkat.Action;
 import com.biotools.meerkat.Card;
@@ -18,13 +24,22 @@ public class MCTSBot implements Player {
 	private Preferences prefs;
 	
 	private GameState currentGameState;
+	private StrategyConfiguration config;
 	
 	private static final long THINKING_TIME = 1000;
 
 	@Override
 	public void init(Preferences arg0) {
-		// TODO Auto-generated method stub
+		// Create a new config.
 		
+		// This is just a simple config.
+		// TODO: create the config from the preferences given.
+		config = new StrategyConfiguration(
+				new HighestEVActionSelectionStrategy(), 
+				new RandomSelectionStrategy(), 
+				new RandomSimulationStrategy(), 
+				new AveragingBackpropagationStrategy() );
+
 	}
 	
 	@Override
@@ -37,9 +52,10 @@ public class MCTSBot implements Player {
 	public Action getAction() {
 
 		// Make root node.
-		RootNode root = new RootNode(currentGameState);
+		RootNode root = new RootNode(currentGameState, config);
 		
 		// Do iterations until time limit reached.
+		final long startTime = System.currentTimeMillis();
 		final long endTime = System.currentTimeMillis() + getThinkingTime();
 		int noIterations = 0;
 		
@@ -57,7 +73,8 @@ public class MCTSBot implements Player {
 			
 		} while(endTime>System.currentTimeMillis());
 		
-		System.out.println("Performed " + noIterations);
+		System.out.println("Performed " + noIterations + " iterations in " + 
+				(System.currentTimeMillis()-startTime) + " milliseconds.");
 		
 		// Perform action.
 		

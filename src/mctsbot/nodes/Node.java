@@ -52,6 +52,10 @@ public abstract class Node {
 		return gameState;
 	}
 	
+	public boolean isExpanded() {
+		return children!=null;
+	}
+	
 	public Node select() {
 		return config.getSelectionStrategy().select(this);
 	}

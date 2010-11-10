@@ -1,13 +1,12 @@
 package mctsbot.nodes;
 
-import mctsbot.actions.Action;
 import mctsbot.gamestate.GameState;
+import mctsbot.strategies.StrategyConfiguration;
 
 public class ChanceNode extends Node {
 
-	public ChanceNode(Node parent, GameState gameState) {
-		super(parent, gameState, null);
-		// TODO Auto-generated constructor stub
+	public ChanceNode(Node parent, GameState gameState, StrategyConfiguration config) {
+		super(parent, gameState, config);
 	}
 
 	@Override

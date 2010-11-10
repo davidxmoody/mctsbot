@@ -1,25 +1,23 @@
 package mctsbot.nodes;
 
 import mctsbot.gamestate.GameState;
+import mctsbot.strategies.StrategyConfiguration;
 
 
-public class RootNode extends Node {
+public class RootNode extends ChoiceNode {
 
-	public RootNode(GameState gameState) {
-		super(null, gameState, null);
-		
-		
-		
-	}
-
-	@Override
-	public void generateChildren() {
-		// TODO Auto-generated method stub
-
+	public RootNode(GameState gameState, StrategyConfiguration config) {
+		super(null, gameState, config);
 	}
 	
 	public Node selectRecursively() {
-		return null;
+		Node selectedNode = this;
+		
+		while(selectedNode.isExpanded()) {
+			selectedNode = selectedNode.select();
+		}
+		
+		return selectedNode;
 	}
 
 }
