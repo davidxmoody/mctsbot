@@ -13,8 +13,15 @@ public class Player {
 	private final List<Action> pastActions;
 	private int seat;
 	
-	protected Player(double money, List<Action> pastActions, int seat) {
+	private double amountInPot;
+	private double amountInPotInCurrentRound;
+	
+	protected Player(double money, double amountInPot, 
+			double amountInPotInCurrentRound, 
+			List<Action> pastActions, int seat) {
 		this.money = money;
+		this.amountInPot = amountInPot;
+		this.amountInPotInCurrentRound = amountInPotInCurrentRound;
 		this.pastActions = pastActions;
 		this.seat = seat;
 	}
@@ -23,17 +30,21 @@ public class Player {
 	public Player doCallOrRaiseAction(Action action) throws AllInException {
 		//if(money<=action.getAmount()) throw new AllInException();
 		
-		final double newMoney = money - action.getAmount();
+		//This allows players to have negative amounts of money.
+		//TODO: make it so that an ALLInException will be thrown if needed.
 		final List<Action> newPastActions = new LinkedList<Action>(pastActions);
 		newPastActions.add(action);
 		
-		return new Player(newMoney, newPastActions, seat);
+		return new Player(money-action.getAmount(), 
+				amountInPot+action.getAmount(), 
+				amountInPotInCurrentRound+action.getAmount(), 
+				newPastActions, seat);
 	}
 	
 	public Player doFoldAction(FoldAction action) {
 		final List<Action> newPastActions = new LinkedList<Action>(pastActions);
 		newPastActions.add(action);
-		return new Player(money, newPastActions, seat);
+		return new Player(money, 0.0, 0.0, newPastActions, seat);
 	}
 	
 	public int getSeat() {
@@ -46,6 +57,14 @@ public class Player {
 	
 	public List<Action> getActions() {
 		return pastActions;
+	}
+
+	public double getAmountInPot() {
+		return amountInPot;
+	}
+
+	public double getAmountInPotInCurrentRound() {
+		return amountInPotInCurrentRound;
 	}
 
 }

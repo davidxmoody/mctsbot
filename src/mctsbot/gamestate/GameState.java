@@ -23,24 +23,41 @@ public class GameState {
 	
 	private static int dealerSeat;
 	
+	private int nextPlayerToAct;
+	
+	private Action lastAction;
+	
+	private double betSize;
+	
+	private double maxBetThisRound;
+	
 	
 	private GameState() {
 		
 	}
 	
-	public Action getLastAction() {
+	public GameState initialise(GameInfo gi, Card c1, Card c2) {
+		//TODO
 		return null;
-		
 	}
 	
-	public GameState doAction(Action action) {
+	public GameState update(GameInfo gi) {
+		//TODO
+		return null;
+	}
+	
+	public Action getLastAction() {
+		return lastAction;
+	}
+	
+	public GameState doAction(int actionType) {
 		return null;
 	}
 	
 	/**
 	 * @return a new GameState with 1 new shared card.
 	 */
-	public GameState dealRandomCard() {
+	/*public GameState dealRandomCard() {
 		final GameState newGameState = new GameState();
 		
 		newGameState.pot = pot;
@@ -51,14 +68,37 @@ public class GameState {
 		newGameState.deck.copy(deck);
 		
 		return newGameState;
+	}*/
+	
+	public boolean isNextPlayerToAct() {
+		return nextPlayerToAct!=-1;
 	}
 	
-	public GameState initialise(GameInfo gi, Card c1, Card c2) {
+	public int getNextPlayerToAct() {
+		return 0; //TODO
+	}
+	
+	public int getNextActivePlayer() {
+		return 0; //TODO
+	}
+	
+	public Player getPlayer(int seat) {
+		for(Player p:activePlayers) {
+			if(p.getSeat()==seat) return p;
+		}
 		return null;
 	}
 	
-	public GameState update(GameInfo gi) {
-		return null;
+	public double getBetSize() {
+		return betSize;
+	}
+	
+	public double getAmountToCall(int seat) {
+		try{
+			return maxBetThisRound-getPlayer(seat).getAmountInPotInCurrentRound();
+		} catch(NullPointerException e) {
+			return 0.0;
+		}
 	}
 
 	

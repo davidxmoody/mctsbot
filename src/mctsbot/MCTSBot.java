@@ -17,6 +17,8 @@ import com.biotools.meerkat.util.Preferences;
 
 public class MCTSBot implements Player {
 	
+	private static final long THINKING_TIME = 500;
+	
 	private int seat;
 	private Card c1, c2;
 	private GameInfo gi;
@@ -25,7 +27,6 @@ public class MCTSBot implements Player {
 	private GameState currentGameState;
 	private StrategyConfiguration config;
 	
-	private static final long THINKING_TIME = 1000;
 
 	@Override
 	public void init(Preferences prefs) {
@@ -40,8 +41,8 @@ public class MCTSBot implements Player {
 				new RandomSelectionStrategy(), 
 				new RandomSimulationStrategy(), 
 				new AveragingBackpropagationStrategy() );
-
 	}
+	
 	
 	@Override
 	public void holeCards(Card c1, Card c2, int seat) {
@@ -49,6 +50,7 @@ public class MCTSBot implements Player {
 		this.c2 = c2;
 		this.seat = seat;
 	}
+	
 	
 	@Override
 	public Action getAction() {
@@ -58,7 +60,7 @@ public class MCTSBot implements Player {
 		
 		// Do iterations until time limit reached.
 		final long startTime = System.currentTimeMillis();
-		final long endTime = System.currentTimeMillis() + getThinkingTime();
+		final long endTime = startTime + getThinkingTime();
 		int noIterations = 0;
 		
 		do {
@@ -79,9 +81,7 @@ public class MCTSBot implements Player {
 				(System.currentTimeMillis()-startTime) + " milliseconds.");
 		
 		// Perform action.
-		mctsbot.actions.Action action = config.getActionSelectionStrategy().select(root);
-
-		return convertToMeerkatAction(action);
+		return convertToMeerkatAction(config.getActionSelectionStrategy().select(root));
 	}
 	
 	
@@ -100,9 +100,11 @@ public class MCTSBot implements Player {
 		selectedNode.backpropagate(expectedValue);
 	}
 	
+	
 	private long getThinkingTime() {
 		return THINKING_TIME;
 	}
+	
 	
 	private Action convertToMeerkatAction(mctsbot.actions.Action action) {
 		final double toCall = gi.getAmountToCall(seat);
@@ -120,19 +122,6 @@ public class MCTSBot implements Player {
 		System.err.println("Received invalid action type: " + action.getClass().toString());
 		return Action.checkOrFoldAction(toCall);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	
