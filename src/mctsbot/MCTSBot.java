@@ -3,7 +3,6 @@ package mctsbot;
 import mctsbot.gamestate.GameState;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.RootNode;
-import mctsbot.strategies.ActionSelectionStrategy;
 import mctsbot.strategies.AveragingBackpropagationStrategy;
 import mctsbot.strategies.HighestEVActionSelectionStrategy;
 import mctsbot.strategies.RandomSelectionStrategy;
@@ -29,11 +28,13 @@ public class MCTSBot implements Player {
 	private static final long THINKING_TIME = 1000;
 
 	@Override
-	public void init(Preferences arg0) {
+	public void init(Preferences prefs) {
+		this.prefs = prefs;
+		
 		// Create a new config.
 		
 		// This is just a simple config.
-		// TODO: create the config from the preferences given.
+		// TODO: create the config from the given preferences.
 		config = new StrategyConfiguration(
 				new HighestEVActionSelectionStrategy(), 
 				new RandomSelectionStrategy(), 
@@ -43,9 +44,10 @@ public class MCTSBot implements Player {
 	}
 	
 	@Override
-	public void holeCards(Card arg0, Card arg1, int arg2) {
-		// TODO Auto-generated method stub
-		
+	public void holeCards(Card c1, Card c2, int seat) {
+		this.c1 = c1;
+		this.c2 = c2;
+		this.seat = seat;
 	}
 	
 	@Override
@@ -77,15 +79,9 @@ public class MCTSBot implements Player {
 				(System.currentTimeMillis()-startTime) + " milliseconds.");
 		
 		// Perform action.
-		
-		
-		
-		
-		
-		
-		
-		
-		return Action.checkOrFoldAction(0);
+		mctsbot.actions.Action action = config.getActionSelectionStrategy().select(root);
+
+		return convertToMeerkatAction(action);
 	}
 	
 	
@@ -93,8 +89,9 @@ public class MCTSBot implements Player {
 		// Selection until a leaf of the stored tree is reached.
 		Node selectedNode = node.selectRecursively();
 		
-		// Expand selected leaf node.
+		// Expand selected leaf node (and select one of the new children).
 		selectedNode.generateChildren();
+		selectedNode = selectedNode.select();
 		
 		// Simulate a game.
 		final double expectedValue = selectedNode.simulate();
@@ -107,7 +104,22 @@ public class MCTSBot implements Player {
 		return THINKING_TIME;
 	}
 	
-	
+	private Action convertToMeerkatAction(mctsbot.actions.Action action) {
+		final double toCall = gi.getAmountToCall(seat);
+		
+		// Raise.
+		if(action instanceof mctsbot.actions.RaiseAction) return Action.raiseAction(gi);
+		
+		// Call.
+		if(action instanceof mctsbot.actions.CallAction) return Action.callAction(toCall);
+		
+		// Fold.
+		if(action instanceof mctsbot.actions.FoldAction) return Action.foldAction(toCall);
+		
+		// Else something went wrong.
+		System.err.println("Received invalid action type: " + action.getClass().toString());
+		return Action.checkOrFoldAction(toCall);
+	}
 	
 	
 	
