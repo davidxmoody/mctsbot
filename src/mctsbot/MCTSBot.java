@@ -32,6 +32,8 @@ public class MCTSBot implements Player {
 	
 	@Override
 	public void init(Preferences prefs) {
+		System.out.println("init called");
+		
 		this.prefs = prefs;
 		
 		// Create a new config.
@@ -43,19 +45,37 @@ public class MCTSBot implements Player {
 				new RandomSelectionStrategy(), 
 				new RandomSimulationStrategy(), 
 				new AveragingBackpropagationStrategy() );
+		
+		System.out.println("init finished");
+	}
+	
+	
+	@Override
+	public void gameStartEvent(GameInfo gi) {
+		System.out.println("gameStartEvent called");
+		this.gi = gi;
+		currentGameState = GameState.initialise(gi);
+		System.out.println("gameStartEvent finished");
 	}
 	
 	
 	@Override
 	public void holeCards(Card c1, Card c2, int seat) {
+		System.out.println("holeCards called");
+		
 		this.c1 = c1;
 		this.c2 = c2;
 		this.seat = seat;
+		
+		currentGameState = currentGameState.holeCards(c1, c2, seat);
+		
+		System.out.println("holeCards finished");
 	}
 	
 	
 	@Override
 	public Action getAction() {
+		System.out.println("getAction called");
 
 		// Make root node.
 		RootNode root = new RootNode(currentGameState, config);
@@ -82,8 +102,13 @@ public class MCTSBot implements Player {
 		System.out.println("Performed " + noIterations + " iterations in " + 
 				(System.currentTimeMillis()-startTime) + " milliseconds.");
 		
+		
 		// Perform action.
-		return convertToMeerkatAction(config.getActionSelectionStrategy().select(root));
+		final Action action = convertToMeerkatAction(config.getActionSelectionStrategy().select(root));
+		
+		System.out.println("getAction about to finish");
+		
+		return action;
 	}
 	
 	
@@ -109,6 +134,9 @@ public class MCTSBot implements Player {
 	
 	
 	private Action convertToMeerkatAction(mctsbot.actions.Action action) {
+		System.out.println("convert called");
+		//System.out.println("convert called on " + action.toString());
+		
 		final double toCall = gi.getAmountToCall(seat);
 		
 		// Raise.
@@ -121,7 +149,7 @@ public class MCTSBot implements Player {
 		if(action instanceof mctsbot.actions.FoldAction) return Action.foldAction(toCall);
 		
 		// Else something went wrong.
-		System.err.println("Received invalid action type: " + action.toString());
+		//System.err.println("Received invalid action type: " + action.toString());
 		return Action.checkOrFoldAction(toCall);
 	}
 	
@@ -131,6 +159,8 @@ public class MCTSBot implements Player {
 	
 	@Override
 	public void actionEvent(int seat, Action action) {
+		System.out.println("actionEvent called");
+		
 		if(action.isBetOrRaise()) {
 			currentGameState = currentGameState.doAction(1);
 		} else if(action.isCheckOrCall()) {
@@ -138,12 +168,12 @@ public class MCTSBot implements Player {
 		} else if(action.isFold()) {
 			currentGameState = currentGameState.doAction(3);
 		} else if(action.isSmallBlind()) {
-			currentGameState = currentGameState.doAction(2);
+			currentGameState = currentGameState.doAction(4);
 		} else if(action.isBigBlind()) {
-			currentGameState = currentGameState.doAction(2);
+			currentGameState = currentGameState.doAction(5);
 		}
 		
-		
+		System.out.println("actionEvent finished");
 	}
 	
 	
@@ -165,10 +195,6 @@ public class MCTSBot implements Player {
 		
 	}
 
-	@Override
-	public void gameStartEvent(GameInfo gi) {
-		this.gi = gi;
-	}
 
 	@Override
 	public void gameStateChanged() {

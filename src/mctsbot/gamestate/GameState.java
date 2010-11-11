@@ -4,8 +4,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import mctsbot.actions.Action;
+import mctsbot.actions.BigBlindAction;
 import mctsbot.actions.CallAction;
 import mctsbot.actions.RaiseAction;
+import mctsbot.actions.SmallBlindAction;
 
 import com.biotools.meerkat.Card;
 import com.biotools.meerkat.GameInfo;
@@ -33,15 +35,20 @@ public class GameState implements Cloneable {
 	private static int dealerSeat;
 	
 	//TODO make sure this will update correctly
-	private int nextPlayerToAct;
+	//TODO make private again
+	public int nextPlayerToAct;
 	
 	private Action lastAction;
 	
 	private double betSize;
+	private static double smallBlindSize;
+	private static double bigBlindSize;
 	
 	private double maxBetThisRound;
 	
 	private int stage;
+	
+	private int committedPlayers;
 	
 	
 	//TODO: remove unnecessary methods
@@ -49,45 +56,11 @@ public class GameState implements Cloneable {
 	
 	private GameState() { }
 	
-	// Used for testing 
-	// TODO: remove this
-	public static GameState demo(Card c1, Card c2) {
-		
-		GameState.c1 = c1;
-		GameState.c2 = c2;
-		GameState.botSeat = 0;
-		GameState.dealerSeat = 0;
-		
-		GameState newGameState = new GameState();
-		
-		newGameState.pot = 0.0;
-		newGameState.betSize = 1.0;
-		newGameState.lastAction = null;
-		newGameState.maxBetThisRound = 0;
-		newGameState.stage = PREFLOP;
-		newGameState.table = new Hand();
-		newGameState.nextPlayerToAct = 1;
-		newGameState.activePlayers = new LinkedList<Player>();
-		
-		// The Bot.
-		newGameState.activePlayers.add(new Player(1000, 0, 0, new LinkedList<Action>(), 0));
-		
-		// Opponent #1
-		newGameState.activePlayers.add(new Player(1000, 0, 0, new LinkedList<Action>(), 1));
-		
-		// Opponent #2
-		newGameState.activePlayers.add(new Player(1000, 0, 0, new LinkedList<Action>(), 2));
-		
-		return newGameState;
-	}
-	
-	public static GameState initialise(GameInfo gi, Card c1, Card c2, int seat) {
-		GameState.c1 = c1;
-		GameState.c2 = c2;
-		GameState.botSeat = seat;
-		//GameState.dealerSeat = 
-		
+	public static GameState initialise(GameInfo gi) {
 		final GameState newGameState = new GameState();
+		
+		GameState.smallBlindSize = gi.getSmallBlindSize();
+		GameState.bigBlindSize = gi.getBigBlindSize();
 		
 		newGameState.pot = 0.0;
 		newGameState.betSize = gi.getCurrentBetSize();
@@ -95,22 +68,30 @@ public class GameState implements Cloneable {
 		newGameState.maxBetThisRound = 0;
 		newGameState.stage = PREFLOP;
 		newGameState.table = new Hand();
-		newGameState.nextPlayerToAct = gi.nextActivePlayer(gi.getButtonSeat());
+		newGameState.nextPlayerToAct = gi.getSmallBlindSeat();
 		newGameState.activePlayers = new LinkedList<Player>();
+		newGameState.committedPlayers = 0;
 		
 		
-		
-		
-		int s = seat;
+		int firstSeat = gi.nextActivePlayer(gi.getButtonSeat());
+		int s = firstSeat;
 		do {
 			PlayerInfo pi = gi.getPlayer(s);
 			newGameState.activePlayers.add(new Player(
 					pi.getBankRoll(), 0.0, 0.0, new LinkedList<Action>(), s));
-		} while((s=gi.nextActivePlayer(s))!=seat);
-		
-		
+		} while((s=gi.nextActivePlayer(s))!=firstSeat);
 		
 		return newGameState;
+	}
+	
+	public GameState holeCards(Card c1, Card c2, int seat) {
+		GameState.c1 = c1;
+		GameState.c2 = c2;
+		GameState.botSeat = seat;
+		//GameState.dealerSeat = 
+		
+		return this;
+		
 	}
 	
 	
@@ -124,28 +105,53 @@ public class GameState implements Cloneable {
 	
 	
 	public GameState doAction(int actionType) {
+		
+		
 		final GameState newGameState = this.clone();
 		
 		// TODO: check input.
 		
 		final Player nextPlayer = getPlayer(nextPlayerToAct);
+		System.out.print("nextPlayer is " + ((nextPlayer==null)?"":" not") + " null");
+		System.out.print(", actionType = " + actionType);
+		System.out.println(" and nextPlayerToAct = " + nextPlayerToAct);
+		
 		
 		// Raise.
-		if(actionType==Action.RAISE) {
+		if(actionType==Action.RAISE || 
+				actionType==Action.SMALL_BLIND || 
+				actionType==Action.BIG_BLIND) {
 			
 			// Check to see if raising is allowed.
 			if(MAX_BET_MULTIPLE_ALLOWED*betSize<maxBetThisRound+betSize) {
+				System.out.println("max bet multiple reached, forcing call");
 				return doAction(Action.CALL);
 			}
 			
-			final RaiseAction raiseAction = 
-				new RaiseAction(maxBetThisRound+betSize-nextPlayer.getAmountInPotInCurrentRound());
+			RaiseAction raiseAction = null;
+			if(actionType==Action.RAISE) {
+				raiseAction = new RaiseAction(
+						maxBetThisRound+betSize-nextPlayer.getAmountInPotInCurrentRound());
+			} else if(actionType==Action.SMALL_BLIND) {
+				raiseAction = new SmallBlindAction(smallBlindSize);
+			} else if(actionType==Action.BIG_BLIND) {
+				raiseAction = new BigBlindAction(bigBlindSize);
+			}
 			
 			newGameState.activePlayers = new LinkedList<Player>(activePlayers);
 			newGameState.activePlayers.remove(nextPlayer);
 			newGameState.activePlayers.add(nextPlayer.doCallOrRaiseAction(raiseAction));
 			
-			newGameState.nextPlayerToAct = getNextActivePlayerSeat(nextPlayer.getSeat());
+			if(actionType==Action.RAISE) {
+				newGameState.committedPlayers = 1;
+			} else {
+				newGameState.committedPlayers = 0;
+			}
+			
+			
+			newGameState.nextPlayerToAct = 
+				(newGameState.isNextPlayerToAct()) ? 
+						newGameState.getNextActivePlayerSeat(nextPlayerToAct) : -1;
 			
 			newGameState.pot += raiseAction.getAmount();
 			newGameState.maxBetThisRound += betSize;
@@ -160,10 +166,11 @@ public class GameState implements Cloneable {
 			newGameState.activePlayers.remove(nextPlayer);
 			newGameState.activePlayers.add(nextPlayer.doCallOrRaiseAction(callAction));
 			
-			final Player nextNextPlayer = getNextActivePlayer(nextPlayer.getSeat());
+			newGameState.committedPlayers++;
+			
 			newGameState.nextPlayerToAct = 
-				(nextNextPlayer.getAmountInPotInCurrentRound()==maxBetThisRound)? 
-						-1 : nextNextPlayer.getSeat() ;
+				(newGameState.isNextPlayerToAct()) ? 
+						newGameState.getNextActivePlayerSeat(nextPlayerToAct) : -1;
 			
 			newGameState.pot += callAction.getAmount();
 			
@@ -175,10 +182,9 @@ public class GameState implements Cloneable {
 			newGameState.activePlayers.remove(nextPlayer);
 			// TODO: Add folded player to inactive player list?
 			
-			final Player nextNextPlayer = getNextActivePlayer(nextPlayer.getSeat());
 			newGameState.nextPlayerToAct = 
-				(nextNextPlayer.getAmountInPotInCurrentRound()==maxBetThisRound)? 
-						-1 : nextNextPlayer.getSeat() ;
+				(newGameState.isNextPlayerToAct()) ? 
+						newGameState.getNextActivePlayerSeat(nextPlayerToAct) : -1;
 			
 			
 		// Invalid actionType?
@@ -188,6 +194,7 @@ public class GameState implements Cloneable {
 		}
 		
 		return newGameState;
+		
 	}
 	
 	public GameState dealCard(Card card) {
@@ -204,7 +211,10 @@ public class GameState implements Cloneable {
 	}
 	
 	public boolean isNextPlayerToAct() {
-		return nextPlayerToAct!=-1;
+		//return nextPlayerToAct!=-1;
+		System.out.println("committedPlayers = " + committedPlayers + " activePlayers = " + activePlayers.size());
+		if(activePlayers.size()<=1) return false;
+		return (committedPlayers<activePlayers.size());
 	}
 	
 	public boolean isBotNextPlayerToAct() {
@@ -320,6 +330,8 @@ public class GameState implements Cloneable {
 		
 		newGameState.maxBetThisRound = 0.0;
 		
+		newGameState.committedPlayers = 0;
+		
 		return newGameState;
 	}
 	
@@ -334,6 +346,7 @@ public class GameState implements Cloneable {
 		newGameState.betSize = betSize;
 		newGameState.maxBetThisRound = maxBetThisRound;
 		newGameState.stage = stage;
+		newGameState.committedPlayers = committedPlayers;
 		
 		return newGameState;
 	}

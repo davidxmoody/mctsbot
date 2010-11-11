@@ -14,15 +14,25 @@ public class OpponentNode extends Node {
 
 	@Override
 	public void generateChildren() {
+		System.out.println("generate on an opponent node is being called");
+		
 		if(children!=null) return;
 		children = new ArrayList<Node>(3);
 		
 		// The opponent raises:
 		GameState newGameState = gameState.doAction(Action.RAISE);
-		if(newGameState.isBotNextPlayerToAct()) {
-			children.add(new ChoiceNode(this, newGameState, config));
+		if(newGameState.isNextPlayerToAct()) {
+			if(newGameState.isBotNextPlayerToAct()) {
+				children.add(new ChoiceNode(this, newGameState, config));
+			} else {
+				children.add(new OpponentNode(this, newGameState, config));
+			}
 		} else {
-			children.add(new OpponentNode(this, newGameState, config));
+			if(gameState.getStage()==GameState.RIVER) {
+				children.add(new ShowdownNode(this, newGameState, config));
+			} else {
+				children.add(new ChanceNode(this, newGameState, config));
+			}
 		}
 		
 		

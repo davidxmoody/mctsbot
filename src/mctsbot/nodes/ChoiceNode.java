@@ -14,12 +14,22 @@ public class ChoiceNode extends Node {
 
 	@Override
 	public void generateChildren() {
+		System.out.println("generate on a choice node is being called");
+		
 		if(children!=null) return;
 		children = new ArrayList<Node>(3);
 		
 		// The bot raises:
 		GameState newGameState = gameState.doAction(Action.RAISE);
-		children.add(new OpponentNode(this, newGameState, config));
+		if(newGameState.isNextPlayerToAct()) {
+			children.add(new OpponentNode(this, newGameState, config));
+		} else {
+			if(gameState.getStage()==GameState.RIVER) {
+				children.add(new ShowdownNode(this, newGameState, config));
+			} else {
+				children.add(new ChanceNode(this, newGameState, config));
+			}
+		}
 		
 		
 		// The bot calls:

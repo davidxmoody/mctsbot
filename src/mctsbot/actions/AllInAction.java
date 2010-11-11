@@ -12,4 +12,9 @@ public class AllInAction implements Action {
 		return amount;
 	}
 
+	@Override
+	public String getDescription() {
+		return "All In Action " + amount;
+	}
+
 }

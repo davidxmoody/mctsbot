@@ -18,6 +18,8 @@ public class ChanceNode extends Node {
 
 	@Override
 	public void generateChildren() {
+		System.out.println("generate on a chance node is being called");
+		
 		if(children!=null) return;
 		children = new LinkedList<Node>();
 	}
@@ -25,6 +27,8 @@ public class ChanceNode extends Node {
 	
 	//TODO clean this up.
 	public Node generateChild() {
+		System.out.println("generateChild on a chance node is being called");
+		
 		if(deck==null) {
 			deck = new Deck();
 			deck.extractCard(gameState.getC1());

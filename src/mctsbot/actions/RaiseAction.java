@@ -13,5 +13,10 @@ public class RaiseAction implements Action {
 	public double getAmount() {
 		return amount;
 	}
+	
+	@Override
+	public String getDescription() {
+		return "Raise Action " + amount;
+	}
 
 }

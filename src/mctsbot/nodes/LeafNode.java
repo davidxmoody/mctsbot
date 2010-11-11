@@ -11,6 +11,7 @@ public class LeafNode extends Node {
 
 	@Override
 	public void generateChildren() {
+		System.out.println("generate on a leaf node is being called");
 		// Do nothing.
 	}
 	

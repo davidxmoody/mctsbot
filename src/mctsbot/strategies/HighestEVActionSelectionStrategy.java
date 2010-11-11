@@ -20,8 +20,15 @@ public class HighestEVActionSelectionStrategy implements
 				currentMaxEV = child.getExpectedValue();
 				currentBestChoice = child;
 			}
+			
+			System.out.println(child.getGameState().getLastAction().getDescription() + " has EV = " + child.getExpectedValue());
+			
 		}
-		return currentBestChoice.getGameState().getLastAction();
+		final Action action = currentBestChoice.getGameState().getLastAction();
+		
+		System.out.println("Chosen to perform " + action.getDescription());
+		
+		return action;
 	}
 
 }
