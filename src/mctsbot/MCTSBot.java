@@ -32,7 +32,7 @@ public class MCTSBot implements Player {
 	
 	@Override
 	public void init(Preferences prefs) {
-		System.out.println("init called");
+		//System.out.println("init called");
 		
 		this.prefs = prefs;
 		
@@ -46,22 +46,22 @@ public class MCTSBot implements Player {
 				new AlwaysCallSimulationStrategy(), 
 				new AveragingBackpropagationStrategy() );
 		
-		System.out.println("init finished");
+		//System.out.println("init finished");
 	}
 	
 	
 	@Override
 	public void gameStartEvent(GameInfo gi) {
-		System.out.println("gameStartEvent called");
+		//System.out.println("gameStartEvent called");
 		this.gi = gi;
 		currentGameState = GameState.initialise(gi);
-		System.out.println("gameStartEvent finished");
+		//System.out.println("gameStartEvent finished");
 	}
 	
 	
 	@Override
 	public void holeCards(Card c1, Card c2, int seat) {
-		System.out.println("holeCards called");
+		//System.out.println("holeCards called");
 		
 		this.c1 = c1;
 		this.c2 = c2;
@@ -69,13 +69,13 @@ public class MCTSBot implements Player {
 		
 		currentGameState = currentGameState.holeCards(c1, c2, seat);
 		
-		System.out.println("holeCards finished");
+		//System.out.println("holeCards finished");
 	}
 	
 	
 	@Override
 	public Action getAction() {
-		System.out.println("getAction called");
+		//System.out.println("getAction called");
 		
 		
 		/*
@@ -128,6 +128,7 @@ public class MCTSBot implements Player {
 			
 		} while(endTime>System.currentTimeMillis());
 		
+		System.out.println();
 		System.out.println("Performed " + noIterations + " iterations in " + 
 				(System.currentTimeMillis()-startTime) + " milliseconds.");
 		
@@ -135,7 +136,7 @@ public class MCTSBot implements Player {
 		// Perform action.
 		final Action action = convertToMeerkatAction(config.getActionSelectionStrategy().select(root));
 		
-		System.out.println("getAction about to finish");
+		//System.out.println("getAction about to finish");
 		
 		return action;
 	}
@@ -163,7 +164,7 @@ public class MCTSBot implements Player {
 	
 	
 	private Action convertToMeerkatAction(mctsbot.actions.Action action) {
-		System.out.println("convert called");
+		//System.out.println("convert called");
 		//System.out.println("convert called on " + action.toString());
 		
 		final double toCall = gi.getAmountToCall(seat);
@@ -188,7 +189,7 @@ public class MCTSBot implements Player {
 	
 	@Override
 	public void actionEvent(int seat, Action action) {
-		System.out.println("actionEvent called");
+		//System.out.println("actionEvent called");
 		
 		if(action.isBetOrRaise()) {
 			currentGameState = currentGameState.doAction(1);
@@ -202,12 +203,12 @@ public class MCTSBot implements Player {
 			currentGameState = currentGameState.doBigBlind(seat);
 		}
 		
-		System.out.println("actionEvent finished");
+		//System.out.println("actionEvent finished");
 	}
 	
 	@Override
 	public void stageEvent(int stage) {
-		System.out.println("stageEvent called, stage = " + stage);
+		//System.out.println("stageEvent called, stage = " + stage);
 		
 		if(stage>0) {
 			currentGameState = currentGameState.setTable(gi.getBoard());

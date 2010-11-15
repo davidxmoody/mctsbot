@@ -22,12 +22,10 @@ public class AlwaysCallSimulationStrategy implements SimulationStrategy {
 		if(node instanceof LeafNode) {
 			
 			if(node instanceof BotFoldedNode) {
-				return -1*node.getParent().getGameState().getAmountInPot(
-						node.getGameState().getBotSeat());
+				return node.getParent().getGameState().getBotMoney();
 				
 			} else if(node instanceof AllOpponentsFoldedNode) {
-				return node.getGameState().getPot()-node.getGameState().getAmountInPot(
-						node.getGameState().getBotSeat());
+				return node.getGameState().getBotMoney()+node.getGameState().getPot();
 				
 			} else if(node instanceof ShowdownNode) {
 				return simulate(node.getGameState());
@@ -61,7 +59,7 @@ public class AlwaysCallSimulationStrategy implements SimulationStrategy {
 		deck.extractHand(gameState.getTable());
 		
 		// Simulate until showdown.
-		while(gameState.getStage()<GameState.RIVER) {
+		while(gameState.getStage()<=GameState.RIVER) {
 			
 			//gameState.printDetails();
 			
@@ -117,7 +115,8 @@ public class AlwaysCallSimulationStrategy implements SimulationStrategy {
 			if(opponentHandRank>maxOpponentHandRank) maxOpponentHandRank = opponentHandRank;
 		}
 		
-		double expectedValue = gameState.getAmountInPot(gameState.getBotSeat());
+		//double expectedValue = gameState.getAmountInPot(gameState.getBotSeat());
+		double expectedValue = gameState.getBotMoney();
 		
 		if(botHandRank>=maxOpponentHandRank) {
 			expectedValue += gameState.getPot();

@@ -91,20 +91,6 @@ public class GameState implements Cloneable {
 			newGameState.seatMap.put(s, newPlayer);
 		} while((s=gi.nextActivePlayer(s))!=firstSeat);
 		
-		
-		
-		for(Player p: newGameState.activePlayers) {
-			System.out.println("Player: " + p.getSeat());
-		}
-		System.out.println("");
-		
-		for(Integer i: newGameState.seatMap.keySet()) {
-			System.out.println("SeatMap: " + i);
-		}
-		System.out.println("");
-		
-		
-		
 		return newGameState;
 	}
 	
@@ -171,7 +157,7 @@ public class GameState implements Cloneable {
 			// Check to see if raising is allowed.
 			// This isn't actually correct all the time, TODO: fix this
 			if(MAX_ALLOWED_BET_MULTIPLE*betSize<maxBetThisRound+betSize) {
-				System.out.println("max bet multiple reached, forcing call");
+				//System.out.println("max bet multiple reached, forcing call");
 				return doAction(Action.CALL);
 			}
 			
@@ -238,8 +224,8 @@ public class GameState implements Cloneable {
 		
 	}
 	
-	public boolean roundOver() {
-		return activePlayers.size()==committedPlayers;
+	public double getBotMoney() {
+		return getPlayer(botSeat).getMoney();
 	}
 	
 	public GameState dealCard(Card card) {

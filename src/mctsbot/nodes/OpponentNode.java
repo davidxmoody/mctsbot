@@ -14,7 +14,7 @@ public class OpponentNode extends Node {
 
 	@Override
 	public void generateChildren() {
-		System.out.println("generate on an opponent node is being called");
+		//System.out.println("generate on an opponent node is being called");
 		
 		if(children!=null) return;
 		children = new ArrayList<Node>(3);

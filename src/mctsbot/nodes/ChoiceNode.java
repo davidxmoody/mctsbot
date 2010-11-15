@@ -14,7 +14,7 @@ public class ChoiceNode extends Node {
 
 	@Override
 	public void generateChildren() {
-		System.out.println("generate on a choice node is being called");
+		//System.out.println("generate on a choice node is being called");
 		
 		if(children!=null) return;
 		children = new ArrayList<Node>(3);
