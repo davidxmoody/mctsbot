@@ -60,17 +60,17 @@ public abstract class Node {
 	}
 	
 	public Node select() {
-		System.out.println("select is being called");
+		//System.out.println("select is being called");
 		return config.getSelectionStrategy().select(this);
 	}
 	
 	public void backpropagate(double expectedValue) {
-		System.out.println("backpropagate is being called");
+		//System.out.println("backpropagate is being called");
 		config.getBackpropagationStrategy().propagate(this, expectedValue);
 	}
 	
 	public double simulate() {
-		System.out.println("simulate is being called");
+		//System.out.println("simulate is being called");
 		return config.getSimulationStrategy().simulate(this);
 	}
 	

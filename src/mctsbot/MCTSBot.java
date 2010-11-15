@@ -3,6 +3,7 @@ package mctsbot;
 import mctsbot.gamestate.GameState;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.RootNode;
+import mctsbot.strategies.AlwaysCallSimulationStrategy;
 import mctsbot.strategies.AveragingBackpropagationStrategy;
 import mctsbot.strategies.HighestEVActionSelectionStrategy;
 import mctsbot.strategies.RandomSelectionStrategy;
@@ -43,7 +44,7 @@ public class MCTSBot implements Player {
 		config = new StrategyConfiguration(
 				new HighestEVActionSelectionStrategy(), 
 				new RandomSelectionStrategy(), 
-				new RandomSimulationStrategy(), 
+				new AlwaysCallSimulationStrategy(), 
 				new AveragingBackpropagationStrategy() );
 		
 		System.out.println("init finished");
@@ -168,15 +169,18 @@ public class MCTSBot implements Player {
 		} else if(action.isFold()) {
 			currentGameState = currentGameState.doAction(3);
 		} else if(action.isSmallBlind()) {
-			currentGameState = currentGameState.doAction(4);
+			currentGameState = currentGameState.doSmallBlind(seat);
 		} else if(action.isBigBlind()) {
-			currentGameState = currentGameState.doAction(5);
+			currentGameState = currentGameState.doBigBlind(seat);
 		}
 		
 		System.out.println("actionEvent finished");
 	}
 	
-	
+	@Override
+	public void stageEvent(int stage) {
+		currentGameState = currentGameState.goToNextStage();
+	}
 	
 	
 	
@@ -204,12 +208,6 @@ public class MCTSBot implements Player {
 
 	@Override
 	public void showdownEvent(int arg0, Card arg1, Card arg2) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void stageEvent(int arg0) {
 		// TODO Auto-generated method stub
 		
 	}
