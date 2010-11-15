@@ -63,7 +63,7 @@ public class ChanceNode extends Node {
 		} else {
 			if(deck.cardsLeft()==0) return null;
 			
-			GameState newGameState = gameState.dealCard(deck.dealCard()).goToNextStage();
+			GameState newGameState = gameState.dealCard(deck.extractRandomCard()).goToNextStage();
 			if(newGameState.isBotNextPlayerToAct()) {
 				newChild = new ChoiceNode(this, newGameState, config);
 			} else {

@@ -7,7 +7,6 @@ import mctsbot.strategies.AlwaysCallSimulationStrategy;
 import mctsbot.strategies.AveragingBackpropagationStrategy;
 import mctsbot.strategies.HighestEVActionSelectionStrategy;
 import mctsbot.strategies.RandomSelectionStrategy;
-import mctsbot.strategies.RandomSimulationStrategy;
 import mctsbot.strategies.StrategyConfiguration;
 
 import com.biotools.meerkat.Action;
@@ -77,6 +76,35 @@ public class MCTSBot implements Player {
 	@Override
 	public Action getAction() {
 		System.out.println("getAction called");
+		
+		
+		/*
+		// Just testing how rank hand works.
+		Deck d = new Deck();
+		Card c1 = d.extractRandomCard();
+		Card c2 = d.extractRandomCard();
+		Card h1 = d.extractRandomCard();
+		Card h2 = d.extractRandomCard();
+		Card h3 = d.extractRandomCard();
+		
+		Hand h = new Hand();
+		h.addCard(h1);
+		h.addCard(h2);
+		h.addCard(h3);
+		
+		int rank = HandEvaluator.rankHand(c1, c2, h);
+		
+		System.out.println("C1 = " + c1.getRank() + " " + c1.getSuit());
+		System.out.println("C2 = " + c2.getRank() + " " + c2.getSuit());
+		System.out.println("H1 = " + h1.getRank() + " " + h1.getSuit());
+		System.out.println("H2 = " + h2.getRank() + " " + h2.getSuit());
+		System.out.println("H3 = " + h3.getRank() + " " + h3.getSuit());
+		System.out.println("RANK = " + rank);
+		System.out.println("");
+		
+		if(true) throw new RuntimeException();*/
+		
+		
 
 		// Make root node.
 		RootNode root = new RootNode(currentGameState, config);
@@ -179,7 +207,13 @@ public class MCTSBot implements Player {
 	
 	@Override
 	public void stageEvent(int stage) {
-		currentGameState = currentGameState.goToNextStage();
+		System.out.println("stageEvent called, stage = " + stage);
+		
+		if(stage>0) {
+			currentGameState = currentGameState.setTable(gi.getBoard());
+			currentGameState = currentGameState.goToNextStage();
+		}
+		
 	}
 	
 	

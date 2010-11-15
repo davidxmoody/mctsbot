@@ -161,9 +161,9 @@ public class GameState implements Cloneable {
 		final GameState newGameState = this.clone();
 		
 		final Player nextPlayer = getPlayer(nextPlayerToAct);
-		System.out.print("nextPlayer is " + ((nextPlayer==null)?"":" not") + " null");
-		System.out.print(", actionType = " + actionType);
-		System.out.println(" and nextPlayerToAct = " + nextPlayerToAct);
+		//System.out.print("nextPlayer is " + ((nextPlayer==null)?"":" not") + " null");
+		//System.out.print(", actionType = " + actionType);
+		//System.out.println(" and nextPlayerToAct = " + nextPlayerToAct);
 		
 		
 		if(actionType==Action.RAISE) {
@@ -251,13 +251,20 @@ public class GameState implements Cloneable {
 		return newGameState;
 	}
 	
+	public GameState setTable(Hand table) {
+		final GameState newGameState = this.clone();
+		
+		newGameState.table = table;
+		
+		return newGameState;
+	}
+	
 	public Action getLastAction() {
 		return lastAction;
 	}
 	
 	public boolean isNextPlayerToAct() {
-		//return nextPlayerToAct!=-1;
-		System.out.println("committedPlayers = " + committedPlayers + " activePlayers = " + activePlayers.size());
+		//System.out.println("committedPlayers = " + committedPlayers + " activePlayers = " + activePlayers.size());
 		if(activePlayers.size()<=1) return false;
 		
 		/*for(Player p: activePlayers) {
@@ -373,15 +380,24 @@ public class GameState implements Cloneable {
 	
 	public GameState goToNextStage() {
 		
-		System.out.println("goToNextStage called");
+		/*System.out.println("goToNextStage called, current stage = " + 
+				((stage==PREFLOP)?"PREFLOP":(stage==FLOP)?"FLOP":
+				(stage==TURN)?"TURN":(stage==RIVER)?"RIVER":
+				(stage==SHOWDOWN)?"SHOWDOWN":"UNKNOWN") + 
+				", next stage = " + ((stage+1==PREFLOP)?"PREFLOP":
+				(stage+1==FLOP)?"FLOP":(stage+1==TURN)?"TURN":
+				(stage+1==RIVER)?"RIVER":(stage+1==SHOWDOWN)?"SHOWDOWN":"UNKNOWN"));*/
 		
 		final GameState newGameState = this.clone();
 		
 		if(stage==FLOP) newGameState.betSize = betSize*2;
 		
-		if(!(stage==PREFLOP || stage==FLOP || stage==TURN || stage==RIVER)) 
-			throw new RuntimeException("goToNextStage called while not in " +
+		if(!(stage==PREFLOP || stage==FLOP || stage==TURN || stage==RIVER)) {
+			System.out.println("goToNextStage called error caused because stage = " + stage);
+			throw new RuntimeException("goToNextStage called while not in " + 
 					"PreFlop, Flop, Turn or River.");
+		}
+					
 		
 		newGameState.stage = stage+1;
 		
@@ -414,6 +430,26 @@ public class GameState implements Cloneable {
 		newGameState.seatMap = seatMap;
 		
 		return newGameState;
+	}
+	
+	public void printDetails() {
+		System.out.println("c1 = " + c1);
+		System.out.println("c1 = " + c2);
+		for(int i=0; i<table.size(); i++) 
+			System.out.println("t" + i + " = " + table.getCard(i));
+		System.out.println("table size = " + table.size());
+		System.out.println("pot = " + pot);
+		System.out.println("num active players = " + activePlayers.size());
+		System.out.println("num committed players = " + committedPlayers);
+		System.out.print("stage = " + stage + ", ");
+		System.out.println(
+				(stage==PREFLOP)?"PREFLOP":
+					(stage==FLOP)?"FLOP":
+						(stage==TURN)?"TURN":
+							(stage==RIVER)?"RIVER":
+								(stage==SHOWDOWN)?"SHOWDOWN":
+									"UNKNOWN");
+		System.out.println("");
 	}
 
 	

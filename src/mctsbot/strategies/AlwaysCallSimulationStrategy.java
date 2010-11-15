@@ -1,7 +1,5 @@
 package mctsbot.strategies;
 
-import com.biotools.meerkat.HandEvaluator;
-
 import mctsbot.actions.Action;
 import mctsbot.gamestate.GameState;
 import mctsbot.nodes.AllOpponentsFoldedNode;
@@ -12,6 +10,9 @@ import mctsbot.nodes.LeafNode;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.OpponentNode;
 import mctsbot.nodes.ShowdownNode;
+
+import com.biotools.meerkat.Deck;
+import com.biotools.meerkat.HandEvaluator;
 
 public class AlwaysCallSimulationStrategy implements SimulationStrategy {
 
@@ -25,7 +26,8 @@ public class AlwaysCallSimulationStrategy implements SimulationStrategy {
 						node.getGameState().getBotSeat());
 				
 			} else if(node instanceof AllOpponentsFoldedNode) {
-				return node.getGameState().getPot();
+				return node.getGameState().getPot()-node.getGameState().getAmountInPot(
+						node.getGameState().getBotSeat());
 				
 			} else if(node instanceof ShowdownNode) {
 				return simulate(node.getGameState());
@@ -49,30 +51,82 @@ public class AlwaysCallSimulationStrategy implements SimulationStrategy {
 	
 	private double simulate(GameState gameState) {
 		
+		//System.out.println("simulate about to start");
+		
+		
+		
+		Deck deck = new Deck();
+		deck.extractCard(gameState.getC1());
+		deck.extractCard(gameState.getC2());
+		deck.extractHand(gameState.getTable());
+		
 		// Simulate until showdown.
-		while(gameState.getStage()<GameState.SHOWDOWN) {
+		while(gameState.getStage()<GameState.RIVER) {
+			
+			//gameState.printDetails();
 			
 			// Make all players call until the end of the round.
 			while(gameState.isNextPlayerToAct()) {
 				gameState = gameState.doAction(Action.CALL);
 			}
 			
-			// Go to next stage.
-			if(gameState.getStage()<GameState.SHOWDOWN) {
-				gameState = gameState.goToNextStage();
+			switch (gameState.getStage()) {
+			case GameState.PREFLOP:
+				gameState = gameState.dealCard(deck.extractRandomCard());
+				gameState = gameState.dealCard(deck.extractRandomCard());
+				gameState = gameState.dealCard(deck.extractRandomCard());
+				break;
+			case GameState.FLOP:
+			case GameState.TURN:
+				gameState = gameState.dealCard(deck.extractRandomCard());
+				break;
 			}
+			
+			// Go to next stage.
+			gameState = gameState.goToNextStage();
+			
 		}
+		
+		// Calculate the hand rank of the bot.
+		
+		//System.out.println("rankHand about to be called on: ");
+		//gameState.printDetails();
+
+		final int botHandRank = HandEvaluator.rankHand(
+				gameState.getC1(), gameState.getC2(), gameState.getTable());
+		
+		//System.out.println("rankHand successful, botHandRank = " + botHandRank);
 		
 		// Deal random hands to each other player in the game and rank them.
 		
-		final double probOfWin = HandEvaluator.handRank(
-				gameState.getC1(), gameState.getC2(), 
-				gameState.getTable(), gameState.getNoOfActivePlayers()-1);
+		final int noOfOpponents = gameState.getNoOfActivePlayers()-1;
+
+		int maxOpponentHandRank = 0;
 		
-		final double expectedValue = probOfWin*gameState.getPot();
+		for(int i=0; i<noOfOpponents; i++) {
+			
+			//System.out.println("rankHand about to be called, for opponent, on: ");
+			
+			final int opponentHandRank = HandEvaluator.rankHand(
+					deck.extractRandomCard(), 
+					deck.extractRandomCard(), 
+					gameState.getTable());
+			
+			//System.out.println("rankHand successful, opponentHandRank = " + opponentHandRank);
+			
+			if(opponentHandRank>maxOpponentHandRank) maxOpponentHandRank = opponentHandRank;
+		}
 		
-		System.out.println("probOfWin = " + probOfWin + " against " + (gameState.getNoOfActivePlayers()-1) + " opponents");
-		System.out.println("expectedValue = " + expectedValue);
+		double expectedValue = gameState.getAmountInPot(gameState.getBotSeat());
+		
+		if(botHandRank>=maxOpponentHandRank) {
+			expectedValue += gameState.getPot();
+		}
+		
+		
+		
+		//System.out.println("expectedValue = " + expectedValue);
+		
 		
 		return expectedValue;
 	}
