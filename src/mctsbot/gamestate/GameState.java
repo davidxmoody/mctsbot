@@ -2,6 +2,7 @@ package mctsbot.gamestate;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import mctsbot.actions.Action;
 import mctsbot.actions.BigBlindAction;
@@ -21,15 +22,16 @@ public class GameState implements Cloneable {
 	public static final int TURN = 3;
 	public static final int RIVER = 4;
 	
-	private static final int MAX_BET_MULTIPLE_ALLOWED = 4;
-	
-	private double pot;
-	
-	private Hand table;
+	private static final int MAX_ALLOWED_BET_MULTIPLE = 4;
 	
 	private static Card c1,c2;
 	private static int botSeat;
 	
+	private double pot;
+	private Hand table;
+	
+	//TODO: Chack that seat map is updated correctly
+	private Map<Integer, Player> seatMap;
 	private List<Player> activePlayers;
 	
 	private static int dealerSeat;
@@ -55,6 +57,7 @@ public class GameState implements Cloneable {
 	
 	
 	private GameState() { }
+	
 	
 	public static GameState initialise(GameInfo gi) {
 		final GameState newGameState = new GameState();
@@ -88,24 +91,12 @@ public class GameState implements Cloneable {
 		GameState.c1 = c1;
 		GameState.c2 = c2;
 		GameState.botSeat = seat;
-		//GameState.dealerSeat = 
 		
 		return this;
-		
-	}
-	
-	
-	public GameState update(GameInfo gi) {
-		final GameState newGameState = this.clone();
-		
-		//TODO is this needed?
-		
-		return newGameState;
 	}
 	
 	
 	public GameState doAction(int actionType) {
-		
 		
 		final GameState newGameState = this.clone();
 		
@@ -117,36 +108,36 @@ public class GameState implements Cloneable {
 		System.out.println(" and nextPlayerToAct = " + nextPlayerToAct);
 		
 		
+		// Small Blind or Big Blind.
+		if(actionType==Action.SMALL_BLIND || actionType==Action.BIG_BLIND) {
+			if(stage!=PREFLOP) throw new RuntimeException(
+					"doAction for a blind was called when not in PreFlop.");
+			
+			final RaiseAction blindAction = (actionType==Action.SMALL_BLIND)?
+					new SmallBlindAction(smallBlindSize):new BigBlindAction(bigBlindSize);
+					
+			newGameState.activePlayers = new LinkedList<Player>(activePlayers);
+			newGameState.activePlayers.remove(nextPlayer);
+			newGameState.activePlayers.add(nextPlayer.doCallOrRaiseAction(blindAction));
+			
 		// Raise.
-		if(actionType==Action.RAISE || 
-				actionType==Action.SMALL_BLIND || 
-				actionType==Action.BIG_BLIND) {
+		} else if(actionType==Action.RAISE) {
 			
 			// Check to see if raising is allowed.
-			if(MAX_BET_MULTIPLE_ALLOWED*betSize<maxBetThisRound+betSize) {
+			// This isn't actually correct all the time, TODO: fix this
+			if(MAX_ALLOWED_BET_MULTIPLE*betSize<maxBetThisRound+betSize) {
 				System.out.println("max bet multiple reached, forcing call");
 				return doAction(Action.CALL);
 			}
 			
-			RaiseAction raiseAction = null;
-			if(actionType==Action.RAISE) {
-				raiseAction = new RaiseAction(
-						maxBetThisRound+betSize-nextPlayer.getAmountInPotInCurrentRound());
-			} else if(actionType==Action.SMALL_BLIND) {
-				raiseAction = new SmallBlindAction(smallBlindSize);
-			} else if(actionType==Action.BIG_BLIND) {
-				raiseAction = new BigBlindAction(bigBlindSize);
-			}
+			RaiseAction raiseAction = new RaiseAction(
+					maxBetThisRound+betSize-nextPlayer.getAmountInPotInCurrentRound());
 			
 			newGameState.activePlayers = new LinkedList<Player>(activePlayers);
 			newGameState.activePlayers.remove(nextPlayer);
 			newGameState.activePlayers.add(nextPlayer.doCallOrRaiseAction(raiseAction));
 			
-			if(actionType==Action.RAISE) {
-				newGameState.committedPlayers = 1;
-			} else {
-				newGameState.committedPlayers = 0;
-			}
+			newGameState.committedPlayers = 1;
 			
 			
 			newGameState.nextPlayerToAct = 
@@ -189,12 +180,15 @@ public class GameState implements Cloneable {
 			
 		// Invalid actionType?
 		} else {
-			System.err.println("Invalid actionType passed to doAction: " + actionType);
-			return null;
+			throw new RuntimeException("Invalid actionType passed to doAction: " + actionType);
 		}
 		
 		return newGameState;
 		
+	}
+	
+	public boolean roundOver() {
+		return activePlayers.size()==committedPlayers;
 	}
 	
 	public GameState dealCard(Card card) {
@@ -267,12 +261,13 @@ public class GameState implements Cloneable {
 	}
 		
 	
-	//TODO: make this more efficient.
+	
 	public Player getPlayer(int seat) {
-		for(Player p:activePlayers) {
+		/*for(Player p:activePlayers) {
 			if(p.getSeat()==seat) return p;
 		}
-		return null;
+		return null;*/
+		return seatMap.get(seat);
 	}
 	
 	public double getBetSize() {
@@ -280,11 +275,7 @@ public class GameState implements Cloneable {
 	}
 	
 	public double getAmountToCall(int seat) {
-		try{
-			return maxBetThisRound-getPlayer(seat).getAmountInPotInCurrentRound();
-		} catch(NullPointerException e) {
-			return 0.0;
-		}
+		return maxBetThisRound-getPlayer(seat).getAmountInPotInCurrentRound();
 	}
 	
 	public int getStage() {
@@ -319,6 +310,10 @@ public class GameState implements Cloneable {
 		final GameState newGameState = this.clone();
 		
 		if(stage==FLOP) newGameState.betSize = betSize*2;
+		
+		if(!(stage==PREFLOP || stage==FLOP || stage==TURN)) throw new RuntimeException(
+				"goToNextStage called while not in PreFlop, Flop or Turn.");
+		
 		newGameState.stage = stage+1;
 		
 		newGameState.activePlayers = new LinkedList<Player>();
@@ -347,6 +342,7 @@ public class GameState implements Cloneable {
 		newGameState.maxBetThisRound = maxBetThisRound;
 		newGameState.stage = stage;
 		newGameState.committedPlayers = committedPlayers;
+		newGameState.seatMap = seatMap;
 		
 		return newGameState;
 	}
