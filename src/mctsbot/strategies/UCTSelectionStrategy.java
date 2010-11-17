@@ -10,7 +10,7 @@ import mctsbot.nodes.OpponentNode;
 
 public class UCTSelectionStrategy implements SelectionStrategy {
 	
-	private static final double C = 0.3;
+	private static final double C = 2;
 	
 	private static final Random random = new Random();
 	

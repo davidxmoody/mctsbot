@@ -16,9 +16,10 @@ import com.biotools.meerkat.HandEvaluator;
 
 public class StaticDistributionSimulationStrategy implements SimulationStrategy {
 	
-	private static final int[] RAISE_WEIGHTS = {0, 35, 40, 35, 25};
-	private static final int[] CALL_WEIGHTS = {0, 65, 45, 55, 60};
-	private static final int[] FOLD_WEIGHTS = {0, 0, 13, 12, 11};
+	private static final int[] FOLD_WEIGHTS = {0, 9, 7, 10, 7};
+	private static final int[] CALL_WEIGHTS = {0, 55, 60, 40, 40};
+	private static final int[] RAISE_WEIGHTS = {0, 35, 30, 50, 50};
+	
 	
 	private static final Random random = new Random();
 
