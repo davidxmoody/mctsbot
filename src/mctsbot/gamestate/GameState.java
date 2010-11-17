@@ -250,7 +250,6 @@ public class GameState implements Cloneable {
 	}
 	
 	public boolean isNextPlayerToAct() {
-		//System.out.println("committedPlayers = " + committedPlayers + " activePlayers = " + activePlayers.size());
 		if(activePlayers.size()<=1) return false;
 		
 		/*for(Player p: activePlayers) {
@@ -364,6 +363,14 @@ public class GameState implements Cloneable {
 		return pot;
 	}
 	
+	public double getMaxBetThisRound() {
+		return maxBetThisRound;
+	}
+	
+	public boolean isBotActive() {
+		return getPlayer(botSeat)!=null;
+	}
+	
 	public GameState goToNextStage() {
 		
 		/*System.out.println("goToNextStage called, current stage = " + 
@@ -396,10 +403,12 @@ public class GameState implements Cloneable {
 		
 		newGameState.maxBetThisRound = 0.0;
 		
-		newGameState.committedPlayers = 0;
+		newGameState.committedPlayers = 
+			(newGameState.stage==SHOWDOWN)?newGameState.activePlayers.size():0;
 		
 		return newGameState;
 	}
+	
 	
 	public GameState clone() {
 		final GameState newGameState = new GameState();
