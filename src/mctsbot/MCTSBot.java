@@ -70,33 +70,6 @@ public class MCTSBot implements Player {
 		//System.out.println("getAction called");
 		
 		
-		/*
-		// Just testing how rank hand works.
-		Deck d = new Deck();
-		Card c1 = d.extractRandomCard();
-		Card c2 = d.extractRandomCard();
-		Card h1 = d.extractRandomCard();
-		Card h2 = d.extractRandomCard();
-		Card h3 = d.extractRandomCard();
-		
-		Hand h = new Hand();
-		h.addCard(h1);
-		h.addCard(h2);
-		h.addCard(h3);
-		
-		int rank = HandEvaluator.rankHand(c1, c2, h);
-		
-		System.out.println("C1 = " + c1.getRank() + " " + c1.getSuit());
-		System.out.println("C2 = " + c2.getRank() + " " + c2.getSuit());
-		System.out.println("H1 = " + h1.getRank() + " " + h1.getSuit());
-		System.out.println("H2 = " + h2.getRank() + " " + h2.getSuit());
-		System.out.println("H3 = " + h3.getRank() + " " + h3.getSuit());
-		System.out.println("RANK = " + rank);
-		System.out.println("");
-		
-		if(true) throw new RuntimeException();*/
-		
-		
 
 		// Make root node.
 		RootNode root = new RootNode(currentGameState, config);
@@ -185,14 +158,19 @@ public class MCTSBot implements Player {
 		
 		if(action.isBetOrRaise()) {
 			currentGameState = currentGameState.doAction(1);
+			
 		} else if(action.isCheckOrCall()) {
 			currentGameState = currentGameState.doAction(2);
+			
 		} else if(action.isFold()) {
 			currentGameState = currentGameState.doAction(3);
+			
 		} else if(action.isSmallBlind()) {
 			currentGameState = currentGameState.doSmallBlind(seat);
+			
 		} else if(action.isBigBlind()) {
 			currentGameState = currentGameState.doBigBlind(seat);
+			
 		}
 		
 		//System.out.println("actionEvent finished");

@@ -16,9 +16,9 @@ import com.biotools.meerkat.HandEvaluator;
 
 public class StaticDistributionSimulationStrategy implements SimulationStrategy {
 	
-	private static final int[] RAISE_WEIGHTS = {0, 8, 44, 43, 47};
-	private static final int[] CALL_WEIGHTS = {0, 26, 48, 51, 51};
-	private static final int[] FOLD_WEIGHTS = {0, 66, 8, 7, 2};
+	private static final int[] RAISE_WEIGHTS = {0, 35, 40, 35, 25};
+	private static final int[] CALL_WEIGHTS = {0, 65, 45, 55, 60};
+	private static final int[] FOLD_WEIGHTS = {0, 0, 13, 12, 11};
 	
 	private static final Random random = new Random();
 
@@ -108,7 +108,7 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 	}
 
 	
-	private double getRaiseProb(int stage, boolean canCheck) {
+	protected double getRaiseProb(int stage, boolean canCheck) {
 		if(stage<1 || stage>4) throw new RuntimeException(
 				"Invalid stage passed to a get prob method: " + stage);
 		
@@ -116,7 +116,7 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 			(RAISE_WEIGHTS[stage]+CALL_WEIGHTS[stage]+(canCheck?0:FOLD_WEIGHTS[stage]));
 	}
 	
-	private double getCallProb(int stage, boolean canCheck) {
+	protected double getCallProb(int stage, boolean canCheck) {
 		if(stage<1 || stage>4) throw new RuntimeException(
 				"Invalid stage passed to a get prob method: " + stage);
 		
@@ -124,8 +124,7 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 			(RAISE_WEIGHTS[stage]+CALL_WEIGHTS[stage]+(canCheck?0:FOLD_WEIGHTS[stage]));
 	}
 	
-	@SuppressWarnings("unused")
-	private double getFoldProb(int stage, boolean canCheck) {
+	protected double getFoldProb(int stage, boolean canCheck) {
 		if(stage<1 || stage>4) throw new RuntimeException(
 				"Invalid stage passed to a get prob method: " + stage);
 		
