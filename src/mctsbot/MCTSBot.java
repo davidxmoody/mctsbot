@@ -3,10 +3,6 @@ package mctsbot;
 import mctsbot.gamestate.GameState;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.RootNode;
-import mctsbot.strategies.AlwaysCallSimulationStrategy;
-import mctsbot.strategies.AveragingBackpropagationStrategy;
-import mctsbot.strategies.HighestEVActionSelectionStrategy;
-import mctsbot.strategies.RandomSelectionStrategy;
 import mctsbot.strategies.StrategyConfiguration;
 
 import com.biotools.meerkat.Action;
@@ -30,6 +26,8 @@ public class MCTSBot implements Player {
 	private StrategyConfiguration config;
 	
 	
+	//TODO: remove all System.out.println's 
+	
 	@Override
 	public void init(Preferences prefs) {
 		//System.out.println("init called");
@@ -37,14 +35,8 @@ public class MCTSBot implements Player {
 		this.prefs = prefs;
 		
 		// Create a new config.
-		
-		// This is just a simple config.
 		// TODO: create the config from the given preferences.
-		config = new StrategyConfiguration(
-				new HighestEVActionSelectionStrategy(), 
-				new RandomSelectionStrategy(), 
-				new AlwaysCallSimulationStrategy(), 
-				new AveragingBackpropagationStrategy() );
+		config = StrategyConfiguration.getDefault();
 		
 		//System.out.println("init finished");
 	}

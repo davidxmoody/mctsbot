@@ -35,4 +35,12 @@ public class StrategyConfiguration {
 		return backpropagationStrategy;
 	}
 	
+	public static StrategyConfiguration getDefault() {
+		return new StrategyConfiguration(
+				new HighestEVActionSelectionStrategy(), 
+				new RandomSelectionStrategy(), 
+				new AlwaysCallSimulationStrategy(), 
+				new AveragingBackpropagationStrategy() );
+	}
+	
 }
