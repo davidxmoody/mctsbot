@@ -11,6 +11,15 @@ public class HighestEVActionSelectionStrategy implements
 
 	@Override
 	public Action select(RootNode root) {
+		
+		System.out.println("RootNode" + 
+				" has EV = " + root.getExpectedValue() + 
+				" and VC = " + root.getVisitCount());
+		
+		
+		
+		
+		
 		final List<Node> children = root.getChildren();
 		
 		double currentMaxEV = children.get(0).getExpectedValue();
@@ -21,7 +30,10 @@ public class HighestEVActionSelectionStrategy implements
 				currentBestChoice = child;
 			}
 			
-			System.out.println(child.getGameState().getLastAction().getDescription() + " has EV = " + child.getExpectedValue());
+			System.out.println(child.getGameState().getLastAction().getDescription() + 
+					" has EV = " + child.getExpectedValue() + 
+					" and VC = " + child.getVisitCount());
+			
 			
 		}
 		final Action action = currentBestChoice.getGameState().getLastAction();

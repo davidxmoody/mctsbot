@@ -4,13 +4,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import mctsbot.nodes.ChoiceNode;
 import mctsbot.nodes.Node;
-import mctsbot.nodes.OpponentNode;
+import mctsbot.nodes.PlayerNode;
 
 public class UCTSelectionStrategy implements SelectionStrategy {
 	
-	private static final double C = 2;
+	public static double explorationTally = 0;
+	public static double exploitationTally = 0;
+	
+	//TODO: find a good value for C.
+	public static final double C = 5;
 	
 	private static final Random random = new Random();
 	
@@ -21,7 +24,7 @@ public class UCTSelectionStrategy implements SelectionStrategy {
 	@Override
 	public Node select(Node node) {
 		// UTC won't work on chance nodes or leaf nodes.
-		if(!((node instanceof OpponentNode) || (node instanceof ChoiceNode))) {
+		if(!(node instanceof PlayerNode)) {
 			return randomSelectionStrategy.select(node);
 		}
 		
@@ -51,12 +54,41 @@ public class UCTSelectionStrategy implements SelectionStrategy {
 		
 		// If all children have been visited then go to next step.
 		
-		return argmaxFormula(node.getChildren(), node);
+		final Node returnNode = argmaxFormula(node.getChildren(), node);
+		
+		
+		
+		Node maxNode = returnNode;
+		double maxValue = returnNode.getExpectedValue();
+		
+		for(Node child: node.getChildren()) {
+			if(child.getExpectedValue()>maxValue) {
+				maxNode = child;
+				maxValue = child.getExpectedValue();
+			}/* else if(child.getExpectedValue()==maxValue) {
+				
+				//System.out.println("two children have the same max value");
+				
+				if(random.nextInt(2)==0) {
+					maxNode = child;
+					maxValue = child.getExpectedValue();
+				}
+			}*/
+		}
+		
+		if(maxNode!=returnNode) {
+			explorationTally++;
+		} else {
+			exploitationTally++;
+		}
+		
+		return returnNode;
 	}
 	
 	
 	private double formula(Node child, Node parent) {
-		return child.getExpectedValue() + 
+		return (child.getExpectedValue() - parent.getExpectedValue())
+			/parent.getGameState().getBetSize() + 
 			C*Math.sqrt(Math.log(parent.getVisitCount())/child.getVisitCount());
 	}
 	
@@ -70,6 +102,12 @@ public class UCTSelectionStrategy implements SelectionStrategy {
 			if(value>maxValue) {
 				maxValue = value;
 				maxNode = children.get(i);
+			} else if(value==maxValue) {
+				
+				if(random.nextInt(2)==0) {
+					maxNode = children.get(i);
+					maxValue = children.get(i).getExpectedValue();
+				}
 			}
 		}
 		

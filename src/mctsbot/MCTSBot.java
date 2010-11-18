@@ -3,7 +3,9 @@ package mctsbot;
 import mctsbot.gamestate.GameState;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.RootNode;
+import mctsbot.strategies.DynamicDistributionSimulationStrategy;
 import mctsbot.strategies.StrategyConfiguration;
+import mctsbot.strategies.UCTSelectionStrategy;
 
 import com.biotools.meerkat.Action;
 import com.biotools.meerkat.Card;
@@ -101,7 +103,35 @@ public class MCTSBot implements Player {
 		// Perform action.
 		final Action action = convertToMeerkatAction(config.getActionSelectionStrategy().select(root));
 		
-		//System.out.println("getAction about to finish");
+		System.out.println("explorationTally = " + UCTSelectionStrategy.explorationTally);
+		System.out.println("exploitationTally = " + UCTSelectionStrategy.exploitationTally);
+		System.out.println("exploration percentage = " + 
+				(100*UCTSelectionStrategy.explorationTally/
+						(UCTSelectionStrategy.explorationTally
+								+UCTSelectionStrategy.exploitationTally)));
+		
+		UCTSelectionStrategy.exploitationTally = 0;
+		UCTSelectionStrategy.explorationTally = 0;
+		
+		System.out.print("Fold Tally = ");
+		for(int i=1; i<=4; i++) {
+			System.out.print(DynamicDistributionSimulationStrategy.foldTally[i] + " ");
+		}
+		System.out.println();
+		
+		System.out.print("Call Tally = ");
+		for(int i=1; i<=4; i++) {
+			System.out.print(DynamicDistributionSimulationStrategy.callTally[i] + " ");
+		}
+		System.out.println();
+		
+		System.out.print("Raise Tally = ");
+		for(int i=1; i<=4; i++) {
+			System.out.print(DynamicDistributionSimulationStrategy.raiseTally[i] + " ");
+		}
+		System.out.println();
+		
+		
 		
 		return action;
 	}
@@ -158,12 +188,18 @@ public class MCTSBot implements Player {
 		
 		if(action.isBetOrRaise()) {
 			currentGameState = currentGameState.doAction(1);
+			DynamicDistributionSimulationStrategy.actionHappened(
+					currentGameState.getStage(), 1);
 			
 		} else if(action.isCheckOrCall()) {
 			currentGameState = currentGameState.doAction(2);
+			DynamicDistributionSimulationStrategy.actionHappened(
+					currentGameState.getStage(), 2);
 			
 		} else if(action.isFold()) {
 			currentGameState = currentGameState.doAction(3);
+			DynamicDistributionSimulationStrategy.actionHappened(
+					currentGameState.getStage(), 3);
 			
 		} else if(action.isSmallBlind()) {
 			currentGameState = currentGameState.doSmallBlind(seat);
