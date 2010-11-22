@@ -11,9 +11,9 @@ public class HighestEVActionSelectionStrategy implements
 
 	public Action select(RootNode root) {
 		
-		System.out.println("RootNode" + 
+		/*System.out.println("RootNode" + 
 				" has EV = " + root.getExpectedValue() + 
-				" and VC = " + root.getVisitCount());
+				" and VC = " + root.getVisitCount());*/
 		
 		
 		

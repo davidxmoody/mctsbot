@@ -46,9 +46,6 @@ public class MCTSDemo  {
 		
 		
 		
-		//root.printDetails();
-
-		
 		Node currentNode = root;
 		
 		while(true) {

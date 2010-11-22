@@ -14,6 +14,7 @@ import mctsbot.nodes.PlayerNode;
 import mctsbot.nodes.ShowdownNode;
 
 import com.biotools.meerkat.Card;
+import com.biotools.meerkat.Hand;
 import com.biotools.meerkat.HandEvaluator;
 
 public class StaticDistributionSimulationStrategy implements SimulationStrategy {
@@ -36,7 +37,27 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 				return node.getGameState().getBotMoney()+node.getGameState().getPot();
 				
 			} else if(node instanceof ShowdownNode) {
-				return simulateShowdown((ShowdownNode)node);
+				int s1 = node.getGameState().getTable().size();
+				final Hand originalTable = new Hand(node.getGameState().getTable());
+				
+				try {
+					return simulateShowdown((ShowdownNode)node);
+				} catch(Exception e) {
+					int s2 = node.getGameState().getTable().size();
+					if(s1!=s2) System.out.println("s1 = " + s1 + " s2 = " + s2);
+					
+					for(int i=0; i<node.getGameState().getTable().size(); i++) 
+						System.out.println("t" + i + " = " + node.getGameState().getTable().getCard(i));
+					
+					for(int i=0; i<originalTable.size(); i++) 
+						System.out.println("to" + i + " = " + originalTable.getCard(i));
+					
+					
+					
+					
+					throw new RuntimeException();
+				}
+				
 				
 			} else {
 				throw new RuntimeException("Unknown node type passed to simulate.");
@@ -83,30 +104,15 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 	 */
 	private double simulateShowdown(ShowdownNode showdownNode) {
 		final GameState gameState = showdownNode.getGameState();
+		final Hand table = gameState.getTable();
 		
-		//TODO: return this to normal
-		int botHandRank = 0;
-		try {
+		//final Hand originalTable = new Hand(table);
 		
 		// Calculate the bot's hand rank.
-		botHandRank = HandEvaluator.rankHand(
-				gameState.getC1(), gameState.getC2(), gameState.getTable());
-		
-		
-		} catch(Exception e) {
-			gameState.printDetails();
-			throw new RuntimeException();
-		}
-		
-		
-		
-		// Work out which cards the opponents can't have.
-		final LinkedList<Card> takenCards = new LinkedList<Card>();
-		takenCards.add(gameState.getC1());
-		takenCards.add(gameState.getC2());
-		for(int i=0; i<gameState.getTable().size(); i++) {
-			takenCards.add(gameState.getTable().getCard(i));
-		}
+		final Hand botHand = new Hand(table);
+		botHand.addCard(gameState.getC1());
+		botHand.addCard(gameState.getC2());
+		final int botHandRank = HandEvaluator.rankHand(botHand);
 		
 		// Work out how many opponents there are.
 		final int noOfOpponents = gameState.getNoOfActivePlayers()-1;
@@ -115,38 +121,11 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 		// out their hand rank. If it is the maximum so far then record it.
 		int maxOpponentHandRank = 0;
 		for(int i=0; i<noOfOpponents; i++) {
-			final Card oppC1 = getRandomOppCard(takenCards);
-			final Card oppC2 = getRandomOppCard(takenCards, oppC1);
+			final Hand oppHand = new Hand(table);
+			giveOpponentRandomCard(oppHand);
+			giveOpponentRandomCard(oppHand);
 			
-			//TODO: remove this
-			for(int j=0; j<gameState.getTable().size(); j++) {
-				if(oppC1.equals(gameState.getTable().getCard(j))) 
-					throw new RuntimeException();
-				if(oppC2.equals(gameState.getTable().getCard(j))) 
-					throw new RuntimeException();
-				if(oppC1.equals(oppC2)) 
-					throw new RuntimeException();
-			}
-			
-			if(gameState.getTable().size()>5) throw new RuntimeException();
-			//System.out.println("Table Size123 =========== " + gameState.getTable().size());
-			
-			int tableSize = gameState.getTable().size();
-			
-			int opponentHandRank = 0;
-			
-			try {
-			opponentHandRank = HandEvaluator.rankHand(
-					oppC1, oppC2, gameState.getTable());
-			} catch(Exception e) {
-				gameState.printDetails();
-				
-				if(tableSize!=gameState.getTable().size())
-					System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHHHHH!");
-				
-				System.out.println("Table Size =========== " + gameState.getTable().size());
-				throw new RuntimeException();
-			}
+			final int opponentHandRank = HandEvaluator.rankHand(oppHand);
 			
 			if(opponentHandRank>maxOpponentHandRank) maxOpponentHandRank = opponentHandRank;
 		}
@@ -159,6 +138,21 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 		
 		return expectedValue;
 	}
+	
+	
+	private void giveOpponentRandomCard(Hand oppHand) {
+		final Card oppCard = new Card(random.nextInt(52));
+		for(int i=0; i<oppHand.size(); i++) {
+			if(oppCard.equals(oppHand.getCard(i))) {
+				giveOpponentRandomCard(oppHand);
+				return;
+			}
+		}
+		oppHand.addCard(oppCard);
+	}
+	
+	
+	
 	
 	private Card getRandomOppCard(Collection<Card> takenCards) {
 		final Card oppCard = new Card(random.nextInt(52));

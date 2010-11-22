@@ -309,9 +309,6 @@ public class GameState implements Cloneable {
 		newGameState.table = new Hand(table);
 		newGameState.table.addCard(card);
 		
-		//TODO: remove this
-		if(newGameState.table.size()>5) throw new RuntimeException();
-		
 		return newGameState;
 	}
 	

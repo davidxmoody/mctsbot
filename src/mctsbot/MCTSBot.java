@@ -51,8 +51,8 @@ public class MCTSBot implements Player {
 	
 	
 	public void holeCards(Card c1, Card c2, int seat) {
-		this.c1 = c1;
-		this.c2 = c2;
+		this.c1 = new Card(c1.getIndex());
+		this.c2 = new Card(c2.getIndex());
 		this.seat = seat;
 		
 		currentGameState = currentGameState.holeCards(c1, c2, seat);
@@ -60,6 +60,63 @@ public class MCTSBot implements Player {
 	
 	
 	public Action getAction() {
+		
+		/*for(int j=0; j<10000; j++) {
+			
+			
+			Hand h = new Hand();
+			
+			Card[] c = new Card[7];
+			
+			c[0] = currentGameState.getC1();
+			c[1] = currentGameState.getC2();
+			
+
+			
+			Random random = new Random();
+			
+			for(int i=2; i<7; i++) {
+				boolean isDifferent = true;
+				do {
+					isDifferent = true;
+					c[i] = new Card(random.nextInt(52));
+					for(int j1=0; j1<i; j1++) 
+						if(c[j1].equals(c[i])) isDifferent = false;
+				} while(!isDifferent);
+			}
+			
+			for(int i=0; i<7; i++) 
+				h.addCard(c[i]);
+			
+			
+			
+			int rank = HandEvaluator.rankHand(h);
+			
+			System.out.println(rank);
+
+		}
+		
+		if(true) return null;
+		
+		*/
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		
 		// Make root node.
 		RootNode root = new RootNode(currentGameState, config);
