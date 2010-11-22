@@ -16,7 +16,6 @@ import com.biotools.meerkat.HandEvaluator;
 
 public class AlwaysCallSimulationStrategy implements SimulationStrategy {
 
-	@Override
 	public double simulate(Node node) {
 		
 		if(node instanceof LeafNode) {

@@ -13,7 +13,6 @@ public class RandomSelectionStrategy implements SelectionStrategy {
 	
 	private static final Random random = new Random();
 
-	@Override
 	public Node select(Node node) {
 		
 		// Should never be called on a leaf node.

@@ -9,7 +9,6 @@ import mctsbot.nodes.RootNode;
 public class HighestEVActionSelectionStrategy implements
 		ActionSelectionStrategy {
 
-	@Override
 	public Action select(RootNode root) {
 		
 		System.out.println("RootNode" + 

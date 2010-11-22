@@ -1,5 +1,8 @@
 package mctsbot.strategies;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 import mctsbot.gamestate.GameState;
@@ -11,19 +14,19 @@ import mctsbot.nodes.Node;
 import mctsbot.nodes.PlayerNode;
 import mctsbot.nodes.ShowdownNode;
 
+import com.biotools.meerkat.Card;
 import com.biotools.meerkat.Deck;
 import com.biotools.meerkat.HandEvaluator;
 
 public class StaticDistributionSimulationStrategy implements SimulationStrategy {
 	
-	private static final int[] FOLD_WEIGHTS = {0, 50, 12, 13, 10};
-	private static final int[] CALL_WEIGHTS = {0, 43, 46, 45, 47};
-	private static final int[] RAISE_WEIGHTS = {0, 8, 42, 42, 43};
+	private static final int[] FOLD_WEIGHTS = {0, 65, 6, 8, 4};
+	private static final int[] CALL_WEIGHTS = {0, 25, 46, 47, 55};
+	private static final int[] RAISE_WEIGHTS = {0, 10, 48, 45, 42};
 	
 	
 	private static final Random random = new Random();
 
-	@Override
 	public double simulate(Node node) {
 		
 		if(node instanceof LeafNode) {
@@ -84,16 +87,28 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 		deck.extractCard(gameState.getC2());
 		deck.extractHand(gameState.getTable());
 		
+		final LinkedList<Card> takenCards = new LinkedList<Card>();
+		takenCards.add(gameState.getC1());
+		takenCards.add(gameState.getC2());
+		for(int i=0; i<gameState.getTable().size(); i++) {
+			takenCards.add(gameState.getTable().getCard(i));
+		}
+		
 		final int noOfOpponents = gameState.getNoOfActivePlayers()-1;
 		
 		int maxOpponentHandRank = 0;
 		
 		for(int i=0; i<noOfOpponents; i++) {
 			
+			Card oppC1 = null;
+			Card oppC2 = null;
+			
+			
+			
+			
+			
 			final int opponentHandRank = HandEvaluator.rankHand(
-					deck.extractRandomCard(), 
-					deck.extractRandomCard(), 
-					gameState.getTable());
+					oppC1, oppC2, gameState.getTable());
 			
 			if(opponentHandRank>maxOpponentHandRank) maxOpponentHandRank = opponentHandRank;
 		}
@@ -106,6 +121,19 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 		}
 		
 		return expectedValue;
+	}
+	
+	private Card getRandomOppC1(Collection<Card> takenCards) {
+		Card oppC1 = new Card(random.nextInt(52));
+		
+		
+		//TODO
+		return null;
+	}
+	
+	private Card getRandomOppC1(List<Card> takenCards, Card oppC1) {
+		//TODO
+		return null;
 	}
 
 	

@@ -14,7 +14,6 @@ public class CallAction implements Action {
 		return amount;
 	}
 
-	@Override
 	public String getDescription() {
 		return "Call Action " + amount;
 	}

@@ -14,7 +14,6 @@ public class RaiseAction implements Action {
 		return amount;
 	}
 	
-	@Override
 	public String getDescription() {
 		return "Raise Action " + amount;
 	}

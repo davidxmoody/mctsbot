@@ -30,7 +30,6 @@ public class MCTSBot implements Player {
 	
 	//TODO: remove all System.out.println's 
 	
-	@Override
 	public void init(Preferences prefs) {
 		//System.out.println("init called");
 		
@@ -44,7 +43,6 @@ public class MCTSBot implements Player {
 	}
 	
 	
-	@Override
 	public void gameStartEvent(GameInfo gi) {
 		//System.out.println("gameStartEvent called");
 		this.gi = gi;
@@ -53,7 +51,6 @@ public class MCTSBot implements Player {
 	}
 	
 	
-	@Override
 	public void holeCards(Card c1, Card c2, int seat) {
 		//System.out.println("holeCards called");
 		
@@ -67,7 +64,6 @@ public class MCTSBot implements Player {
 	}
 	
 	
-	@Override
 	public Action getAction() {
 		//System.out.println("getAction called");
 		
@@ -182,7 +178,6 @@ public class MCTSBot implements Player {
 	
 	
 	
-	@Override
 	public void actionEvent(int seat, Action action) {
 		//System.out.println("actionEvent called");
 		
@@ -212,7 +207,6 @@ public class MCTSBot implements Player {
 		//System.out.println("actionEvent finished");
 	}
 	
-	@Override
 	public void stageEvent(int stage) {
 		//System.out.println("stageEvent called, stage = " + stage);
 		
@@ -228,32 +222,27 @@ public class MCTSBot implements Player {
 	
 	
 	
-	@Override
 	public void dealHoleCardsEvent() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void gameOverEvent() {
 		// TODO Auto-generated method stub
 		
 	}
 
 
-	@Override
 	public void gameStateChanged() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void showdownEvent(int arg0, Card arg1, Card arg2) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void winEvent(int arg0, double arg1, String arg2) {
 		// TODO Auto-generated method stub
 		

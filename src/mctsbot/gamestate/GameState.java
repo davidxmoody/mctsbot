@@ -2,8 +2,6 @@ package mctsbot.gamestate;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import mctsbot.actions.Action;
 import mctsbot.actions.BigBlindAction;
@@ -34,7 +32,7 @@ public class GameState implements Cloneable {
 	private Hand table;
 	
 	//TODO: Check that seat map is updated correctly
-	private Map<Integer, Player> seatMap;
+	//private Map<Integer, Player> seatMap;
 	private List<Player> activePlayers;
 	
 	private static int dealerSeat;
@@ -62,6 +60,55 @@ public class GameState implements Cloneable {
 	private GameState() { }
 	
 	
+	public static GameState demo(Card c1, Card c2, int dealerSeat, int players) {
+		
+		if(players<2 || c1==null || c2==null) throw new RuntimeException();
+		
+		GameState newGameState = new GameState();
+		
+		GameState.smallBlindSize = 0.5;
+		GameState.bigBlindSize = 1.0;
+		GameState.dealerSeat = 0;
+		
+		newGameState.pot = 0.0;
+		newGameState.betSize = 1.0;
+		newGameState.lastAction = null;
+		newGameState.maxBetThisRound = 0;
+		newGameState.stage = PREFLOP;
+		newGameState.table = new Hand();
+		newGameState.nextPlayerToAct = 0;
+		newGameState.activePlayers = new LinkedList<Player>();
+		newGameState.committedPlayers = 0;
+		//newGameState.seatMap = new TreeMap<Integer, Player>();
+		
+		for(int i=0; i<players; i++) {
+			newGameState.activePlayers.add(new Player(1000, 0, 0, new LinkedList<Action>(), i));
+		}
+		
+		newGameState = newGameState.holeCards(c1, c2, 0);
+		
+		if(players==2) {
+			newGameState = newGameState.doSmallBlind(dealerSeat);
+			newGameState = newGameState.doBigBlind(
+					newGameState.getNextActivePlayerSeat(dealerSeat));
+		} else {
+			newGameState = newGameState.doSmallBlind(
+					newGameState.getNextActivePlayerSeat(dealerSeat));
+			newGameState = newGameState.doBigBlind(
+					newGameState.getNextActivePlayerSeat(
+							newGameState.getNextActivePlayerSeat(dealerSeat)));
+		}
+		
+
+		return newGameState;
+	}
+	
+	public static GameState randomDemo() {
+		//final Deck deck = new Deck();
+		//return demo(deck.extractRandomCard(), deck.extractRandomCard(), 0, 2);
+		return null;
+	}
+	
 	public static GameState initialise(GameInfo gi) {
 		final GameState newGameState = new GameState();
 		
@@ -78,7 +125,7 @@ public class GameState implements Cloneable {
 		newGameState.nextPlayerToAct = gi.getSmallBlindSeat();
 		newGameState.activePlayers = new LinkedList<Player>();
 		newGameState.committedPlayers = 0;
-		newGameState.seatMap = new TreeMap<Integer, Player>();
+		//newGameState.seatMap = new TreeMap<Integer, Player>();
 		
 		
 		int firstSeat = gi.nextActivePlayer(dealerSeat);
@@ -88,7 +135,7 @@ public class GameState implements Cloneable {
 			Player newPlayer = new Player(
 					pi.getBankRoll(), 0.0, 0.0, new LinkedList<Action>(), s);
 			newGameState.activePlayers.add(newPlayer);
-			newGameState.seatMap.put(s, newPlayer);
+			//newGameState.seatMap.put(s, newPlayer);
 		} while((s=gi.nextActivePlayer(s))!=firstSeat);
 		
 		return newGameState;
@@ -206,7 +253,6 @@ public class GameState implements Cloneable {
 			
 			newGameState.activePlayers = new LinkedList<Player>(activePlayers);
 			newGameState.activePlayers.remove(nextPlayer);
-			// TODO: Add folded player to inactive player list?
 			
 			newGameState.nextPlayerToAct = 
 				(newGameState.isNextPlayerToAct()) ? 
@@ -228,6 +274,10 @@ public class GameState implements Cloneable {
 		return getPlayer(botSeat).getMoney();
 	}
 	
+	
+	
+	
+	
 	public GameState dealCard(Card card) {
 		final GameState newGameState = this.clone();
 		
@@ -236,6 +286,21 @@ public class GameState implements Cloneable {
 		
 		return newGameState;
 	}
+	
+	public GameState dealRandomCard() {
+		//TODO
+		
+		//TODO
+		return null;
+	}
+
+	
+	
+	
+	
+	
+	
+	
 	
 	public GameState setTable(Hand table) {
 		final GameState newGameState = this.clone();
@@ -422,7 +487,7 @@ public class GameState implements Cloneable {
 		newGameState.maxBetThisRound = maxBetThisRound;
 		newGameState.stage = stage;
 		newGameState.committedPlayers = committedPlayers;
-		newGameState.seatMap = seatMap;
+		//newGameState.seatMap = seatMap;
 		
 		return newGameState;
 	}
@@ -443,7 +508,7 @@ public class GameState implements Cloneable {
 						(stage==TURN)?"TURN":
 							(stage==RIVER)?"RIVER":
 								(stage==SHOWDOWN)?"SHOWDOWN":
-									"UNKNOWN");
+									"UNKNOWN: " + stage);
 		System.out.println("");
 	}
 

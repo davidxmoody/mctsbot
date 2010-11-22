@@ -7,7 +7,6 @@ public class FoldAction implements Action {
 		return 0.0;
 	}
 	
-	@Override
 	public String getDescription() {
 		return "Fold Action";
 	}

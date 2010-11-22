@@ -5,7 +5,6 @@ import mctsbot.nodes.Node;
 public class AveragingBackpropagationStrategy implements
 		BackpropagationStrategy {
 
-	@Override
 	public void propagate(Node node, double expectedValue) {
 		node.setExpectedValue(expectedValue);
 		node.setVisitCount(node.getVisitCount()+1);

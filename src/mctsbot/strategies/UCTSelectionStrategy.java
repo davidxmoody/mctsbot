@@ -21,7 +21,6 @@ public class UCTSelectionStrategy implements SelectionStrategy {
 	private static final RandomSelectionStrategy randomSelectionStrategy = 
 		new RandomSelectionStrategy();
 
-	@Override
 	public Node select(Node node) {
 		// UTC won't work on chance nodes or leaf nodes.
 		if(!(node instanceof PlayerNode)) {
