@@ -1,7 +1,5 @@
 package mctsbot.strategies;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Random;
 
 import mctsbot.gamestate.GameState;
@@ -13,8 +11,7 @@ import mctsbot.nodes.Node;
 import mctsbot.nodes.PlayerNode;
 import mctsbot.nodes.ShowdownNode;
 
-import com.biotools.meerkat.Card;
-import com.biotools.meerkat.Hand;
+import com.biotools.meerkat.Deck;
 import com.biotools.meerkat.HandEvaluator;
 
 public class StaticDistributionSimulationStrategy implements SimulationStrategy {
@@ -37,28 +34,8 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 				return node.getGameState().getBotMoney()+node.getGameState().getPot();
 				
 			} else if(node instanceof ShowdownNode) {
-				int s1 = node.getGameState().getTable().size();
-				final Hand originalTable = new Hand(node.getGameState().getTable());
-				
-				try {
-					return simulateShowdown((ShowdownNode)node);
-				} catch(Exception e) {
-					int s2 = node.getGameState().getTable().size();
-					if(s1!=s2) System.out.println("s1 = " + s1 + " s2 = " + s2);
-					
-					for(int i=0; i<node.getGameState().getTable().size(); i++) 
-						System.out.println("t" + i + " = " + node.getGameState().getTable().getCard(i));
-					
-					for(int i=0; i<originalTable.size(); i++) 
-						System.out.println("to" + i + " = " + originalTable.getCard(i));
-					
-					
-					
-					
-					throw new RuntimeException();
-				}
-				
-				
+				return simulateShowdown((ShowdownNode)node);
+
 			} else {
 				throw new RuntimeException("Unknown node type passed to simulate.");
 			}
@@ -95,6 +72,7 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 		
 	}
 	
+	
 	/**
 	 * Simulates a showdown event where all opponents are dealt random 
 	 * cards and the winner is calculated.
@@ -104,28 +82,25 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 	 */
 	private double simulateShowdown(ShowdownNode showdownNode) {
 		final GameState gameState = showdownNode.getGameState();
-		final Hand table = gameState.getTable();
-		
-		//final Hand originalTable = new Hand(table);
 		
 		// Calculate the bot's hand rank.
-		final Hand botHand = new Hand(table);
-		botHand.addCard(gameState.getC1());
-		botHand.addCard(gameState.getC2());
-		final int botHandRank = HandEvaluator.rankHand(botHand);
+		final int botHandRank = HandEvaluator.rankHand(
+				gameState.getC1(), gameState.getC2(), gameState.getTable());
 		
 		// Work out how many opponents there are.
 		final int noOfOpponents = gameState.getNoOfActivePlayers()-1;
+		
+		// Create a new Deck from gameState.
+		final Deck deck = gameState.createDeck();
 		
 		// For each opponent, deal them two random, non-taken cards and work 
 		// out their hand rank. If it is the maximum so far then record it.
 		int maxOpponentHandRank = 0;
 		for(int i=0; i<noOfOpponents; i++) {
-			final Hand oppHand = new Hand(table);
-			giveOpponentRandomCard(oppHand);
-			giveOpponentRandomCard(oppHand);
-			
-			final int opponentHandRank = HandEvaluator.rankHand(oppHand);
+			final int opponentHandRank = HandEvaluator.rankHand(
+					deck.extractRandomCard(), 
+					deck.extractRandomCard(), 
+					gameState.getTable());
 			
 			if(opponentHandRank>maxOpponentHandRank) maxOpponentHandRank = opponentHandRank;
 		}
@@ -140,38 +115,9 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 	}
 	
 	
-	private void giveOpponentRandomCard(Hand oppHand) {
-		final Card oppCard = new Card(random.nextInt(52));
-		for(int i=0; i<oppHand.size(); i++) {
-			if(oppCard.equals(oppHand.getCard(i))) {
-				giveOpponentRandomCard(oppHand);
-				return;
-			}
-		}
-		oppHand.addCard(oppCard);
-	}
 	
 	
 	
-	
-	private Card getRandomOppCard(Collection<Card> takenCards) {
-		final Card oppCard = new Card(random.nextInt(52));
-		for(Card takenCard: takenCards) 
-			if(oppCard.equals(takenCard)) 
-				return getRandomOppCard(takenCards);
-		return oppCard;
-	}
-	
-	private Card getRandomOppCard(Collection<Card> takenCards, Card oppC1) {
-		final Card oppCard = new Card(random.nextInt(52));
-		if(oppCard.equals(oppC1)) 
-			return getRandomOppCard(takenCards, oppC1);
-		for(Card takenCard: takenCards) 
-			if(oppCard.equals(takenCard)) 
-				return getRandomOppCard(takenCards, oppC1);
-		return oppCard;
-	}
-
 	
 	protected double getRaiseProb(int stage, boolean canCheck) {
 		if(stage<1 || stage>4) throw new RuntimeException(

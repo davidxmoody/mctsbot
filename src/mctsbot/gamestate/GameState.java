@@ -12,6 +12,7 @@ import mctsbot.actions.RaiseAction;
 import mctsbot.actions.SmallBlindAction;
 
 import com.biotools.meerkat.Card;
+import com.biotools.meerkat.Deck;
 import com.biotools.meerkat.GameInfo;
 import com.biotools.meerkat.Hand;
 import com.biotools.meerkat.PlayerInfo;
@@ -321,6 +322,16 @@ public class GameState implements Cloneable {
 			if(randomCard.equals(table.getCard(i))) return dealRandomCard();
 		
 		return dealCard(randomCard);
+	}
+	
+	
+	
+	public Deck createDeck() {
+		final Deck deck = new Deck();
+		deck.extractCard(c1);
+		deck.extractCard(c2);
+		deck.extractHand(table);
+		return deck;
 	}
 
 	
