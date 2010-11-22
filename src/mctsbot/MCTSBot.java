@@ -28,77 +28,53 @@ public class MCTSBot implements Player {
 	private StrategyConfiguration config;
 	
 	
-	//TODO: remove all System.out.println's 
-	
 	public void init(Preferences prefs) {
-		//System.out.println("init called");
-		
 		this.prefs = prefs;
 		
-		// Create a new config.
-		// TODO: create the config from the given preferences.
-		config = StrategyConfiguration.getDefault();
-		
-		//System.out.println("init finished");
+		// Create a new config. Maybe create if from prefs?
+		setConfig(StrategyConfiguration.getDefault());
+	}
+	
+	
+	public void setConfig(StrategyConfiguration config) {
+		this.config = config;
+	}
+	
+	public void setCurrentGameState(GameState currentGameState) {
+		this.currentGameState = currentGameState;
 	}
 	
 	
 	public void gameStartEvent(GameInfo gi) {
-		//System.out.println("gameStartEvent called");
 		this.gi = gi;
 		currentGameState = GameState.initialise(gi);
-		//System.out.println("gameStartEvent finished");
 	}
 	
 	
 	public void holeCards(Card c1, Card c2, int seat) {
-		//System.out.println("holeCards called");
-		
 		this.c1 = c1;
 		this.c2 = c2;
 		this.seat = seat;
 		
 		currentGameState = currentGameState.holeCards(c1, c2, seat);
-		
-		//System.out.println("holeCards finished");
 	}
 	
 	
 	public Action getAction() {
-		//System.out.println("getAction called");
 		
-		
-
 		// Make root node.
 		RootNode root = new RootNode(currentGameState, config);
 		
 		// Do iterations until time limit reached.
-		final long startTime = System.currentTimeMillis();
-		final long endTime = startTime + getThinkingTime();
-		int noIterations = 0;
+		performIterations(root, getThinkingTime());
 		
-		do {
-			iterate(root);
-			iterate(root);
-			iterate(root);
-			iterate(root);
-			iterate(root);
-			iterate(root);
-			iterate(root);
-			iterate(root);
-			
-			noIterations+=8;
-			
-		} while(endTime>System.currentTimeMillis());
-		
-		System.out.println();
-		System.out.println("Performed " + noIterations + " iterations in " + 
-				(System.currentTimeMillis()-startTime) + " milliseconds.");
+		// Select the (Meerkat) Action to perform.
+		final Action action = convertToMeerkatAction(
+				config.getActionSelectionStrategy().select(root));
 		
 		
-		// Perform action.
-		final Action action = convertToMeerkatAction(config.getActionSelectionStrategy().select(root));
 		
+		// Debugging stuff.
 		System.out.println("explorationTally = " + UCTSelectionStrategy.explorationTally);
 		System.out.println("exploitationTally = " + UCTSelectionStrategy.exploitationTally);
 		System.out.println("exploration percentage = " + 
@@ -129,7 +105,35 @@ public class MCTSBot implements Player {
 		
 		
 		
+		
+		// Return the (Meerkat) Action.
 		return action;
+	}
+	
+	
+	public void performIterations(RootNode root, long thinkingTime) {
+		
+		final long startTime = System.currentTimeMillis();
+		final long endTime = startTime + thinkingTime;
+		int noIterations = 0;
+		
+		do {
+			iterate(root);
+			iterate(root);
+			iterate(root);
+			iterate(root);
+			iterate(root);
+			iterate(root);
+			iterate(root);
+			iterate(root);
+			
+			noIterations+=8;
+			
+		} while(endTime>System.currentTimeMillis());
+		
+		System.out.println();
+		System.out.println("Performed " + noIterations + " iterations in " + 
+				(System.currentTimeMillis()-startTime) + " milliseconds.");
 	}
 	
 	
@@ -155,9 +159,6 @@ public class MCTSBot implements Player {
 	
 	
 	private Action convertToMeerkatAction(mctsbot.actions.Action action) {
-		//System.out.println("convert called");
-		//System.out.println("convert called on " + action.toString());
-		
 		final double toCall = gi.getAmountToCall(seat);
 		
 		// Raise.
@@ -170,11 +171,8 @@ public class MCTSBot implements Player {
 		if(action instanceof mctsbot.actions.FoldAction) return Action.foldAction(toCall);
 		
 		// Else something went wrong.
-		//System.err.println("Received invalid action type: " + action.toString());
-		return Action.checkOrFoldAction(toCall);
+		throw new RuntimeException("Invalid action type passed to convertToMeerkatAction");
 	}
-	
-	
 	
 	
 	
@@ -223,28 +221,23 @@ public class MCTSBot implements Player {
 	
 	
 	public void dealHoleCardsEvent() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	public void gameOverEvent() {
-		// TODO Auto-generated method stub
 		
 	}
 
 
 	public void gameStateChanged() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	public void showdownEvent(int arg0, Card arg1, Card arg2) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	public void winEvent(int arg0, double arg1, String arg2) {
-		// TODO Auto-generated method stub
 		
 	}
 

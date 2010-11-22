@@ -76,6 +76,22 @@ public abstract class Node {
 	
 	public abstract void generateChildren();
 	
+	public void printDetails() {
+		System.out.println("Node type = " + this.getClass().getSimpleName());
+		System.out.println("Last action = " + gameState.getLastAction().getDescription());
+		System.out.println("EV = " + expectedValue);
+		System.out.println("VC = " + visitCount);
+		System.out.println();
+	}
+	
+	public void printChildrensDetails() {
+		if(children==null) System.out.println("This node has no children.");
+		else if(children.size()>10) System.out.println("This node has too many children to print.");
+		else for(Node child: children) 
+			child.printDetails();
+		
+		
+	}
 	
 }
 

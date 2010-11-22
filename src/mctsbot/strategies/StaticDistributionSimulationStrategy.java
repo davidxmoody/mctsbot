@@ -2,7 +2,6 @@ package mctsbot.strategies;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 
 import mctsbot.gamestate.GameState;
@@ -15,7 +14,6 @@ import mctsbot.nodes.PlayerNode;
 import mctsbot.nodes.ShowdownNode;
 
 import com.biotools.meerkat.Card;
-import com.biotools.meerkat.Deck;
 import com.biotools.meerkat.HandEvaluator;
 
 public class StaticDistributionSimulationStrategy implements SimulationStrategy {
@@ -74,19 +72,21 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 		
 	}
 	
-	
+	/**
+	 * Simulates a showdown event where all opponents are dealt random 
+	 * cards and the winner is calculated.
+	 * 
+	 * @param showdownNode the node to start the simulation from.
+	 * @return the amount of money the bot has after the showdown.
+	 */
 	private double simulateShowdown(ShowdownNode showdownNode) {
-		
 		final GameState gameState = showdownNode.getGameState();
 		
+		// Calculate the bot's hand rank.
 		final int botHandRank = HandEvaluator.rankHand(
 				gameState.getC1(), gameState.getC2(), gameState.getTable());
 		
-		Deck deck = new Deck();
-		deck.extractCard(gameState.getC1());
-		deck.extractCard(gameState.getC2());
-		deck.extractHand(gameState.getTable());
-		
+		// Work out which cards the opponents can't have.
 		final LinkedList<Card> takenCards = new LinkedList<Card>();
 		takenCards.add(gameState.getC1());
 		takenCards.add(gameState.getC2());
@@ -94,18 +94,15 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 			takenCards.add(gameState.getTable().getCard(i));
 		}
 		
+		// Work out how many opponents there are.
 		final int noOfOpponents = gameState.getNoOfActivePlayers()-1;
 		
+		// For each opponent, deal them two random, non-taken cards and work 
+		// out their hand rank. If it is the maximum so far then record it.
 		int maxOpponentHandRank = 0;
-		
 		for(int i=0; i<noOfOpponents; i++) {
-			
-			Card oppC1 = null;
-			Card oppC2 = null;
-			
-			
-			
-			
+			final Card oppC1 = getRandomOppCard(takenCards);
+			final Card oppC2 = getRandomOppCard(takenCards, oppC1);
 			
 			final int opponentHandRank = HandEvaluator.rankHand(
 					oppC1, oppC2, gameState.getTable());
@@ -113,27 +110,31 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 			if(opponentHandRank>maxOpponentHandRank) maxOpponentHandRank = opponentHandRank;
 		}
 		
-		
+		// Calculate the expected value of the game state depending 
+		// on whether the bot wins or loses in the random showdown.
 		double expectedValue = gameState.getBotMoney();
-		
-		if(botHandRank>=maxOpponentHandRank) {
+		if(botHandRank>=maxOpponentHandRank) 
 			expectedValue += gameState.getPot();
-		}
 		
 		return expectedValue;
 	}
 	
-	private Card getRandomOppC1(Collection<Card> takenCards) {
-		Card oppC1 = new Card(random.nextInt(52));
-		
-		
-		//TODO
-		return null;
+	private Card getRandomOppCard(Collection<Card> takenCards) {
+		final Card oppCard = new Card(random.nextInt(52));
+		for(Card takenCard: takenCards) 
+			if(oppCard.equals(takenCard)) 
+				return getRandomOppCard(takenCards);
+		return oppCard;
 	}
 	
-	private Card getRandomOppC1(List<Card> takenCards, Card oppC1) {
-		//TODO
-		return null;
+	private Card getRandomOppCard(Collection<Card> takenCards, Card oppC1) {
+		final Card oppCard = new Card(random.nextInt(52));
+		if(oppCard.equals(oppC1)) 
+			return getRandomOppCard(takenCards, oppC1);
+		for(Card takenCard: takenCards) 
+			if(oppCard.equals(takenCard)) 
+				return getRandomOppCard(takenCards, oppC1);
+		return oppCard;
 	}
 
 	

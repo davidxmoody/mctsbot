@@ -2,6 +2,7 @@ package mctsbot.gamestate;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import mctsbot.actions.Action;
 import mctsbot.actions.BigBlindAction;
@@ -24,6 +25,8 @@ public class GameState implements Cloneable {
 	public static final int SHOWDOWN = 5;
 	
 	private static final int MAX_ALLOWED_BET_MULTIPLE = 4;
+	
+	private static final Random random = new Random();
 	
 	private static Card c1,c2;
 	private static int botSeat;
@@ -60,7 +63,7 @@ public class GameState implements Cloneable {
 	private GameState() { }
 	
 	
-	public static GameState demo(Card c1, Card c2, int dealerSeat, int players) {
+	public static GameState demo(Card c1, Card c2, int botSeat, int dealerSeat, int players) {
 		
 		if(players<2 || c1==null || c2==null) throw new RuntimeException();
 		
@@ -68,7 +71,7 @@ public class GameState implements Cloneable {
 		
 		GameState.smallBlindSize = 0.5;
 		GameState.bigBlindSize = 1.0;
-		GameState.dealerSeat = 0;
+		GameState.dealerSeat = dealerSeat;
 		
 		newGameState.pot = 0.0;
 		newGameState.betSize = 1.0;
@@ -85,29 +88,42 @@ public class GameState implements Cloneable {
 			newGameState.activePlayers.add(new Player(1000, 0, 0, new LinkedList<Action>(), i));
 		}
 		
-		newGameState = newGameState.holeCards(c1, c2, 0);
+		newGameState = newGameState.holeCards(c1, c2, botSeat);
 		
-		if(players==2) {
-			newGameState = newGameState.doSmallBlind(dealerSeat);
-			newGameState = newGameState.doBigBlind(
-					newGameState.getNextActivePlayerSeat(dealerSeat));
-		} else {
-			newGameState = newGameState.doSmallBlind(
-					newGameState.getNextActivePlayerSeat(dealerSeat));
-			newGameState = newGameState.doBigBlind(
-					newGameState.getNextActivePlayerSeat(
-							newGameState.getNextActivePlayerSeat(dealerSeat)));
+		int smallBlindSeat = dealerSeat;
+		int bigBlindSeat = newGameState.getNextActivePlayerSeat(dealerSeat);
+		
+		if(players>2) {
+			smallBlindSeat = newGameState.getNextActivePlayerSeat(dealerSeat);
+			bigBlindSeat = 	newGameState.getNextActivePlayerSeat(
+							newGameState.getNextActivePlayerSeat(dealerSeat));
 		}
+		newGameState = newGameState.doSmallBlind(smallBlindSeat);
+		newGameState = newGameState.doBigBlind(bigBlindSeat);
 		
+		if(botSeat!=newGameState.getNextActivePlayerSeat(bigBlindSeat)) {
+			while(!newGameState.isBotNextPlayerToAct()) {
+				newGameState = newGameState.doAction(Action.CALL);
+			}
+		}
 
 		return newGameState;
 	}
 	
+	
+	
+	
 	public static GameState randomDemo() {
-		//final Deck deck = new Deck();
-		//return demo(deck.extractRandomCard(), deck.extractRandomCard(), 0, 2);
-		return null;
+		final Card randomCard1 = new Card(random.nextInt(52));
+		Card randomCard2 = null;
+		while((randomCard2=new Card(random.nextInt(52))).equals(randomCard1)) {}
+		return demo(randomCard1, randomCard2, 0, random.nextInt(2), 2);
 	}
+	
+	
+	
+	
+	
 	
 	public static GameState initialise(GameInfo gi) {
 		final GameState newGameState = new GameState();
@@ -166,6 +182,8 @@ public class GameState implements Cloneable {
 		
 		newGameState.maxBetThisRound = smallBlindAction.getAmount();
 		
+		newGameState.pot = newGameState.pot + smallBlindAction.getAmount();
+		
 		return newGameState;
 	}
 	
@@ -186,6 +204,8 @@ public class GameState implements Cloneable {
 		
 		newGameState.maxBetThisRound = bigBlindAction.getAmount();
 		
+		newGameState.pot = newGameState.pot + bigBlindAction.getAmount();
+		
 		return newGameState;
 	}
 	
@@ -201,15 +221,20 @@ public class GameState implements Cloneable {
 		
 		if(actionType==Action.RAISE) {
 			
-			// Check to see if raising is allowed.
-			// This isn't actually correct all the time, TODO: fix this
-			if(MAX_ALLOWED_BET_MULTIPLE*betSize<maxBetThisRound+betSize) {
-				//System.out.println("max bet multiple reached, forcing call");
-				return doAction(Action.CALL);
-			}
+			RaiseAction raiseAction = null;
 			
-			RaiseAction raiseAction = new RaiseAction(
-					maxBetThisRound+betSize-nextPlayer.getAmountInPotInCurrentRound());
+			// Check to see if raising is allowed.
+			if(MAX_ALLOWED_BET_MULTIPLE*betSize<maxBetThisRound+betSize) {
+				if(MAX_ALLOWED_BET_MULTIPLE*betSize==maxBetThisRound) {
+					return doAction(Action.CALL);
+				} else {
+					raiseAction = new RaiseAction(
+							maxBetThisRound-nextPlayer.getAmountInPotInCurrentRound());
+				}
+			} else {
+				raiseAction = new RaiseAction(
+						maxBetThisRound+betSize-nextPlayer.getAmountInPotInCurrentRound());
+			}
 			
 			newGameState.activePlayers = new LinkedList<Player>(activePlayers);
 			newGameState.activePlayers.remove(nextPlayer);
@@ -287,11 +312,15 @@ public class GameState implements Cloneable {
 		return newGameState;
 	}
 	
+	
 	public GameState dealRandomCard() {
-		//TODO
+		final Card randomCard = new Card(random.nextInt(52));
+		if(randomCard.equals(c1)) return dealRandomCard();
+		if(randomCard.equals(c2)) return dealRandomCard();
+		for(int i=0; i<table.size(); i++) 
+			if(randomCard.equals(table.getCard(i))) return dealRandomCard();
 		
-		//TODO
-		return null;
+		return dealCard(randomCard);
 	}
 
 	
@@ -494,7 +523,7 @@ public class GameState implements Cloneable {
 	
 	public void printDetails() {
 		System.out.println("c1 = " + c1);
-		System.out.println("c1 = " + c2);
+		System.out.println("c2 = " + c2);
 		for(int i=0; i<table.size(); i++) 
 			System.out.println("t" + i + " = " + table.getCard(i));
 		System.out.println("table size = " + table.size());

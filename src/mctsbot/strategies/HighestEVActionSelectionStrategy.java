@@ -35,6 +35,7 @@ public class HighestEVActionSelectionStrategy implements
 			
 			
 		}
+		
 		final Action action = currentBestChoice.getGameState().getLastAction();
 		
 		System.out.println("Chosen to perform " + action.getDescription());
