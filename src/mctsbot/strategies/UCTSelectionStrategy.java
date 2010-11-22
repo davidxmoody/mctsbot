@@ -4,8 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import mctsbot.nodes.ChoiceNode;
 import mctsbot.nodes.Node;
-import mctsbot.nodes.PlayerNode;
 
 public class UCTSelectionStrategy implements SelectionStrategy {
 	
@@ -21,9 +21,12 @@ public class UCTSelectionStrategy implements SelectionStrategy {
 	private static final RandomSelectionStrategy randomSelectionStrategy = 
 		new RandomSelectionStrategy();
 
+	
+	
+	
 	public Node select(Node node) {
 		// UTC won't work on chance nodes or leaf nodes.
-		if(!(node instanceof PlayerNode)) {
+		if(!(node instanceof ChoiceNode)) {
 			return randomSelectionStrategy.select(node);
 		}
 		
@@ -86,8 +89,7 @@ public class UCTSelectionStrategy implements SelectionStrategy {
 	
 	
 	private double formula(Node child, Node parent) {
-		return (child.getExpectedValue() - parent.getExpectedValue())
-			/parent.getGameState().getBetSize() + 
+		return child.getExpectedValue() + 
 			C*Math.sqrt(Math.log(parent.getVisitCount())/child.getVisitCount());
 	}
 	
@@ -112,6 +114,7 @@ public class UCTSelectionStrategy implements SelectionStrategy {
 		
 		return maxNode;
 	}
+
 
 }
 

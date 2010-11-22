@@ -48,6 +48,8 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 			
 		} else if(node instanceof PlayerNode) {
 			
+			// Not actually correct when dealing with the person who put in the big blind.
+			//TODO: fix this
 			final boolean canCheck = node.getGameState().getMaxBetThisRound()==0.0;
 			final int stage = node.getGameState().getStage();
 			
@@ -82,9 +84,21 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 	private double simulateShowdown(ShowdownNode showdownNode) {
 		final GameState gameState = showdownNode.getGameState();
 		
+		//TODO: return this to normal
+		int botHandRank = 0;
+		try {
+		
 		// Calculate the bot's hand rank.
-		final int botHandRank = HandEvaluator.rankHand(
+		botHandRank = HandEvaluator.rankHand(
 				gameState.getC1(), gameState.getC2(), gameState.getTable());
+		
+		
+		} catch(Exception e) {
+			gameState.printDetails();
+			throw new RuntimeException();
+		}
+		
+		
 		
 		// Work out which cards the opponents can't have.
 		final LinkedList<Card> takenCards = new LinkedList<Card>();
@@ -104,8 +118,35 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 			final Card oppC1 = getRandomOppCard(takenCards);
 			final Card oppC2 = getRandomOppCard(takenCards, oppC1);
 			
-			final int opponentHandRank = HandEvaluator.rankHand(
+			//TODO: remove this
+			for(int j=0; j<gameState.getTable().size(); j++) {
+				if(oppC1.equals(gameState.getTable().getCard(j))) 
+					throw new RuntimeException();
+				if(oppC2.equals(gameState.getTable().getCard(j))) 
+					throw new RuntimeException();
+				if(oppC1.equals(oppC2)) 
+					throw new RuntimeException();
+			}
+			
+			if(gameState.getTable().size()>5) throw new RuntimeException();
+			//System.out.println("Table Size123 =========== " + gameState.getTable().size());
+			
+			int tableSize = gameState.getTable().size();
+			
+			int opponentHandRank = 0;
+			
+			try {
+			opponentHandRank = HandEvaluator.rankHand(
 					oppC1, oppC2, gameState.getTable());
+			} catch(Exception e) {
+				gameState.printDetails();
+				
+				if(tableSize!=gameState.getTable().size())
+					System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHHHHH!");
+				
+				System.out.println("Table Size =========== " + gameState.getTable().size());
+				throw new RuntimeException();
+			}
 			
 			if(opponentHandRank>maxOpponentHandRank) maxOpponentHandRank = opponentHandRank;
 		}

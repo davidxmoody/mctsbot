@@ -38,7 +38,7 @@ public class StrategyConfiguration {
 	public static StrategyConfiguration getDefault() {
 		return new StrategyConfiguration(
 				new HighestEVActionSelectionStrategy(), 
-				new RandomSelectionStrategy(), 
+				new UCTSelectionStrategy(), 
 				new StaticDistributionSimulationStrategy(), 
 				new AveragingBackpropagationStrategy() );
 	}

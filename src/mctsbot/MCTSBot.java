@@ -5,7 +5,6 @@ import mctsbot.nodes.Node;
 import mctsbot.nodes.RootNode;
 import mctsbot.strategies.DynamicDistributionSimulationStrategy;
 import mctsbot.strategies.StrategyConfiguration;
-import mctsbot.strategies.UCTSelectionStrategy;
 
 import com.biotools.meerkat.Action;
 import com.biotools.meerkat.Card;
@@ -75,7 +74,7 @@ public class MCTSBot implements Player {
 		
 		
 		// Debugging stuff.
-		System.out.println("explorationTally = " + UCTSelectionStrategy.explorationTally);
+		/*System.out.println("explorationTally = " + UCTSelectionStrategy.explorationTally);
 		System.out.println("exploitationTally = " + UCTSelectionStrategy.exploitationTally);
 		System.out.println("exploration percentage = " + 
 				(100*UCTSelectionStrategy.explorationTally/
@@ -83,9 +82,9 @@ public class MCTSBot implements Player {
 								+UCTSelectionStrategy.exploitationTally)));
 		
 		UCTSelectionStrategy.exploitationTally = 0;
-		UCTSelectionStrategy.explorationTally = 0;
+		UCTSelectionStrategy.explorationTally = 0;*/
 		
-		System.out.print("Fold Tally = ");
+		/*System.out.print("Fold Tally = ");
 		for(int i=1; i<=4; i++) {
 			System.out.print(DynamicDistributionSimulationStrategy.foldTally[i] + " ");
 		}
@@ -101,7 +100,7 @@ public class MCTSBot implements Player {
 		for(int i=1; i<=4; i++) {
 			System.out.print(DynamicDistributionSimulationStrategy.raiseTally[i] + " ");
 		}
-		System.out.println();
+		System.out.println();*/
 		
 		
 		
@@ -206,7 +205,17 @@ public class MCTSBot implements Player {
 	}
 	
 	public void stageEvent(int stage) {
-		//System.out.println("stageEvent called, stage = " + stage);
+		//TODO: remove this
+		/*System.out.println("stageEvent called, stage = " + stage);
+		
+		for(int i=0; i<gi.getBoard().size(); i++) {
+			System.out.println("gi board" + i + " = " + gi.getBoard().getCard(i));
+		}
+		
+		for(int i=0; i<currentGameState.getTable().size(); i++) {
+			System.out.println("oldgamestate board" + i + " = " + 
+					currentGameState.getTable().getCard(i));
+		}*/
 		
 		if(stage>0) {
 			currentGameState = currentGameState.setTable(gi.getBoard());

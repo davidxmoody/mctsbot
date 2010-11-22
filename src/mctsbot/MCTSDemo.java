@@ -2,6 +2,7 @@ package mctsbot;
 
 import java.io.IOException;
 
+import mctsbot.actions.Action;
 import mctsbot.gamestate.GameState;
 import mctsbot.nodes.LeafNode;
 import mctsbot.nodes.Node;
@@ -15,17 +16,27 @@ import mctsbot.strategies.UCTSelectionStrategy;
 public class MCTSDemo  {
 	
 	public static void main(String[] args) throws IOException {
+		
 		final MCTSBot mctsbot = new MCTSBot();
-		final GameState gameState = GameState.randomDemo();
+		
 		final StrategyConfiguration config = new StrategyConfiguration(
 				new HighestEVActionSelectionStrategy(), 
 				new UCTSelectionStrategy(), 
 				new StaticDistributionSimulationStrategy(), 
 				new AveragingBackpropagationStrategy() );
-		final RootNode root = new RootNode(gameState, config);
 		
-		mctsbot.setConfig(config);
-		mctsbot.setCurrentGameState(gameState);
+		GameState gameState = GameState.randomDemo();
+		
+		while(gameState.isNextPlayerToAct()) 
+			gameState = gameState.doAction(Action.CALL);
+		
+		gameState = gameState.dealRandomCard().dealRandomCard().dealRandomCard().goToNextStage();
+		
+		while(!gameState.isBotNextPlayerToAct()) 
+			gameState = gameState.doAction(Action.CALL);
+		
+
+		final RootNode root = new RootNode(gameState, config);
 		
 		mctsbot.performIterations(root, 100);
 		
@@ -34,14 +45,15 @@ public class MCTSDemo  {
 		gameState.printDetails();
 		
 		
+		
 		//root.printDetails();
 
 		
 		Node currentNode = root;
 		
 		while(true) {
-			System.out.println("Current Node has " + 
-					currentNode.getChildren().size() + " children.");
+			System.out.println("Current Node is a " + currentNode.getClass().getSimpleName() + 
+					" and has " + currentNode.getChildren().size() + " children.");
 			System.out.println();
 			currentNode.printChildrensDetails();
 			
