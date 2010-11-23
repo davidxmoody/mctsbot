@@ -1,5 +1,6 @@
 package mctsbot.actions;
 
+//TODO: Make use of this class.
 public class AllInAction implements Action {
 
 	private final double amount;

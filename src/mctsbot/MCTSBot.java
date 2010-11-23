@@ -3,7 +3,6 @@ package mctsbot;
 import mctsbot.gamestate.GameState;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.RootNode;
-import mctsbot.strategies.StrategyConfiguration;
 import mctsbot.strategies.simulation.DynamicDistributionSimulationStrategy;
 
 import com.biotools.meerkat.Action;
@@ -17,25 +16,18 @@ public class MCTSBot implements Player {
 	private static final long THINKING_TIME = 500;
 	
 	private int seat;
-	@SuppressWarnings("unused")
-	private Card c1, c2;
 	private GameInfo gi;
-	@SuppressWarnings("unused")
-	private Preferences prefs;
 	
 	protected GameState currentGameState;
-	private StrategyConfiguration config;
+	private Config config;
 	
 	
 	public void init(Preferences prefs) {
-		this.prefs = prefs;
-		
-		// Create a new config. Maybe create if from prefs?
-		setConfig(StrategyConfiguration.getDefault());
+		setConfig(new Config(prefs));
 	}
 	
 	
-	public void setConfig(StrategyConfiguration config) {
+	public void setConfig(Config config) {
 		this.config = config;
 	}
 	
@@ -51,10 +43,7 @@ public class MCTSBot implements Player {
 	
 	
 	public void holeCards(Card c1, Card c2, int seat) {
-		this.c1 = new Card(c1.getIndex());
-		this.c2 = new Card(c2.getIndex());
 		this.seat = seat;
-		
 		currentGameState = currentGameState.holeCards(c1, c2, seat);
 	}
 	

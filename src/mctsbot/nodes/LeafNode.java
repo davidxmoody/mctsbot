@@ -1,11 +1,11 @@
 package mctsbot.nodes;
 
+import mctsbot.Config;
 import mctsbot.gamestate.GameState;
-import mctsbot.strategies.StrategyConfiguration;
 
 public class LeafNode extends Node {
 
-	public LeafNode(Node parent, GameState gameState, StrategyConfiguration config) {
+	public LeafNode(Node parent, GameState gameState, Config config) {
 		super(parent, gameState, config);
 	}
 

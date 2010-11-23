@@ -1,12 +1,12 @@
 package mctsbot.nodes;
 
+import mctsbot.Config;
 import mctsbot.gamestate.GameState;
-import mctsbot.strategies.StrategyConfiguration;
 
 
 public class RootNode extends ChoiceNode {
 
-	public RootNode(GameState gameState, StrategyConfiguration config) {
+	public RootNode(GameState gameState, Config config) {
 		super(null, gameState, config);
 	}
 	

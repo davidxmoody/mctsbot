@@ -2,8 +2,8 @@ package mctsbot.nodes;
 
 import java.util.LinkedList;
 
+import mctsbot.Config;
 import mctsbot.gamestate.GameState;
-import mctsbot.strategies.StrategyConfiguration;
 
 import com.biotools.meerkat.Card;
 import com.biotools.meerkat.Deck;
@@ -12,7 +12,7 @@ public class ChanceNode extends Node {
 	
 	Deck deck = null;
 
-	public ChanceNode(Node parent, GameState gameState, StrategyConfiguration config) {
+	public ChanceNode(Node parent, GameState gameState, Config config) {
 		super(parent, gameState, config);
 	}
 

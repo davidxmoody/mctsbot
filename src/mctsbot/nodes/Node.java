@@ -2,8 +2,8 @@ package mctsbot.nodes;
 
 import java.util.List;
 
+import mctsbot.Config;
 import mctsbot.gamestate.GameState;
-import mctsbot.strategies.StrategyConfiguration;
 
 public abstract class Node {
 	
@@ -14,9 +14,9 @@ public abstract class Node {
 	protected final GameState gameState;
 	protected List<Node> children;
 	
-	protected final StrategyConfiguration config;
+	protected final Config config;
 	
-	public Node(Node parent, GameState gameState, StrategyConfiguration config) {
+	public Node(Node parent, GameState gameState, Config config) {
 		this.parent = parent;
 		this.gameState = gameState;
 		this.config = config;
@@ -55,22 +55,23 @@ public abstract class Node {
 		return gameState;
 	}
 	
+	public Config getConfig() {
+		return config;
+	}
+	
 	public boolean isExpanded() {
 		return children!=null;
 	}
 	
 	public Node select() {
-		//System.out.println("select is being called");
 		return config.getSelectionStrategy().select(this);
 	}
 	
 	public void backpropagate(double expectedValue) {
-		//System.out.println("backpropagate is being called");
 		config.getBackpropagationStrategy().propagate(this, expectedValue);
 	}
 	
 	public double simulate() {
-		//System.out.println("simulate is being called");
 		return config.getSimulationStrategy().simulate(this);
 	}
 	

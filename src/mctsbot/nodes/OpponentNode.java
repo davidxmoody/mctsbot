@@ -1,12 +1,12 @@
 package mctsbot.nodes;
 
+import mctsbot.Config;
 import mctsbot.actions.Action;
 import mctsbot.gamestate.GameState;
-import mctsbot.strategies.StrategyConfiguration;
 
 public class OpponentNode extends PlayerNode {
 
-	public OpponentNode(Node parent, GameState gameState, StrategyConfiguration config) {
+	public OpponentNode(Node parent, GameState gameState, Config config) {
 		super(parent, gameState, config);
 	}
 

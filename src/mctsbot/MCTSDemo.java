@@ -7,7 +7,7 @@ import mctsbot.gamestate.GameState;
 import mctsbot.nodes.LeafNode;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.RootNode;
-import mctsbot.strategies.StrategyConfiguration;
+import mctsbot.opponentmodel.handrank.RandomHandRankOpponentModel;
 import mctsbot.strategies.actionselection.HighestEVActionSelectionStrategy;
 import mctsbot.strategies.backpropagation.AveragingBackpropagationStrategy;
 import mctsbot.strategies.selection.UCTSelectionStrategy;
@@ -19,11 +19,13 @@ public class MCTSDemo  {
 		
 		final MCTSBot mctsbot = new MCTSBot();
 		
-		final StrategyConfiguration config = new StrategyConfiguration(
+		final Config config = new Config(
 				new HighestEVActionSelectionStrategy(), 
 				new UCTSelectionStrategy(), 
 				new StaticDistributionSimulationStrategy(), 
-				new AveragingBackpropagationStrategy() );
+				new AveragingBackpropagationStrategy(), 
+				new RandomHandRankOpponentModel(), 
+				null );
 		
 		GameState gameState = GameState.randomDemo();
 		

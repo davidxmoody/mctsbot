@@ -10,8 +10,7 @@ import mctsbot.nodes.LeafNode;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.PlayerNode;
 import mctsbot.nodes.ShowdownNode;
-import mctsbot.opponentmodel.HandRankOpponentModel;
-import mctsbot.opponentmodel.RandomHandRankOpponentModel;
+import mctsbot.opponentmodel.handrank.HandRankOpponentModel;
 
 import com.biotools.meerkat.HandEvaluator;
 
@@ -23,9 +22,6 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 	
 	
 	private static final Random random = new Random();
-	
-	private static final HandRankOpponentModel handRankOpponentModel = 
-		new RandomHandRankOpponentModel();
 
 	public double simulate(Node node) {
 		
@@ -86,6 +82,8 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 	 */
 	private double simulateShowdown(ShowdownNode showdownNode) {
 		final GameState gameState = showdownNode.getGameState();
+		final HandRankOpponentModel handRankOpponentModel = 
+			showdownNode.getConfig().getHandRankOpponentModel();
 		
 		// Calculate the bot's hand rank.
 		final int botHandRank = HandEvaluator.rankHand(

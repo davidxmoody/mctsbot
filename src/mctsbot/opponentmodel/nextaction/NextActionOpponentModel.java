@@ -1,4 +1,4 @@
-package mctsbot.opponentmodel;
+package mctsbot.opponentmodel.nextaction;
 
 import mctsbot.nodes.OpponentNode;
 
