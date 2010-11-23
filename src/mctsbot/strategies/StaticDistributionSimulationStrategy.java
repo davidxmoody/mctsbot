@@ -10,8 +10,9 @@ import mctsbot.nodes.LeafNode;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.PlayerNode;
 import mctsbot.nodes.ShowdownNode;
+import mctsbot.opponentmodel.HandRankOpponentModel;
+import mctsbot.opponentmodel.RandomHandRankOpponentModel;
 
-import com.biotools.meerkat.Deck;
 import com.biotools.meerkat.HandEvaluator;
 
 public class StaticDistributionSimulationStrategy implements SimulationStrategy {
@@ -22,6 +23,9 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 	
 	
 	private static final Random random = new Random();
+	
+	private static final HandRankOpponentModel handRankOpponentModel = 
+		new RandomHandRankOpponentModel();
 
 	public double simulate(Node node) {
 		
@@ -89,19 +93,12 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 		
 		// Work out how many opponents there are.
 		final int noOfOpponents = gameState.getNoOfActivePlayers()-1;
-		
-		// Create a new Deck from gameState.
-		final Deck deck = gameState.createDeck();
-		
+
 		// For each opponent, deal them two random, non-taken cards and work 
 		// out their hand rank. If it is the maximum so far then record it.
 		int maxOpponentHandRank = 0;
 		for(int i=0; i<noOfOpponents; i++) {
-			final int opponentHandRank = HandEvaluator.rankHand(
-					deck.extractRandomCard(), 
-					deck.extractRandomCard(), 
-					gameState.getTable());
-			
+			final int opponentHandRank = handRankOpponentModel.getRank(showdownNode, 0);
 			if(opponentHandRank>maxOpponentHandRank) maxOpponentHandRank = opponentHandRank;
 		}
 		
@@ -113,9 +110,6 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 		
 		return expectedValue;
 	}
-	
-	
-	
 	
 	
 	

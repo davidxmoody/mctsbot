@@ -39,7 +39,7 @@ public class StrategyConfiguration {
 		return new StrategyConfiguration(
 				new HighestEVActionSelectionStrategy(), 
 				new UCTSelectionStrategy(), 
-				new StaticDistributionSimulationStrategy(), 
+				new AveragingSimulationStrategy(new StaticDistributionSimulationStrategy(), 10), 
 				new AveragingBackpropagationStrategy() );
 	}
 	

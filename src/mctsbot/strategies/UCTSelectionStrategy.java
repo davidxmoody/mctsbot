@@ -13,7 +13,7 @@ public class UCTSelectionStrategy implements SelectionStrategy {
 	public static double exploitationTally = 0;
 	
 	//TODO: find a good value for C.
-	public static final double C = 5;
+	public static final double C = 0.1;
 	
 	private static final Random random = new Random();
 	
@@ -67,15 +67,7 @@ public class UCTSelectionStrategy implements SelectionStrategy {
 			if(child.getExpectedValue()>maxValue) {
 				maxNode = child;
 				maxValue = child.getExpectedValue();
-			}/* else if(child.getExpectedValue()==maxValue) {
-				
-				//System.out.println("two children have the same max value");
-				
-				if(random.nextInt(2)==0) {
-					maxNode = child;
-					maxValue = child.getExpectedValue();
-				}
-			}*/
+			}
 		}
 		
 		if(maxNode!=returnNode) {
