@@ -1,4 +1,4 @@
-package mctsbot.strategies;
+package mctsbot.strategies.simulation;
 
 import mctsbot.nodes.Node;
 

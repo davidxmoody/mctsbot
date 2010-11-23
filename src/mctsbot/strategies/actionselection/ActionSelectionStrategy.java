@@ -1,4 +1,4 @@
-package mctsbot.strategies;
+package mctsbot.strategies.actionselection;
 
 import mctsbot.actions.Action;
 import mctsbot.nodes.RootNode;

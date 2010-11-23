@@ -7,11 +7,11 @@ import mctsbot.gamestate.GameState;
 import mctsbot.nodes.LeafNode;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.RootNode;
-import mctsbot.strategies.AveragingBackpropagationStrategy;
-import mctsbot.strategies.HighestEVActionSelectionStrategy;
-import mctsbot.strategies.StaticDistributionSimulationStrategy;
 import mctsbot.strategies.StrategyConfiguration;
-import mctsbot.strategies.UCTSelectionStrategy;
+import mctsbot.strategies.actionselection.HighestEVActionSelectionStrategy;
+import mctsbot.strategies.backpropagation.AveragingBackpropagationStrategy;
+import mctsbot.strategies.selection.UCTSelectionStrategy;
+import mctsbot.strategies.simulation.StaticDistributionSimulationStrategy;
 
 public class MCTSDemo  {
 	

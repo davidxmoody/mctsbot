@@ -3,8 +3,8 @@ package mctsbot;
 import mctsbot.gamestate.GameState;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.RootNode;
-import mctsbot.strategies.DynamicDistributionSimulationStrategy;
 import mctsbot.strategies.StrategyConfiguration;
+import mctsbot.strategies.simulation.DynamicDistributionSimulationStrategy;
 
 import com.biotools.meerkat.Action;
 import com.biotools.meerkat.Card;

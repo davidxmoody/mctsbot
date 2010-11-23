@@ -1,4 +1,4 @@
-package mctsbot.strategies;
+package mctsbot.strategies.backpropagation;
 
 import mctsbot.nodes.Node;
 

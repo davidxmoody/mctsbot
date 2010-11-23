@@ -1,5 +1,10 @@
 package mctsbot.strategies;
 
+import mctsbot.strategies.actionselection.*;
+import mctsbot.strategies.backpropagation.*;
+import mctsbot.strategies.selection.*;
+import mctsbot.strategies.simulation.*;
+
 public class StrategyConfiguration {
 	
 	private final ActionSelectionStrategy actionSelectionStrategy;

@@ -1,4 +1,4 @@
-package mctsbot.strategies;
+package mctsbot.strategies.selection;
 
 import java.util.Random;
 
