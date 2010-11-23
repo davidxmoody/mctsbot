@@ -2,6 +2,10 @@ package simplebot;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
@@ -26,6 +30,14 @@ import com.biotools.meerkat.util.Preferences;
  */
 public class SimpleBot implements Player {
    private static final String ALWAYS_CALL_MODE = "ALWAYS_CALL_MODE";
+   
+   private static final String LOGGING_MODE = "LOGGING_MODE";
+   private static final String LOG_FILE = "LOG_FILE";
+   
+   private BufferedWriter writer = null;
+   
+   private int timesRaised = 0;
+   private int timesCalled = 0;
 
    private int ourSeat;       // our seat for the current hand
    private Card c1, c2;       // our hole cards
@@ -33,6 +45,74 @@ public class SimpleBot implements Player {
    private Preferences prefs; // the configuration options for this bot
       
    public SimpleBot() { }  
+   
+   // All of my methods are at the top.
+   
+   public boolean getLoggingMode() {
+	   return prefs.getBooleanPreference(LOGGING_MODE, false);
+   }
+   
+   public BufferedWriter getWriter() {
+	   try {
+		   if(writer==null) {
+			   final String fileLocation = 
+				   prefs.getPreference(LOG_FILE, "S:\\Workspace\\MCTSBot\\weka\\default.txt");
+			   
+			   //System.out.println(fileLocation);
+			   
+			   final File loggingFile = new File(fileLocation);
+			   loggingFile.createNewFile();
+			   writer = new BufferedWriter(new FileWriter(loggingFile, true));
+		   }
+	   } catch (IOException e) {
+		   e.printStackTrace();
+		   throw new RuntimeException();
+	   }
+	   return writer;
+   }
+   
+   protected void finalize() throws Throwable {
+	   if(writer!=null) writer.close();
+   }
+   
+   // remember: c1 and c2 are the cards of the player showing not of SimpleBot.
+   public void showdownEvent(int seat, Card c1, Card c2) {
+	   if(seat==ourSeat) {
+		   if(getLoggingMode()) {
+			   
+			   final int rank = HandEvaluator.rankHand(c1, c2, gi.getBoard());
+			   
+			   //System.out.println("about to write to file:");
+			   //System.out.println(timesRaised + "," + timesCalled + "," + rank + "\r");
+			   
+			   try {
+				   getWriter().write(timesRaised + "," + timesCalled + "," + rank + "\r");
+				   getWriter().flush();
+				   
+			   } catch (IOException e) {
+				   e.printStackTrace();
+				   throw new RuntimeException();
+			   }
+			   
+		   }
+	   }
+   }
+   
+   public void logAction(Action action) {
+	   if(action.isBetOrRaise()) {
+ 		  timesRaised++;
+ 	  } else if(action.isCheckOrCall()) {
+ 		  timesCalled++;
+ 	  }
+   }
+   
+   
+   
+   
+   
+   
+   
+   
    
    /**
     * An event called to tell us our hole cards and seat number
@@ -44,6 +124,10 @@ public class SimpleBot implements Player {
       this.c1 = c1;
       this.c2 = c2;
       this.ourSeat = seat;
+      
+      timesCalled = 0;
+      timesRaised = 0;
+      
    }
 
    /**
@@ -55,13 +139,17 @@ public class SimpleBot implements Player {
       double toCall = gi.getAmountToCall(ourSeat);
       
       if (getAlwaysCallMode()) {
-         return Action.checkOrFoldAction(toCall);
+         return Action.callAction(toCall);
       }
 
       if (gi.isPreFlop()) {
-         return preFlopAction();
+    	  final Action action = preFlopAction();
+    	  logAction(action);
+    	  return action;
       } else  {
-         return postFlopAction();
+         final Action action = postFlopAction();
+         logAction(action);
+         return action;
       }
    }
    
@@ -143,11 +231,11 @@ public class SimpleBot implements Player {
     * @param c1 the first hole card shown
     * @param c2 the second hole card shown
     */
-   public void showdownEvent(int seat, Card c1, Card c2) {}
+   //public void showdownEvent(int seat, Card c1, Card c2) {}
 
    /**
     * A new game has been started.
-    * @param gi the game stat information
+    * @param gi the game start information
     */
    public void gameStartEvent(GameInfo gInfo) {
       this.gi = gInfo;

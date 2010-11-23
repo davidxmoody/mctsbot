@@ -17,7 +17,6 @@ public class UCTSelectionStrategy implements SelectionStrategy {
 	
 	private static final Random random = new Random();
 	
-	//TODO: remove dependency on other selection strategy and just copy code to this class.
 	private static final RandomSelectionStrategy randomSelectionStrategy = 
 		new RandomSelectionStrategy();
 
