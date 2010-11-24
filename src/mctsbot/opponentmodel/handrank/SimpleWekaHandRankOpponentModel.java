@@ -7,18 +7,20 @@ import java.io.FileReader;
 import java.io.FileWriter;
 
 import mctsbot.gamestate.GameState;
+import mctsbot.gamestate.Player;
 import mctsbot.nodes.ShowdownNode;
 import weka.classifiers.trees.M5P;
+import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
+
+import com.biotools.meerkat.Holdem;
 
 public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 	
 	private static final String FILE_LOCATION = "S:\\Workspace\\MCTSBot\\weka\\simplehrom.arff";
 	
 	private final M5P classifier;
-	
-	private Instance testInstance = null;
 	
 	
 	public SimpleWekaHandRankOpponentModel() throws Exception {
@@ -29,11 +31,7 @@ public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 		
 		final Instances data = new Instances(new BufferedReader(new FileReader(FILE_LOCATION)));
 		
-		data.setClassIndex(2);
-		
-		
-		testInstance = data.firstInstance();
-		
+		data.setClassIndex(data.numAttributes()-1);
 		
 		
 		classifier = new M5P();
@@ -43,10 +41,23 @@ public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 		classifier.buildClassifier(data);
 		
 		
+		
+		
+		
+		
 	}
 	
 	
 	private Instance getInstance(GameState gameState, int seat) {
+		
+		final Player player = gameState.getPlayer(seat);
+		
+		final Instance instance = new DenseInstance(17);
+		instance.setValue(0, "");
+		
+		
+		
+		
 		return null;
 	}
 
@@ -57,11 +68,6 @@ public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 			final Instance instance = getInstance(showdownNode.getGameState(), oppSeat);
 			
 			final double result = classifier.classifyInstance(instance);
-			
-			
-			
-			
-			
 			
 			return (int)result;
 			
@@ -78,17 +84,27 @@ public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 			if(file.createNewFile()) {
 				// Create the default file.
 				
-				final BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+				final BufferedWriter w = new BufferedWriter(new FileWriter(file));
 				
-				writer.write("@RELATION SimpleHROppModel\r");
-				writer.write("\r");
-				writer.write("@ATTRIBUTE times_raised NUMERIC\r");
-				writer.write("@ATTRIBUTE times_called NUMERIC\r");
-				writer.write("@ATTRIBUTE hand_rank NUMERIC\r");
-				writer.write("\r");
-				writer.write("@DATA\r");
+				w.write("@RELATION SimpleHROppModel\r");
+				w.write("\r");
+				w.write("@ATTRIBUTE preflop_actions {c,r,rr}\r");
+				w.write("@ATTRIBUTE flop_actions {c,r,rr}\r");
+				w.write("@ATTRIBUTE turn_actions {c,r,rr}\r");
+				w.write("@ATTRIBUTE river_actions {c,r,rr}\r");
+				w.write("@ATTRIBUTE c_card_1_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
+				w.write("@ATTRIBUTE c_card_2_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
+				w.write("@ATTRIBUTE c_card_3_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
+				w.write("@ATTRIBUTE c_card_4_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
+				w.write("@ATTRIBUTE c_card_5_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
+				w.write("@ATTRIBUTE num_suited_flop {1,2,3}\r");
+				w.write("@ATTRIBUTE num_suited_turn {1,2,3,4,22}\r");
+				w.write("@ATTRIBUTE num_suited_river {0,3,4,5}\r");
+				w.write("@ATTRIBUTE hand_rank NUMERIC\r");
+				w.write("\r");
+				w.write("@DATA\r");
 				
-				writer.close();
+				w.close();
 				
 			} // else it already existed.
 			
@@ -104,11 +120,10 @@ public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 		
 		getDataFile();
 		
-		final SimpleWekaHandRankOpponentModel swhrom = new SimpleWekaHandRankOpponentModel();
-		
-		System.out.println(swhrom.testInstance);
-		
-		System.out.println(swhrom.classifier.classifyInstance(swhrom.testInstance));
+		System.out.println(Holdem.PREFLOP);
+		System.out.println(Holdem.FLOP);
+		System.out.println(Holdem.TURN);
+		System.out.println(Holdem.RIVER);
 		
 		
 		
