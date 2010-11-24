@@ -86,7 +86,7 @@ public class GameState implements Cloneable {
 		//newGameState.seatMap = new TreeMap<Integer, Player>();
 		
 		for(int i=0; i<players; i++) {
-			newGameState.activePlayers.add(new Player(1000, 0, 0, new LinkedList<Action>(), i));
+			newGameState.activePlayers.add(new Player(1000, i));
 		}
 		
 		newGameState = newGameState.holeCards(c1, c2, botSeat);
@@ -150,7 +150,7 @@ public class GameState implements Cloneable {
 		do {
 			PlayerInfo pi = gi.getPlayer(s);
 			Player newPlayer = new Player(
-					pi.getBankRoll(), 0.0, 0.0, new LinkedList<Action>(), s);
+					pi.getBankRoll(), s);
 			newGameState.activePlayers.add(newPlayer);
 			//newGameState.seatMap.put(s, newPlayer);
 		} while((s=gi.nextActivePlayer(s))!=firstSeat);
@@ -175,7 +175,7 @@ public class GameState implements Cloneable {
 				
 		newGameState.activePlayers = new LinkedList<Player>(activePlayers);
 		newGameState.activePlayers.remove(player);
-		newGameState.activePlayers.add(player.doCallOrRaiseAction(smallBlindAction));
+		newGameState.activePlayers.add(player.doCallOrRaiseAction(smallBlindAction, 0));
 		
 		newGameState.nextPlayerToAct = newGameState.getNextActivePlayerSeat(seat);
 		
@@ -197,7 +197,7 @@ public class GameState implements Cloneable {
 				
 		newGameState.activePlayers = new LinkedList<Player>(activePlayers);
 		newGameState.activePlayers.remove(player);
-		newGameState.activePlayers.add(player.doCallOrRaiseAction(bigBlindAction));
+		newGameState.activePlayers.add(player.doCallOrRaiseAction(bigBlindAction, 0));
 		
 		newGameState.nextPlayerToAct = newGameState.getNextActivePlayerSeat(seat);
 		
@@ -239,7 +239,7 @@ public class GameState implements Cloneable {
 			
 			newGameState.activePlayers = new LinkedList<Player>(activePlayers);
 			newGameState.activePlayers.remove(nextPlayer);
-			newGameState.activePlayers.add(nextPlayer.doCallOrRaiseAction(raiseAction));
+			newGameState.activePlayers.add(nextPlayer.doCallOrRaiseAction(raiseAction, stage));
 			
 			newGameState.committedPlayers = 1;
 			
@@ -261,7 +261,7 @@ public class GameState implements Cloneable {
 			
 			newGameState.activePlayers = new LinkedList<Player>(activePlayers);
 			newGameState.activePlayers.remove(nextPlayer);
-			newGameState.activePlayers.add(nextPlayer.doCallOrRaiseAction(callAction));
+			newGameState.activePlayers.add(nextPlayer.doCallOrRaiseAction(callAction, stage));
 			
 			newGameState.committedPlayers++;
 			

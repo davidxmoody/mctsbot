@@ -6,44 +6,91 @@ import java.util.List;
 import mctsbot.actions.Action;
 import mctsbot.actions.FoldAction;
 
-public class Player {
+public class Player implements Cloneable {
 	
-	private final double money;
-	private final List<Action> pastActions;
-	private final int seat;
+	private double money;
+	private List<Action> preflopActions;
+	private List<Action> flopActions;
+	private List<Action> turnActions;
+	private List<Action> riverActions;
+	private int seat;
 	
-	private final double amountInPot;
-	private final double amountInPotInCurrentRound;
+	private double amountInPot;
+	private double amountInPotInCurrentRound;
 	
-	protected Player(double money, double amountInPot, 
-			double amountInPotInCurrentRound, 
-			List<Action> pastActions, int seat) {
+	private Player() { }
+	
+	protected Player(double money, int seat) {
 		this.money = money;
-		this.amountInPot = amountInPot;
-		this.amountInPotInCurrentRound = amountInPotInCurrentRound;
-		this.pastActions = pastActions;
 		this.seat = seat;
+		this.amountInPot = 0;
+		this.amountInPotInCurrentRound = 0;
+		this.preflopActions = null;
+		this.flopActions = null;
+		this.turnActions = null;
+		this.riverActions = null;
+	}
+	
+	public List<Action> getActions(int stage) {
+		switch (stage) {
+		case GameState.PREFLOP:
+			return preflopActions;
+		case GameState.FLOP:
+			return flopActions;
+		case GameState.TURN:
+			return turnActions;
+		case GameState.RIVER:
+			return riverActions;
+
+		default:
+			return null;
+		}
+	}
+	
+	public void setActions(List<Action> actions, int stage) {
+		switch (stage) {
+		case GameState.PREFLOP:
+			this.preflopActions= actions ;
+		case GameState.FLOP:
+			this.flopActions = actions;
+		case GameState.TURN:
+			this.turnActions= actions ;
+		case GameState.RIVER:
+			this.riverActions = actions;
+
+		default:
+			break;
+		}
 	}
 	
 	
-	public Player doCallOrRaiseAction(Action action) /*throws AllInException*/ {
-		//if(money<=action.getAmount()) throw new AllInException();
-		
+	public Player doCallOrRaiseAction(Action action, int stage) /*throws AllInException*/ {
 		//This allows players to have negative amounts of money.
 		//TODO: make it so that an ALLInException will be thrown if needed.
-		final List<Action> newPastActions = new LinkedList<Action>(pastActions);
-		newPastActions.add(action);
 		
-		return new Player(money-action.getAmount(), 
-				amountInPot+action.getAmount(), 
-				amountInPotInCurrentRound+action.getAmount(), 
-				newPastActions, seat);
+		final Player newPlayer = this.clone();
+		
+		final List<Action> newPastActions = new LinkedList<Action>(getActions(stage));
+		newPastActions.add(action);
+		newPlayer.setActions(newPastActions, stage);
+		
+		newPlayer.money = money-action.getAmount();
+		newPlayer.amountInPot = amountInPot + action.getAmount();
+		newPlayer.amountInPotInCurrentRound = amountInPotInCurrentRound + action.getAmount();
+		
+		return newPlayer;
 	}
 	
-	public Player doFoldAction(FoldAction action) {
-		final List<Action> newPastActions = new LinkedList<Action>(pastActions);
+	public Player doFoldAction(FoldAction action, int stage) {
+		final Player newPlayer = this.clone();
+		
+		final List<Action> newPastActions = new LinkedList<Action>(getActions(stage));
 		newPastActions.add(action);
-		return new Player(money, 0.0, 0.0, newPastActions, seat);
+		newPlayer.setActions(newPastActions, stage);
+		
+		newPlayer.amountInPotInCurrentRound = 0.0;
+		
+		return newPlayer;
 	}
 	
 	public int getSeat() {
@@ -54,10 +101,6 @@ public class Player {
 		return money;
 	}
 	
-	public List<Action> getActions() {
-		return pastActions;
-	}
-
 	public double getAmountInPot() {
 		return amountInPot;
 	}
@@ -67,7 +110,26 @@ public class Player {
 	}
 	
 	public Player newRound() {
-		return new Player(money, amountInPot, 0.0, pastActions, seat);
+		final Player newPlayer = this.clone();
+		
+		newPlayer.amountInPotInCurrentRound = 0;
+
+		return newPlayer;
+	}
+	
+	public Player clone() {
+		final Player newPlayer = new Player();
+		
+		newPlayer.money = money;
+		newPlayer.seat = seat;
+		newPlayer.amountInPot = amountInPot;
+		newPlayer.amountInPotInCurrentRound = amountInPotInCurrentRound;
+		newPlayer.preflopActions = preflopActions;
+		newPlayer.flopActions = flopActions;
+		newPlayer.turnActions = turnActions;
+		newPlayer.riverActions = riverActions;
+		
+		return newPlayer;
 	}
 
 }
