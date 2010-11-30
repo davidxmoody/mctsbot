@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
-Main-Class: mctsbot.opponentmodel.handrank.SimpleWekaHandRankOpponentModel
+Main-Class: mctsbot.opponentmodel.SimpleWekaHandRankOpponentModel
 Class-Path: weka336.jar
 

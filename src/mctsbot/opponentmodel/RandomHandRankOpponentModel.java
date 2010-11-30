@@ -1,4 +1,4 @@
-package mctsbot.opponentmodel.handrank;
+package mctsbot.opponentmodel;
 
 import mctsbot.gamestate.GameState;
 import mctsbot.nodes.ShowdownNode;

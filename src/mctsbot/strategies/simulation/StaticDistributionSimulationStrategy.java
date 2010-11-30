@@ -10,7 +10,7 @@ import mctsbot.nodes.LeafNode;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.PlayerNode;
 import mctsbot.nodes.ShowdownNode;
-import mctsbot.opponentmodel.handrank.HandRankOpponentModel;
+import mctsbot.opponentmodel.HandRankOpponentModel;
 
 import com.biotools.meerkat.HandEvaluator;
 

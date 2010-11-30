@@ -7,7 +7,7 @@ import mctsbot.gamestate.GameState;
 import mctsbot.nodes.LeafNode;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.RootNode;
-import mctsbot.opponentmodel.handrank.RandomHandRankOpponentModel;
+import mctsbot.opponentmodel.RandomHandRankOpponentModel;
 import mctsbot.strategies.actionselection.HighestEVActionSelectionStrategy;
 import mctsbot.strategies.backpropagation.AveragingBackpropagationStrategy;
 import mctsbot.strategies.selection.UCTSelectionStrategy;

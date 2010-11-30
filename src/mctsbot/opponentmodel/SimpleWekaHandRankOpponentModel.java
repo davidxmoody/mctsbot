@@ -1,4 +1,4 @@
-package mctsbot.opponentmodel.handrank;
+package mctsbot.opponentmodel;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
