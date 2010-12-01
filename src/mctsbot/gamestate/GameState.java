@@ -19,6 +19,7 @@ import com.biotools.meerkat.PlayerInfo;
 
 public class GameState implements Cloneable {
 	
+	// Don't change these constants without checking all other uses of them.
 	public static final int PREFLOP = 1;
 	public static final int FLOP = 2;
 	public static final int TURN = 3;
@@ -35,9 +36,9 @@ public class GameState implements Cloneable {
 	private double pot;
 	private Hand table;
 	
-	//TODO: Check that seat map is updated correctly
 	//private Map<Integer, Player> seatMap;
 	private List<Player> activePlayers;
+	private List<Player> inactivePlayers;
 	
 	private static int dealerSeat;
 	
@@ -61,7 +62,7 @@ public class GameState implements Cloneable {
 	//TODO: remove unnecessary methods
 	
 	
-	private GameState() { }
+	protected GameState() { }
 	
 	
 	public static GameState demo(Card c1, Card c2, int botSeat, int dealerSeat, int players) {
@@ -82,6 +83,7 @@ public class GameState implements Cloneable {
 		newGameState.table = new Hand();
 		newGameState.nextPlayerToAct = 0;
 		newGameState.activePlayers = new LinkedList<Player>();
+		newGameState.inactivePlayers = new LinkedList<Player>();
 		newGameState.committedPlayers = 0;
 		//newGameState.seatMap = new TreeMap<Integer, Player>();
 		
@@ -141,6 +143,7 @@ public class GameState implements Cloneable {
 		newGameState.table = new Hand();
 		newGameState.nextPlayerToAct = gi.getSmallBlindSeat();
 		newGameState.activePlayers = new LinkedList<Player>();
+		newGameState.inactivePlayers = new LinkedList<Player>();
 		newGameState.committedPlayers = 0;
 		//newGameState.seatMap = new TreeMap<Integer, Player>();
 		
@@ -279,6 +282,9 @@ public class GameState implements Cloneable {
 			
 			newGameState.activePlayers = new LinkedList<Player>(activePlayers);
 			newGameState.activePlayers.remove(nextPlayer);
+			newGameState.inactivePlayers = new LinkedList<Player>(inactivePlayers);
+			newGameState.inactivePlayers.add(
+					nextPlayer.doFoldAction(new FoldAction(), stage));
 			
 			newGameState.nextPlayerToAct = 
 				(newGameState.isNextPlayerToAct()) ? 
@@ -417,9 +423,10 @@ public class GameState implements Cloneable {
 	
 	
 	public Player getPlayer(int seat) {
-		for(Player p:activePlayers) {
+		for(Player p:activePlayers) 
 			if(p.getSeat()==seat) return p;
-		}
+		for(Player p:inactivePlayers) 
+			if(p.getSeat()==seat) return p;
 		return null;
 		//return seatMap.get(seat);
 	}
@@ -476,6 +483,10 @@ public class GameState implements Cloneable {
 		return getPlayer(botSeat)!=null;
 	}
 	
+	public List<Player> getInactivePlayers() {
+		return inactivePlayers;
+	}
+	
 	public GameState goToNextStage() {
 		
 		/*System.out.println("goToNextStage called, current stage = " + 
@@ -521,6 +532,7 @@ public class GameState implements Cloneable {
 		newGameState.pot = pot;
 		newGameState.table = table;
 		newGameState.activePlayers = activePlayers;
+		newGameState.inactivePlayers = inactivePlayers;
 		newGameState.nextPlayerToAct = nextPlayerToAct;
 		newGameState.lastAction = lastAction;
 		newGameState.betSize = betSize;

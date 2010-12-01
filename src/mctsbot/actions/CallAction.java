@@ -1,8 +1,8 @@
 package mctsbot.actions;
 
-
-
 public class CallAction implements Action {
+	
+	private static final long serialVersionUID = 1L;
 	
 	private final double amount;
 	

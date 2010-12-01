@@ -18,7 +18,7 @@ public class Player implements Cloneable {
 	private double amountInPot;
 	private double amountInPotInCurrentRound;
 	
-	private Player() { }
+	protected Player() { }
 	
 	protected Player(double money, int seat) {
 		this.money = money;
@@ -70,7 +70,8 @@ public class Player implements Cloneable {
 		
 		final Player newPlayer = this.clone();
 		
-		final List<Action> newPastActions = new LinkedList<Action>(getActions(stage));
+		List<Action> newPastActions = new LinkedList<Action>();
+		if(getActions(stage)!=null) newPastActions.addAll(getActions(stage));
 		newPastActions.add(action);
 		newPlayer.setActions(newPastActions, stage);
 		

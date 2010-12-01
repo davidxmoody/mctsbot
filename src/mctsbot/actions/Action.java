@@ -1,6 +1,8 @@
 package mctsbot.actions;
 
-public interface Action {
+import java.io.Serializable;
+
+public interface Action extends Serializable {
 	
 	public static final int RAISE = 1;
 	public static final int CALL = 2;
