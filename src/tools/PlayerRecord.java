@@ -123,16 +123,16 @@ public class PlayerRecord implements Serializable {
 	}
 	
 	public void print() {
-		System.out.print(" " + seat + ") " + name + (dealer?" * ":"   "));
+		System.out.print(" " + seat + ") " + name + (dealer?" *  ":"    "));
 		
 		System.out.println(getC1().toString() + " " + getC2().toString());
 		
-		System.out.print("  Actions: ");
+		System.out.print("  Actions:");
 		for(int i=GameState.PREFLOP; i<=GameState.RIVER; i++) {
 			List<Action> actions = getActions(i);
 			if(actions==null) break;
-			for(Action action: actions) System.out.print(action.getDescription() + "  ");
-			System.out.print("|  ");
+			if(i!=GameState.PREFLOP) System.out.print(" |");
+			for(Action action: actions) System.out.print(" " + action.getDescription());
 		}
 		System.out.println();
 	}

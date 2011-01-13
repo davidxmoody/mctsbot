@@ -13,15 +13,15 @@ public class GameRecord implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	private int stage = 0;
-	private int[] tableCardIndexes = null;
+	protected int stage = -1;
+	private int[] tableCardIndexes = new int[0];
 	private List<PlayerRecord> players = new LinkedList<PlayerRecord>();
 
 	protected GameRecord() { }
 	
+	//TODO
 	/*public GameRecord(GameState gameState) {
-		//TODO
-		
+	 	
 		// First check to see whether gameState represents an ended game.
 		if(!(gameState.getStage()==GameState.SHOWDOWN || gameState.getNoOfActivePlayers()<2)) 
 			throw new RuntimeException("");
@@ -106,8 +106,9 @@ public class GameRecord implements Serializable {
 		
 		System.out.print("Table size = " + tableCardIndexes.length + " (");
 		for(int i=0; i<tableCardIndexes.length; i++) 
-			System.out.print(Card.getRankChar(Card.getRank(tableCardIndexes[i])) + 
-							 Card.getSuitChar(Card.getSuit(tableCardIndexes[i])));
+			System.out.print((i==0?"":" ") + 
+					Card.getRankChar(Card.getRank(tableCardIndexes[i])) + 
+					Card.getSuitChar(Card.getSuit(tableCardIndexes[i])));
 		System.out.println(")");
 		
 		System.out.println("Number of players = " + players.size());
@@ -116,7 +117,52 @@ public class GameRecord implements Serializable {
 		System.out.println();
 	}
 	
-	
+	public void checkGame() throws Exception {
+		
+		if(stage==GameState.PREFLOP) {
+			if(tableCardIndexes.length!=0) throw new Exception(
+					"wrong number of table cards for the current stage (preflop): " 
+						+ tableCardIndexes.length);
+			
+		} else if(stage==GameState.FLOP) {
+			if(tableCardIndexes.length!=3) throw new Exception(
+				"wrong number of table cards for the current stage (flop): " 
+					+ tableCardIndexes.length);
+			
+		} else if(stage==GameState.TURN) {
+			if(tableCardIndexes.length!=4) throw new Exception(
+					"wrong number of table cards for the current stage (turn): " 
+						+ tableCardIndexes.length);
+			
+		} else if(stage==GameState.RIVER) {
+			if(tableCardIndexes.length!=5) throw new Exception(
+					"wrong number of table cards for the current stage (river): " 
+						+ tableCardIndexes.length);
+			
+		} else if(stage==GameState.SHOWDOWN) {
+			if(tableCardIndexes.length!=5) throw new Exception(
+					"wrong number of table cards for the current stage (showdown): " 
+						+ tableCardIndexes.length);
+			
+		} else {
+			throw new Exception("invalid stage: " + stage);
+		}
+		
+		if(players.size()<2) throw new Exception("too few players: " + players.size());
+		if(players.size()>12) throw new Exception("too many players: " + players.size());
+		
+		for(int i=0; i<players.size(); i++) {
+			for(int j=i+1; j<players.size(); j++) {
+				if(players.get(i).getName().equals(players.get(j).getName())) {
+					throw new Exception("two players have the same name: " + 
+							players.get(i).getName() + " and " + players.get(j).getName());
+				}
+			}
+		}
+		
+		// TODO: write more tests
+		
+	}
 	
 	
 
