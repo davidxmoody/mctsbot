@@ -9,7 +9,7 @@ public class FoldAction implements Action {
 	}
 	
 	public String getDescription() {
-		return "Fold Action";
+		return "Fold";
 	}
 
 }

@@ -7,5 +7,9 @@ public class BigBlindAction extends RaiseAction {
 	public BigBlindAction(double amount) {
 		super(amount);
 	}
+	
+	public String getDescription() {
+		return "Big_Blind_" + getAmount();
+	}
 
 }

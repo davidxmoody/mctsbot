@@ -15,7 +15,7 @@ public class RaiseAction implements Action {
 	}
 	
 	public String getDescription() {
-		return "Raise Action " + amount;
+		return "Raise_" + amount;
 	}
 
 }

@@ -20,11 +20,11 @@ import com.biotools.meerkat.PlayerInfo;
 public class GameState implements Cloneable {
 	
 	// Don't change these constants without checking all other uses of them.
-	public static final int PREFLOP = 1;
-	public static final int FLOP = 2;
-	public static final int TURN = 3;
-	public static final int RIVER = 4;
-	public static final int SHOWDOWN = 5;
+	public static final int PREFLOP = 0;
+	public static final int FLOP = 1;
+	public static final int TURN = 2;
+	public static final int RIVER = 3;
+	public static final int SHOWDOWN = 4;
 	
 	private static final int MAX_ALLOWED_BET_MULTIPLE = 4;
 	

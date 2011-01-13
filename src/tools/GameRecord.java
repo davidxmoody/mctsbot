@@ -13,13 +13,13 @@ public class GameRecord implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	private int stageReached = 0;
+	private int stage = 0;
 	private int[] tableCardIndexes = null;
 	private List<PlayerRecord> players = new LinkedList<PlayerRecord>();
 
 	protected GameRecord() { }
 	
-	public GameRecord(GameState gameState) {
+	/*public GameRecord(GameState gameState) {
 		//TODO
 		
 		// First check to see whether gameState represents an ended game.
@@ -27,14 +27,14 @@ public class GameRecord implements Serializable {
 			throw new RuntimeException("");
 		
 		// Set variables in GameRecord.
-		stageReached = gameState.getStage();
+		stage = gameState.getStage();
 		
 		// Create the players
 		
-	}
+	}*/
 	
 	protected void setStageReached(int stageReached) {
-		this.stageReached = stageReached;
+		this.stage = stageReached;
 	}
 	
 	protected void setTable(int[] tableCardIndexes) {
@@ -52,7 +52,7 @@ public class GameRecord implements Serializable {
 		
 		table.clearBadCards();
 		final int tableSize = table.size();
-		if((tableSize==0 || tableSize==3 || tableSize==4 || tableSize==5)) 
+		if(!(tableSize==0 || tableSize==3 || tableSize==4 || tableSize==5)) 
 			throw new RuntimeException(
 					"invalid String passed to setTable: " + tableDescription);
 		
@@ -72,15 +72,15 @@ public class GameRecord implements Serializable {
 	public PlayerRecord getPlayer(String name) {
 		for(PlayerRecord player: players) 
 			if(player.getName().equals(name)) return player;
-		return null;
+		throw new RuntimeException("Player: " + name + " is not in this game.");
 	}
 	
 	public int getStageReached() {
-		return stageReached;
+		return stage;
 	}
 	
 	public boolean endedInShowdown() {
-		return stageReached == GameState.SHOWDOWN;
+		return stage == GameState.SHOWDOWN;
 	}
 	
 	public Hand getTable() {
@@ -92,6 +92,28 @@ public class GameRecord implements Serializable {
 	
 	public List<PlayerRecord> getPlayers() {
 		return players;
+	}
+	
+	
+	public void print() {
+		System.out.println("Stage reached = " + stage + " (" + 
+			((stage==GameState.PREFLOP)?"PREFLOP":
+				(stage==GameState.FLOP)?"FLOP":
+					(stage==GameState.TURN)?"TURN":
+						(stage==GameState.RIVER)?"RIVER":
+							(stage==GameState.SHOWDOWN)?"SHOWDOWN":
+								"UNKNOWN_" + stage) + ")");
+		
+		System.out.print("Table size = " + tableCardIndexes.length + " (");
+		for(int i=0; i<tableCardIndexes.length; i++) 
+			System.out.print(Card.getRankChar(Card.getRank(tableCardIndexes[i])) + 
+							 Card.getSuitChar(Card.getSuit(tableCardIndexes[i])));
+		System.out.println(")");
+		
+		System.out.println("Number of players = " + players.size());
+		for(PlayerRecord player: players) player.print();
+		
+		System.out.println();
 	}
 	
 	

@@ -1,25 +1,32 @@
 package tools;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
-import com.biotools.meerkat.Card;
+import mctsbot.actions.BigBlindAction;
+import mctsbot.actions.CallAction;
+import mctsbot.actions.FoldAction;
+import mctsbot.actions.RaiseAction;
+import mctsbot.actions.SmallBlindAction;
+import mctsbot.gamestate.GameState;
 
 public class HHConverter {
 	
 	private static final String DEFAULT_INPUT_FILE_LOCATION = 
-		"S:\\Workspace\\MCTSBot\\weka\\histories.txt";
+		"S:\\Workspace\\MCTSBot\\weka\\test.txt";
 	
 	private static final String DEFAULT_OUTPUT_FILE_LOCATION = 
-		"S:\\Workspace\\MCTSBot\\weka\\simplebotmodel.arff";
+		"S:\\Workspace\\MCTSBot\\weka\\output.txt";
 	
-	private final String SIMPLEBOT = "SimpleBot";
-	private final String MCTSBOT = "MCTSBot";
+	private static final String SIMPLEBOT = "SimpleBot";
+	private static final String MCTSBOT = "MCTSBot";
+	private static final char CURRENCY_SYMBOL = '$';
+	
+	private static double smallBlindSize = 0.5;
+	private static double bigBlindSize = 1.0;
 
 	/**
 	 * When run, this method will go through the entire file given to it and 
@@ -42,15 +49,15 @@ public class HHConverter {
 		 * 
 		 * end of a game is always followed by a series of *'s
 		 * seat numbers are always a single digit
+		 * player name shave no spaces in them
 		 * 
 		 * 
 		 */
 		
-		String s = " 7) MCTSBot *       $992  5h 3h";
+		/*String s = "MCTSBot posts small blind $0.50";
+		System.out.println(s.matches("\\S+ posts small blind .+"));
+		if(true) return;*/
 		
-		System.out.println(s.substring(4,s.indexOf(' ', 5)));
-		
-		if(true) return;
 		
 		
 		
@@ -65,64 +72,129 @@ public class HHConverter {
 		
 		String inputLine = "";
 		
-		while(true) {
+		while(inputLine!=null) {
 			
 			try {
 				
 				final GameRecord gameRecord = new GameRecord();
 				
+				int stage = GameState.PREFLOP;
+				
 				
 				while(!((inputLine = in.readLine()).startsWith("***"))) {
 					
-					// inputLine is a player declaration.
+					System.out.println("-" + inputLine);
+					
+					// Player Declaration.
 					if(inputLine.matches("\\s\\d\\)\\s\\S+\\s.+")) {
 						
 						final String name = inputLine.substring(4,inputLine.indexOf(' ', 5));
 						final int seat = Integer.parseInt(inputLine.substring(1, 2));
 						final boolean dealer = inputLine.matches("\\s\\d\\)\\s\\S+\\s\\*.+");
+						final PlayerRecord player = new PlayerRecord(name, seat, dealer);
+						player.setCards(inputLine.substring(inputLine.length()-5));
+						gameRecord.addPlayer(player);
 						
-						gameRecord.addPlayer(new PlayerRecord(name, seat, dealer));
+						//System.out.println("# of players = " + gameRecord.getPlayers().size());
+						//for(PlayerRecord p: gameRecord.getPlayers()) {
+						//	System.out.println(p.getName());
+						//}
 						
-					} else if(inputLine.startsWith("SimpleBot posts small blind")) {
-						// Do Nothing.
-					} else if(inputLine.startsWith("SimpleBot posts big blind")) {
-						// Do Nothing.
-					} else if(inputLine.startsWith("SimpleBot calls") || 
-							inputLine.startsWith("SimpleBot checks")) {
+						//System.out.println(name + seat + dealer);
+						
+					// Small Blind.
+					} else if(inputLine.matches("\\S+ posts small blind .+")) {
+						final String playerName = inputLine.substring(0, inputLine.indexOf(' '));
+						final PlayerRecord player = gameRecord.getPlayer(playerName);
+						player.doAction(new SmallBlindAction(smallBlindSize), stage);
+						
+					// Big Blind.
+					} else if(inputLine.matches("\\S+ posts big blind .+")) {
+						final String playerName = inputLine.substring(0, inputLine.indexOf(' '));
+						final PlayerRecord player = gameRecord.getPlayer(playerName);
+						player.doAction(new BigBlindAction(bigBlindSize), stage);
+						
+					// Check.
+					} else if(inputLine.matches("\\S+ checks")){
+						final String playerName = inputLine.substring(0, inputLine.indexOf(' '));
+						final PlayerRecord player = gameRecord.getPlayer(playerName);
+						player.doAction(new CallAction(0), stage);
+						
+					// Call.
+					} else if(inputLine.matches("\\S+ calls .+")){
+						final double amount = Double.parseDouble(
+								inputLine.substring(inputLine.indexOf(CURRENCY_SYMBOL)+1));
+						final String playerName = inputLine.substring(0, inputLine.indexOf(' '));
+						final PlayerRecord player = gameRecord.getPlayer(playerName);
+						player.doAction(new CallAction(amount), stage);
+						
+					// Raise or Bet.
+					} else if(inputLine.matches("\\S+ (bets|raises) .+")){
+						final double amount = Double.parseDouble(
+								inputLine.substring(inputLine.indexOf(CURRENCY_SYMBOL)+1));
+						final String playerName = inputLine.substring(0, inputLine.indexOf(' '));
+						final PlayerRecord player = gameRecord.getPlayer(playerName);
+						player.doAction(new RaiseAction(amount), stage);
+						
+					// Fold.
+					} else if(inputLine.matches("\\S+ folds")){
+						final String playerName = inputLine.substring(0, inputLine.indexOf(' '));
+						final PlayerRecord player = gameRecord.getPlayer(playerName);
+						player.doAction(new FoldAction(), stage);
+						
+					// Flop.
+					} else if(inputLine.matches("FLOP.+")){
+						stage = GameState.FLOP;
+						gameRecord.setTable(inputLine.substring(7));
+						
+					// Turn.
+					} else if(inputLine.matches("TURN.+")){
+						stage = GameState.TURN;
+						gameRecord.setTable(inputLine.substring(7));
+						
+					// Flop.
+					} else if(inputLine.matches("RIVER.+")){
+						stage = GameState.RIVER;
+						gameRecord.setTable(inputLine.substring(8));
+
+					// Shows.
+					} else if(inputLine.matches("\\S+ shows .+")){
+						stage = GameState.SHOWDOWN;
 						
 						
-						
-						
-					} else if(inputLine.startsWith("SimpleBot raises") || 
-							inputLine.startsWith("SimpleBot bets")) {
-						
-						
-						
-						
-					} else if(inputLine.startsWith("SimpleBot folds")) {
-						
-						
-						
-						
+					// Something Else.
 					} else {
+						// Do Nothing.
 						
 					}
 				}
-				// Write to file.
 				
+				gameRecord.setStageReached(stage);
 				
-				break;
+				// TODO: write to file here.
+				System.out.println("# of players = " + gameRecord.getPlayers().size());
+				for(PlayerRecord p: gameRecord.getPlayers()) {
+					System.out.println(p.getName());
+				}
+
+				gameRecord.print();
+				
+				return;
+				
 				
 				
 			} catch(Exception e) {
+				e.printStackTrace();
 				numErrors++;
 				continue;
+				//TODO: fix this by skipping to the next game
 			}
 			
 			
 			
 		}
-
+		
+		System.out.println();
 		System.out.println(numSuccesses + " games successfully converted.");
 		System.out.println(numErrors + " games caused errors.");
 		//TODO: add more useful information here.

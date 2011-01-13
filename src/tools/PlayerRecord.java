@@ -41,6 +41,11 @@ public class PlayerRecord implements Serializable {
 		this.card2Index = card2.getIndex();
 	}
 	
+	protected void setCards(String cardsDescription) {
+		final String[] cardDescriptions = cardsDescription.split(" ");
+		setCards(new Card(cardDescriptions[0]), new Card(cardDescriptions[1]));
+	}
+	
 	public Card getC1() {
 		if(card1Index==-1) return null;
 		else return new Card(card1Index);
@@ -56,15 +61,19 @@ public class PlayerRecord implements Serializable {
 		case GameState.PREFLOP:
 			if(preflopActions==null) preflopActions = new LinkedList<Action>();
 			preflopActions.add(action);
+			break;
 		case GameState.FLOP:
 			if(flopActions==null) flopActions = new LinkedList<Action>();
 			flopActions.add(action);
+			break;
 		case GameState.TURN:
 			if(turnActions==null) turnActions = new LinkedList<Action>();
 			turnActions.add(action);
+			break;
 		case GameState.RIVER:
 			if(riverActions==null) riverActions = new LinkedList<Action>();
 			riverActions.add(action);
+			break;
 		default:
 			throw new RuntimeException("doAction called with invalid stage: " + stage);
 		}
@@ -113,6 +122,19 @@ public class PlayerRecord implements Serializable {
 		}
 	}
 	
-	
+	public void print() {
+		System.out.print(" " + seat + ") " + name + (dealer?" * ":"   "));
+		
+		System.out.println(getC1().toString() + " " + getC2().toString());
+		
+		System.out.print("  Actions: ");
+		for(int i=GameState.PREFLOP; i<=GameState.RIVER; i++) {
+			List<Action> actions = getActions(i);
+			if(actions==null) break;
+			for(Action action: actions) System.out.print(action.getDescription() + "  ");
+			System.out.print("|  ");
+		}
+		System.out.println();
+	}
 	
 }

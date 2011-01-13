@@ -1,17 +1,10 @@
 package mctsbot;
 
-import mctsbot.opponentmodel.HandRankOpponentModel;
-import mctsbot.opponentmodel.NextActionOpponentModel;
-import mctsbot.opponentmodel.SimpleWekaHandRankOpponentModel;
-import mctsbot.strategies.actionselection.ActionSelectionStrategy;
-import mctsbot.strategies.actionselection.HighestEVActionSelectionStrategy;
-import mctsbot.strategies.backpropagation.AveragingBackpropagationStrategy;
-import mctsbot.strategies.backpropagation.BackpropagationStrategy;
-import mctsbot.strategies.selection.SelectionStrategy;
-import mctsbot.strategies.selection.UCTSelectionStrategy;
-import mctsbot.strategies.simulation.AveragingSimulationStrategy;
-import mctsbot.strategies.simulation.SimulationStrategy;
-import mctsbot.strategies.simulation.StaticDistributionSimulationStrategy;
+import mctsbot.opponentmodel.*;
+import mctsbot.strategies.actionselection.*;
+import mctsbot.strategies.backpropagation.*;
+import mctsbot.strategies.selection.*;
+import mctsbot.strategies.simulation.*;
 
 import com.biotools.meerkat.util.Preferences;
 
@@ -54,13 +47,14 @@ public class Config {
 		
 		// SimulationStrategy.
 		this.simulationStrategy = new AveragingSimulationStrategy(
-				new StaticDistributionSimulationStrategy(), 20);
+				new StaticDistributionSimulationStrategy(), 8);
 		
 		// BackpropagationStrategy.
 		this.backpropagationStrategy = new AveragingBackpropagationStrategy();
 		
 		// HandRankOpponentModel.
-		this.handRankOpponentModel = new SimpleWekaHandRankOpponentModel();
+		//this.handRankOpponentModel = new SimpleWekaHandRankOpponentModel();
+		this.handRankOpponentModel = new RandomHandRankOpponentModel();;
 		
 		// NextActionOpponentModel.
 		this.nextActionOpponentModel = null;

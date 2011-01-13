@@ -15,7 +15,7 @@ public class CallAction implements Action {
 	}
 
 	public String getDescription() {
-		return "Call Action " + amount;
+		return (amount==0)?"Check":"Call_" + amount;
 	}
 
 }
