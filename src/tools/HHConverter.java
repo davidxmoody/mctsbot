@@ -1,9 +1,12 @@
 package tools;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
+import mctsbot.actions.Action;
 import mctsbot.actions.BigBlindAction;
 import mctsbot.actions.CallAction;
 import mctsbot.actions.FoldAction;
@@ -11,24 +14,32 @@ import mctsbot.actions.RaiseAction;
 import mctsbot.actions.SmallBlindAction;
 import mctsbot.gamestate.GameState;
 
+import com.biotools.meerkat.Card;
+import com.biotools.meerkat.Hand;
+import com.biotools.meerkat.HandEvaluator;
+
 public class HHConverter {
 	
 	private static final String DEFAULT_INPUT_FILE_LOCATION = 
-		"S:\\Workspace\\MCTSBot\\weka\\test.txt";
+		"S:\\Workspace\\MCTSBot\\weka\\histories.txt";
 	
 	private static final String DEFAULT_OUTPUT_FILE_LOCATION = 
-		"S:\\Workspace\\MCTSBot\\weka\\output.txt";
+		"S:\\Workspace\\MCTSBot\\weka\\output.arff";
 	
 	private static final char CURRENCY_SYMBOL = '$';
+	
+	private static final boolean APPEND = false;
+	
+	private static final WekaFormat format = new SimpleBotHROMWekaFormat3();
 	
 	/**
 	 * When run, this method will go through the entire file given to it and 
 	 * convert it to 
 	 * 
 	 * @param args 
-	 * @throws IOException 
+	 * @throws Exception 
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 
 		//TODO: Make program use arguments for file locations.
 		
@@ -48,11 +59,12 @@ public class HHConverter {
 		 */
 		
 		
-		//ObjectOutputStream out = new ObjectOutputStream(
-		//		new FileOutputStream(DEFAULT_OUTPUT_FILE_LOCATION, true));
+		BufferedReader in = new BufferedReader(
+				new FileReader(DEFAULT_INPUT_FILE_LOCATION));
+		BufferedWriter out = new BufferedWriter(
+				new FileWriter(DEFAULT_OUTPUT_FILE_LOCATION, APPEND));
 		
-		BufferedReader in = new BufferedReader(new FileReader(DEFAULT_INPUT_FILE_LOCATION));
-		//BufferedWriter out = new BufferedWriter(new FileWriter(DEFAULT_OUTPUT_FILE_LOCATION));
+		if(!APPEND) format.writeHeader(out);
 		
 		final long startTime = System.currentTimeMillis();
 		
@@ -157,13 +169,12 @@ public class HHConverter {
 					
 					inputLine = in.readLine();
 				}
-				
-				// TODO: write to file here.
 
 				//gameRecord.print();
-				
 				gameRecord.checkGame();
 				
+				
+				format.write(gameRecord, out);
 				
 				numSuccesses++;
 				inputLine = in.readLine();
@@ -179,15 +190,16 @@ public class HHConverter {
 				continue;
 			}
 			
-			
-			
 		}
+		
+		in.close();
+		out.close();
+		
+		System.out.println();
 		System.out.println(numSuccesses + " games successfully converted.");
 		System.out.println(numErrors + " games caused errors.");
 		System.out.println("Total time taken = " + (System.currentTimeMillis()-startTime) + "ms.");
 		System.out.println();
-		//TODO: add more useful information here.
-		
 	}
 
 }

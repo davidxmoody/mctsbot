@@ -1,9 +1,12 @@
 package mctsbot;
 
+import java.io.IOException;
+
 import mctsbot.gamestate.GameState;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.RootNode;
 import mctsbot.strategies.simulation.DynamicDistributionSimulationStrategy;
+import tools.HHConverter;
 
 import com.biotools.meerkat.Action;
 import com.biotools.meerkat.Card;
@@ -50,59 +53,23 @@ public class MCTSBot implements Player {
 	
 	public Action getAction() {
 		
-		/*for(int j=0; j<10000; j++) {
-			
-			
-			Hand h = new Hand();
-			
-			Card[] c = new Card[7];
-			
-			c[0] = currentGameState.getC1();
-			c[1] = currentGameState.getC2();
-			
-
-			
-			Random random = new Random();
-			
-			for(int i=2; i<7; i++) {
-				boolean isDifferent = true;
-				do {
-					isDifferent = true;
-					c[i] = new Card(random.nextInt(52));
-					for(int j1=0; j1<i; j1++) 
-						if(c[j1].equals(c[i])) isDifferent = false;
-				} while(!isDifferent);
-			}
-			
-			for(int i=0; i<7; i++) 
-				h.addCard(c[i]);
-			
-			
-			
-			int rank = HandEvaluator.rankHand(h);
-			
-			System.out.println(rank);
-
+		
+		
+		
+		
+		
+		
+		
+		try {
+			HHConverter.main(null);
+			System.out.println("Conversion Successful");
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Conversion Caused An Error");
 		}
 		
 		if(true) return null;
-		
-		*/
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
 		
 		
 		

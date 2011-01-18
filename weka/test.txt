@@ -1,0 +1,129 @@
+Poker Academy Pro #17,804
+Limit Texas Holdem ($1/$2)
+Table SimpleBot Vs MCTSBot UCT AS2
+November 23, 2010 - 17:29:41 (GMT)
+
+ 1} David        (sitting out)
+ 5) MCTSBot *       $998  Qh 4h
+ 6) SimpleBot     $1,002  Ac 7d
+
+MCTSBot posts small blind $0.50
+SimpleBot posts big blind $1
+MCTSBot calls $0.50 
+SimpleBot checks
+
+FLOP:  Ks 5s 7c
+SimpleBot checks
+MCTSBot checks
+
+TURN:  Ks 5s 7c 3h
+SimpleBot checks
+MCTSBot checks
+
+RIVER:  Ks 5s 7c 3h 6c
+SimpleBot bets $2
+MCTSBot raises $2
+SimpleBot calls $2 
+MCTSBot shows Qh 4h
+SimpleBot shows Ac 7d
+
+MCTSBot wins $10 with a Seven High Straight
+
+******************************
+Poker Academy Pro #17,802
+Limit Texas Holdem ($1/$2)
+Table SimpleBot Vs MCTSBot UCT AS2
+November 23, 2010 - 17:29:35 (GMT)
+
+ 1} David        (sitting out)
+ 5) MCTSBot *       $999  Jd 5d
+ 6) SimpleBot     $1,001  Th 9d
+
+MCTSBot posts small blind $0.50
+SimpleBot posts big blind $1
+MCTSBot calls $0.50 
+SimpleBot checks
+
+FLOP:  Qs Qc Ac
+SimpleBot checks
+MCTSBot checks
+
+TURN:  Qs Qc Ac 6c
+SimpleBot checks
+MCTSBot checks
+
+RIVER:  Qs Qc Ac 6c 6h
+SimpleBot checks
+MCTSBot checks
+SimpleBot shows Th 9d
+MCTSBot shows Jd 5d
+
+SimpleBot wins $1 with Two Pair, Queens and Sixes
+MCTSBot wins $1 with Two Pair, Queens and Sixes
+
+******************************
+Poker Academy Pro #17,804
+Limit Texas Holdem ($1/$2)
+Table SimpleBot Vs MCTSBot UCT AS2
+November 23, 2010 - 17:29:41 (GMT)
+
+ 1} David        (sitting out)
+ 5) MCTSBot *       $998  Qh 4h
+ 6) SimpleBot     $1,002  Ac 7d
+
+MCTSBot posts small blind $0.50
+SimpleBot posts big blind $1
+MCTSBot calls $0.50 
+SimpleBot checks
+
+FLOP:  Ks 5s 7c
+SimpleBot checks
+MCTSBot checks
+
+TURN:  Ks 5s 7c 3h
+SimpleBot checks
+MCTSBot checks
+
+RIVER:  Ks 5s 7c 3h 6c
+SimpleBot bets $2
+MCTSBot raises $2
+SimpleBot calls $2 
+MCTSBot shows Qh 4h
+SimpleBot shows Ac 7d
+
+MCTSBot wins $10 with a Seven High Straight
+
+******************************
+Poker Academy Pro #17,810
+Limit Texas Holdem ($1/$2)
+Table SimpleBot Vs MCTSBot UCT AS2
+November 23, 2010 - 17:29:49 (GMT)
+
+ 1} David        (sitting out)
+ 5) MCTSBot *     $1,005  Qs 5c
+ 6) SimpleBot       $995  Th 4c
+
+MCTSBot posts small blind $0.50
+SimpleBot posts big blind $1
+MCTSBot calls $0.50 
+SimpleBot checks
+
+FLOP:  Jc 7d 4d
+SimpleBot bets $1
+MCTSBot raises $1
+SimpleBot calls $1 
+
+TURN:  Jc 7d 4d 5s
+SimpleBot bets $2
+MCTSBot calls $2 
+
+RIVER:  Jc 7d 4d 5s Ah
+SimpleBot checks
+MCTSBot bets $2
+SimpleBot calls $2 
+MCTSBot shows Qs 5c
+SimpleBot shows Th 4c
+
+MCTSBot wins $14 with a Pair of Fives
+
+******************************
