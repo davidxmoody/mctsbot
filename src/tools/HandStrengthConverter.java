@@ -1,6 +1,5 @@
 package tools;
 
-import com.biotools.meerkat.Card;
 
 public class HandStrengthConverter {
 	
@@ -19,20 +18,25 @@ public class HandStrengthConverter {
 	private static final int[] HIGHEST_RANKS = {1276, 4136, 4994, 5852, 5862, 
 												7139, 7295, 7451, 7461};
 	
-	private static final double[] weights = {1,			// High Card.
-											 1,			// One Pair.
-											 1,			// Two Pairs.
-											 1,			// Three Of A Kind.
-											 1,			// Straight.
-											 1,			// Flush.
-											 1,			// Full House.
-											 1,			// Four Of A Kind
+	private static final double[] weights = {258,			// High Card.
+											 866,			// One Pair.
+											 511,			// Two Pairs.
+											 93,			// Three Of A Kind.
+											 58,			// Straight.
+											 84,			// Flush.
+											 62,			// Full House.
+											 6,			// Four Of A Kind.
 											 1};		// Straight Flush.
-											 
 	
-	public static void main(String[] args) {
-		System.out.println(Card.TWO);
-	}
+	private static final double[] gaps = {0,			// High Card - One Pair.
+										  0,			// One Pair - Two Pairs.
+										  0,			// Two Pairs - Three Of A Kind.
+										  0,			// Three Of A Kind - Straight.
+										  0,			// Straight - Flush.
+										  0,			// Flush - Full House.
+										  0,			// Full House - Four Of A Kind.
+										  0};			// Four Of A Kind - Straight Flush.
+											 
 	
 	
 	public static double rankToStrength(int rank) {
@@ -45,7 +49,7 @@ public class HandStrengthConverter {
 						/(HIGHEST_RANKS[i]-(i==0?0:HIGHEST_RANKS[i-1]));
 				break;
 			} else {
-				strength += weights[i];
+				strength += weights[i] + gaps[i];
 			}
 		}
 		

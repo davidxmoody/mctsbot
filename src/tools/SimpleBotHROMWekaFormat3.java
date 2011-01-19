@@ -9,7 +9,6 @@ import mctsbot.gamestate.GameState;
 
 import com.biotools.meerkat.Card;
 import com.biotools.meerkat.Hand;
-import com.biotools.meerkat.HandEvaluator;
 
 public class SimpleBotHROMWekaFormat3 implements WekaFormat {
 	
@@ -141,7 +140,7 @@ public class SimpleBotHROMWekaFormat3 implements WekaFormat {
 		out.write(numSuitedRiver);
 		
 		
-		final int handRank = HandEvaluator.rankHand(player.getC1(), player.getC2(), table);
+		final int handRank = player.getHandRank();
 		
 		out.write(handRank + "\r");
 		

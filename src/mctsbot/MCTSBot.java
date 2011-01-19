@@ -1,7 +1,5 @@
 package mctsbot;
 
-import java.io.IOException;
-
 import mctsbot.gamestate.GameState;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.RootNode;
@@ -75,6 +73,7 @@ public class MCTSBot implements Player {
 		
 		
 		// Make root node.
+		@SuppressWarnings("unused")
 		RootNode root = new RootNode(currentGameState, config);
 		
 		// Do iterations until time limit reached.

@@ -8,7 +8,6 @@ import mctsbot.gamestate.GameState;
 
 import com.biotools.meerkat.Card;
 import com.biotools.meerkat.Hand;
-import com.biotools.meerkat.HandEvaluator;
 
 public class SimpleBotHROMWekaFormat2 implements WekaFormat {
 	
@@ -62,7 +61,7 @@ public class SimpleBotHROMWekaFormat2 implements WekaFormat {
 		int[] suits = new int[5];
 		
 		// TODO: make this more efficient by using the array already stored in gameRecord.
-		int[] cards = gameRecord.getTable().getCardArray();
+		int[] cards = table.getCardArray();
 		
 		for(int j=0; j<5; j++) {
 			ranks[j] = Card.getRank(cards[j+1]);
@@ -136,7 +135,7 @@ public class SimpleBotHROMWekaFormat2 implements WekaFormat {
 		out.write(numSuitedRiver);
 		
 		
-		final int handRank = HandEvaluator.rankHand(player.getC1(), player.getC2(), table);
+		final int handRank = player.getHandRank();
 		
 		out.write(handRank + "\r");
 		

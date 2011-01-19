@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.util.Arrays;
 
 import mctsbot.actions.Action;
-import mctsbot.actions.CallAction;
 import mctsbot.actions.RaiseAction;
 import mctsbot.gamestate.GameState;
 
@@ -42,10 +41,10 @@ public class SimpleBotHROMWekaFormat implements WekaFormat {
 	public void writeHeader(BufferedWriter out) throws Exception {
 		out.write("@RELATION " + RELATION_TITLE + "\r");
 		out.write("\r");
-		out.write("@ATTRIBUTE raised_preflop {never,sometimes,always}\r");
-		out.write("@ATTRIBUTE raised_flop {never,sometimes,always}\r");
-		out.write("@ATTRIBUTE raised_turn {never,sometimes,always}\r");
-		out.write("@ATTRIBUTE raised_river {never,sometimes,always}\r");
+		out.write("@ATTRIBUTE preflop_actions {c,r,rr}\r");
+		out.write("@ATTRIBUTE flop_actions {c,r,rr}\r");
+		out.write("@ATTRIBUTE turn_actions {c,r,rr}\r");
+		out.write("@ATTRIBUTE river_actions {c,r,rr}\r");
 		out.write("@ATTRIBUTE c_card_1_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
 		out.write("@ATTRIBUTE c_card_2_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
 		out.write("@ATTRIBUTE c_card_3_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
@@ -71,18 +70,12 @@ public class SimpleBotHROMWekaFormat implements WekaFormat {
 		// Actions.
 		for(int i=GameState.PREFLOP; i<=GameState.RIVER; i++) {
 			int raiseCount = 0;
-			int callCount = 0;
-			for(Action action: player.getActions(i)) {
+			for(Action action: player.getActions(i))
 				if(action instanceof RaiseAction) raiseCount++;
-				if(action instanceof CallAction) callCount++;
-			}
-			final int totalCount = raiseCount + callCount;
 			
-			if(totalCount<=0) throw new RuntimeException("totalCount == 0");
-			
-			if(totalCount==callCount) out.write("never,");
-			else if(totalCount==raiseCount) out.write("always,");
-			else out.write("sometimes,");
+			if(raiseCount<1) out.write("c,");
+			else if(raiseCount==1) out.write("r,");
+			else if(raiseCount>1) out.write("rr,");
 		}
 		
 		// Table cards.
@@ -173,6 +166,32 @@ public class SimpleBotHROMWekaFormat implements WekaFormat {
 		final double handStrength = HandStrengthConverter.rankToStrength(handRank);
 		
 		out.write(handStrength + "\r");
+		
+		/*
+		
+		if(handRank<=HIGHEST_HIGH_CARD) {
+			out.write(HIGH_CARD);
+		} else if(handRank<=HIGHEST_PAIR) {
+			out.write(ONE_PAIR);
+		} else if(handRank<=HIGHEST_TWO_PAIRS) {
+			out.write(TWO_PAIRS);
+		} else if(handRank<=HIGHEST_THREE_OF_A_KIND) {
+			out.write("better");
+		} else if(handRank<=HIGHEST_STRAIGHT) {
+			out.write("better");
+		} else if(handRank<=HIGHEST_FLUSH) {
+			out.write("better");
+		} else if(handRank<=HIGHEST_FULL_HOUSE) {
+			out.write("better");
+		} else if(handRank<=HIGHEST_FOUR_OF_A_KIND) {
+			out.write("better");
+		} else if(handRank<=HIGHEST_STRAIGHT_FLUSH) {
+			out.write("better");
+		} else throw new RuntimeException("invalid rank: " + handRank);
+		
+		out.write("\r");
+		
+		*/
 		
 		out.flush();
 

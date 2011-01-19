@@ -3,12 +3,14 @@ package tools;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.EOFException;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Method;
 
 import com.biotools.meerkat.HandEvaluator;
 
@@ -45,6 +47,8 @@ public class HHConverter {
 	 */
 	public static void main(String[] args) throws Exception {
 		
+		System.out.println("Starting...");
+		
 		BufferedWriter out = new BufferedWriter(
 				new FileWriter(DEFAULT_OUTPUT_FILE_LOCATION, APPEND));
 		
@@ -80,8 +84,16 @@ public class HHConverter {
 		ois.close();
 		
 		System.out.println(numSuccesses + " games successfully converted.");
-		//System.out.println(numErrors + " games caused errors.");
 		System.out.println("Total time taken = " + (System.currentTimeMillis()-startTime) + "ms.");
+		
+		// Launch Weka on output.arff
+		Class<?> desktopClass = ClassLoader.getSystemClassLoader().loadClass("java.awt.Desktop");
+		Method getDesktop = desktopClass.getMethod("getDesktop", (Class[])null);
+		Object desktop = getDesktop.invoke((Object[])null, (Object[])null);
+		Method open = desktopClass.getMethod("open", new Class[] {File.class});
+		File file = new File(DEFAULT_OUTPUT_FILE_LOCATION);
+		open.invoke(desktop, file);
+		System.out.println("Launching Weka...");
 	}
 	
 	
