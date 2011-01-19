@@ -36,7 +36,7 @@ public class HHConverter {
 	
 	private static final boolean APPEND = false;
 	
-	private static final WekaFormat format = new SimpleBotHROMWekaFormat();
+	private static final WekaFormat format = new SBNMOMWekaFormat();
 	
 	/**
 	 * When run, this method will go through the entire file given to it and 

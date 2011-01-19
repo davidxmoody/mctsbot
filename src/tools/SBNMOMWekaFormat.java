@@ -2,15 +2,18 @@ package tools;
 
 import java.io.BufferedWriter;
 import java.util.Arrays;
+import java.util.List;
 
 import mctsbot.actions.Action;
+import mctsbot.actions.CallAction;
+import mctsbot.actions.FoldAction;
 import mctsbot.actions.RaiseAction;
 import mctsbot.gamestate.GameState;
 
 import com.biotools.meerkat.Card;
 import com.biotools.meerkat.Hand;
 
-public class SimpleBotHROMWekaFormat implements WekaFormat {
+public class SBNMOMWekaFormat implements WekaFormat {
 	
 	/*
 	private static final int HIGHEST_HIGH_CARD = 1276;
@@ -36,24 +39,23 @@ public class SimpleBotHROMWekaFormat implements WekaFormat {
 
 	private static final String SIMPLEBOT = "SimpleBot";
 	
-	private static final String RELATION_TITLE = "SimpleBotHROM";
+	private static final String RELATION_TITLE = "SimpleBotNMOM";
 	
 	public void writeHeader(BufferedWriter out) throws Exception {
 		out.write("@RELATION " + RELATION_TITLE + "\r");
 		out.write("\r");
-		out.write("@ATTRIBUTE preflop_actions {c,r,rr}\r");
-		out.write("@ATTRIBUTE flop_actions {c,r,rr}\r");
-		out.write("@ATTRIBUTE turn_actions {c,r,rr}\r");
-		out.write("@ATTRIBUTE river_actions {c,r,rr}\r");
-		out.write("@ATTRIBUTE c_card_1_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
-		out.write("@ATTRIBUTE c_card_2_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
-		out.write("@ATTRIBUTE c_card_3_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
-		out.write("@ATTRIBUTE c_card_4_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
-		out.write("@ATTRIBUTE c_card_5_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
-		out.write("@ATTRIBUTE num_suited_flop {1,2,3}\r");
-		out.write("@ATTRIBUTE num_suited_turn {1,2,3,4,22}\r");
-		out.write("@ATTRIBUTE num_suited_river {0,3,4,5}\r");
-		out.write("@ATTRIBUTE hand_strength NUMERIC\r");
+		out.write("@ATTRIBUTE raised_preflop NUMERIC\r");
+		out.write("@ATTRIBUTE called_preflop NUMERIC\r");
+		out.write("@ATTRIBUTE folded_preflop NUMERIC\r");
+		out.write("@ATTRIBUTE raised_flop NUMERIC\r");
+		out.write("@ATTRIBUTE called_flop NUMERIC\r");
+		out.write("@ATTRIBUTE folded_flop NUMERIC\r");
+		out.write("@ATTRIBUTE raised_turn NUMERIC\r");
+		out.write("@ATTRIBUTE called_turn NUMERIC\r");
+		out.write("@ATTRIBUTE folded_turn NUMERIC\r");
+		out.write("@ATTRIBUTE raised_river NUMERIC\r");
+		out.write("@ATTRIBUTE called_river NUMERIC\r");
+		out.write("@ATTRIBUTE folded_river NUMERIC\r");
 		out.write("\r");
 		out.write("@DATA\r");
 		out.flush();
@@ -61,28 +63,48 @@ public class SimpleBotHROMWekaFormat implements WekaFormat {
 
 	public void write(GameRecord gameRecord, BufferedWriter out)
 			throws Exception {
-		
-		if(!gameRecord.endedInShowdown()) return;
-		
+				
 		final PlayerRecord player = gameRecord.getPlayer(SIMPLEBOT);
-		final Hand table = gameRecord.getTable();
+		//final Hand table = gameRecord.getTable();
 		
 		// Actions.
 		for(int i=GameState.PREFLOP; i<=GameState.RIVER; i++) {
 			int raiseCount = 0;
-			for(Action action: player.getActions(i))
-				if(action instanceof RaiseAction) raiseCount++;
+			int callCount = 0;
+			int foldCount = 0;
 			
-			if(raiseCount<1) out.write("c,");
-			else if(raiseCount==1) out.write("r,");
-			else if(raiseCount>1) out.write("rr,");
+			List<Action> actions = player.getActions(i);
+			
+			if(actions==null || actions.size()==0) {
+				out.write("?,?,?" + (i==GameState.RIVER?"\r":","));
+				continue;
+			}
+			
+			for(Action action: actions) {
+				if(action instanceof RaiseAction) raiseCount++;
+				if(action instanceof CallAction) callCount++;
+				if(action instanceof FoldAction) foldCount++;
+			}
+			final int totalCount = raiseCount + callCount + foldCount;
+			
+			final double fractionRaised = (double)raiseCount/totalCount;
+			final double fractionCalled = (double)callCount/totalCount;
+			final double fractionFolded = (double)foldCount/totalCount;
+			
+			//out.write(fractionRaised + ",");
+			out.write(fractionRaised + ",");
+			out.write(fractionCalled + ",");
+			out.write(fractionFolded + (i==GameState.RIVER?"\r":","));
 		}
+		
+		/*
+		
 		
 		// Table cards.
 		int[] ranks = new int[5];
 		int[] suits = new int[5];
 		
-		// TODO: make this more efficient by using the array already stored in gameRecord.
+		// make this more efficient by using the array already stored in gameRecord.
 		int[] cards = table.getCardArray();
 		
 		for(int j=0; j<5; j++) {
@@ -192,6 +214,7 @@ public class SimpleBotHROMWekaFormat implements WekaFormat {
 		out.write("\r");
 		
 		*/
+		
 		
 		out.flush();
 
