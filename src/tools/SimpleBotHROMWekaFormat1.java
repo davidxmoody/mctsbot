@@ -136,15 +136,15 @@ public class SimpleBotHROMWekaFormat1 implements WekaFormat {
 		
 		final int handRank = HandEvaluator.rankHand(player.getC1(), player.getC2(), table);
 		
-		if(handRank<HIGHEST_HIGH_CARD) out.write(HIGH_CARD);
-		else if(handRank<HIGHEST_PAIR) out.write(ONE_PAIR);
-		else if(handRank<HIGHEST_TWO_PAIRS) out.write(TWO_PAIRS);
-		else if(handRank<HIGHEST_THREE_OF_A_KIND) out.write(THREE_OF_A_KIND);
-		else if(handRank<HIGHEST_STRAIGHT) out.write(STRAIGHT);
-		else if(handRank<HIGHEST_FLUSH) out.write(FLUSH);
-		else if(handRank<HIGHEST_FULL_HOUSE) out.write(FULL_HOUSE);
-		else if(handRank<HIGHEST_FOUR_OF_A_KIND) out.write(FOUR_OF_A_KIND);
-		else if(handRank<HIGHEST_STRAIGHT_FLUSH) out.write(STRAIGHT_FLUSH);
+		if(handRank<=HIGHEST_HIGH_CARD) out.write(HIGH_CARD);
+		else if(handRank<=HIGHEST_PAIR) out.write(ONE_PAIR);
+		else if(handRank<=HIGHEST_TWO_PAIRS) out.write(TWO_PAIRS);
+		else if(handRank<=HIGHEST_THREE_OF_A_KIND) out.write(THREE_OF_A_KIND);
+		else if(handRank<=HIGHEST_STRAIGHT) out.write(STRAIGHT);
+		else if(handRank<=HIGHEST_FLUSH) out.write(FLUSH);
+		else if(handRank<=HIGHEST_FULL_HOUSE) out.write(FULL_HOUSE);
+		else if(handRank<=HIGHEST_FOUR_OF_A_KIND) out.write(FOUR_OF_A_KIND);
+		else if(handRank<=HIGHEST_STRAIGHT_FLUSH) out.write(STRAIGHT_FLUSH);
 		else throw new RuntimeException("invalid rank: " + handRank);
 		
 		out.write("\r");

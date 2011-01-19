@@ -13,6 +13,7 @@ import com.biotools.meerkat.HandEvaluator;
 
 public class SimpleBotHROMWekaFormat3 implements WekaFormat {
 	
+	/*
 	private static final int HIGHEST_HIGH_CARD = 1276;
 	private static final int HIGHEST_PAIR = 4136;
 	private static final int HIGHEST_TWO_PAIRS = 4994;
@@ -32,6 +33,7 @@ public class SimpleBotHROMWekaFormat3 implements WekaFormat {
 	private static final String FULL_HOUSE = "full_house";
 	private static final String FOUR_OF_A_KIND = "four_of_a_kind";
 	private static final String STRAIGHT_FLUSH = "straight_flush";
+	*/
 
 	private static final String SIMPLEBOT = "SimpleBot";
 	

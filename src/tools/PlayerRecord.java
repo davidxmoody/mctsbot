@@ -20,6 +20,8 @@ public class PlayerRecord implements Serializable {
 	private int card1Index = -1;
 	private int card2Index = -1;
 	
+	private int handRank = -1;
+	
 	private List<Action> preflopActions = null;
 	private List<Action> flopActions = null;
 	private List<Action> turnActions = null;
@@ -120,6 +122,14 @@ public class PlayerRecord implements Serializable {
 		default:
 			throw new RuntimeException("getActions called with invalid stage: " + stage);
 		}
+	}
+	
+	public void setHandRank(int handRank) {
+		this.handRank = handRank;
+	}
+	
+	public int getHandRank() {
+		return handRank;
 	}
 	
 	public void print() {

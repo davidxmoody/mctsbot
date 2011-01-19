@@ -61,7 +61,7 @@ public class MCTSBot implements Player {
 		
 		
 		try {
-			HHConverter.main(null);
+			HHConverter.convertHistoriesToGameRecords();
 			System.out.println("Conversion Successful");
 		} catch (Exception e) {
 			e.printStackTrace();

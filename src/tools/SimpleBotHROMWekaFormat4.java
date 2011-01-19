@@ -1,6 +1,7 @@
 package tools;
 
 import java.io.BufferedWriter;
+import java.util.Arrays;
 
 import mctsbot.actions.Action;
 import mctsbot.actions.RaiseAction;
@@ -10,7 +11,7 @@ import com.biotools.meerkat.Card;
 import com.biotools.meerkat.Hand;
 import com.biotools.meerkat.HandEvaluator;
 
-public class SimpleBotHROMWekaFormat2 implements WekaFormat {
+public class SimpleBotHROMWekaFormat4 implements WekaFormat {
 	
 	/*
 	private static final int HIGHEST_HIGH_CARD = 1276;
@@ -62,7 +63,7 @@ public class SimpleBotHROMWekaFormat2 implements WekaFormat {
 		int[] suits = new int[5];
 		
 		// TODO: make this more efficient by using the array already stored in gameRecord.
-		int[] cards = gameRecord.getTable().getCardArray();
+		int[] cards = table.getCardArray();
 		
 		for(int j=0; j<5; j++) {
 			ranks[j] = Card.getRank(cards[j+1]);
@@ -70,6 +71,10 @@ public class SimpleBotHROMWekaFormat2 implements WekaFormat {
 		}
 		
 		// Write card ranks
+		
+		// Sort the ranks first
+		Arrays.sort(ranks);
+		
 		for(int j=0; j<5; j++) {
 			out.write(Card.getRankChar(ranks[j]) + ",");
 		}
@@ -138,22 +143,9 @@ public class SimpleBotHROMWekaFormat2 implements WekaFormat {
 		
 		final int handRank = HandEvaluator.rankHand(player.getC1(), player.getC2(), table);
 		
-		out.write(handRank + "\r");
+		final double handStrength = HandStrengthConverter.rankToStrength(handRank);
 		
-		/*
-		if(handRank<HIGHEST_HIGH_CARD) out.write(HIGH_CARD);
-		else if(handRank<HIGHEST_PAIR) out.write(ONE_PAIR);
-		else if(handRank<HIGHEST_TWO_PAIRS) out.write(TWO_PAIRS);
-		else if(handRank<HIGHEST_THREE_OF_A_KIND) out.write(THREE_OF_A_KIND);
-		else if(handRank<HIGHEST_STRAIGHT) out.write(STRAIGHT);
-		else if(handRank<HIGHEST_FLUSH) out.write(FLUSH);
-		else if(handRank<HIGHEST_FULL_HOUSE) out.write(FULL_HOUSE);
-		else if(handRank<HIGHEST_FOUR_OF_A_KIND) out.write(FOUR_OF_A_KIND);
-		else if(handRank<HIGHEST_STRAIGHT_FLUSH) out.write(STRAIGHT_FLUSH);
-		else throw new RuntimeException("invalid rank: " + handRank);
-		
-		out.write("\r");
-		*/
+		out.write(handStrength + "\r");
 		
 		out.flush();
 
@@ -174,7 +166,7 @@ public class SimpleBotHROMWekaFormat2 implements WekaFormat {
 		out.write("@ATTRIBUTE num_suited_flop {1,2,3}\r");
 		out.write("@ATTRIBUTE num_suited_turn {1,2,3,4,22}\r");
 		out.write("@ATTRIBUTE num_suited_river {0,3,4,5}\r");
-		out.write("@ATTRIBUTE hand_rank NUMERIC\r");
+		out.write("@ATTRIBUTE hand_strength NUMERIC\r");
 		out.write("\r");
 		out.write("@DATA\r");
 		out.flush();
