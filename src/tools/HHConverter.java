@@ -32,11 +32,18 @@ public class HHConverter {
 	private static final String DEFAULT_TEMPORARY_STORAGE_LOCATION = 
 		"S:\\Workspace\\MCTSBot\\weka\\serializedGameRecords.txt";
 	
+	private static final String[] simpleBotAliases = {"SimpleBot", 
+													  "Unknown", 
+													  "LoggingSimpleBot", 
+													  "LoggingSimpleBot1", 
+													  "LoggingSimpleBot2"};
+	
+	
 	private static final char CURRENCY_SYMBOL = '$';
 	
 	private static final boolean APPEND = false;
 	
-	private static final WekaFormat format = new SimpleBotHROMWekaFormat();
+	private static final WekaFormat format = new SBHROMWekaFormat();
 	
 	// Set this to true if you want to run the convertHistoriesToGameRecords 
 	// method when running MCTSBot in PA Pro.
@@ -71,8 +78,12 @@ public class HHConverter {
 			
 			while((gameRecord=(GameRecord)ois.readObject())!=null) {
 				gameRecord.checkGame();
-				format.write(gameRecord, out);
-				numSuccesses++;
+				
+				for(int i=0; i<simpleBotAliases.length; i++) {
+					format.write(gameRecord, simpleBotAliases[i], out);
+					numSuccesses++;
+				}
+				
 			}
 	
 		} catch(EOFException e) {

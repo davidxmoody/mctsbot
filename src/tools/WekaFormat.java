@@ -11,7 +11,7 @@ public interface WekaFormat {
 	
 	public Instance getInstance(ShowdownNode showdownNode, Player opponent, int botHandRank);
 	
-	public void write(GameRecord gameRecord, BufferedWriter out) throws Exception;
+	public void write(GameRecord gameRecord, String name, BufferedWriter out) throws Exception;
 	
 	public void writeHeader(BufferedWriter out) throws Exception;
 

@@ -1,7 +1,6 @@
 package tools;
 
 import java.io.BufferedWriter;
-import java.util.Arrays;
 import java.util.List;
 
 import mctsbot.actions.Action;
@@ -9,9 +8,9 @@ import mctsbot.actions.CallAction;
 import mctsbot.actions.FoldAction;
 import mctsbot.actions.RaiseAction;
 import mctsbot.gamestate.GameState;
-
-import com.biotools.meerkat.Card;
-import com.biotools.meerkat.Hand;
+import mctsbot.gamestate.Player;
+import mctsbot.nodes.ShowdownNode;
+import weka.core.Instance;
 
 public class SBNMOMWekaFormat implements WekaFormat {
 	
@@ -221,6 +220,18 @@ public class SBNMOMWekaFormat implements WekaFormat {
 		
 		out.flush();
 
+	}
+
+	public Instance getInstance(ShowdownNode showdownNode, Player opponent,
+			int botHandRank) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void write(GameRecord gameRecord, String name, BufferedWriter out)
+			throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 
 

@@ -1,22 +1,16 @@
 package mctsbot.opponentmodel;
 
-import mctsbot.gamestate.GameState;
-import mctsbot.nodes.ShowdownNode;
+import java.util.Random;
 
-import com.biotools.meerkat.Deck;
-import com.biotools.meerkat.HandEvaluator;
+import mctsbot.gamestate.Player;
+import mctsbot.nodes.ShowdownNode;
 
 public class RandomHandRankOpponentModel implements HandRankOpponentModel {
 
-	public boolean beatsOpponent(ShowdownNode showdownNode, int oppSeat, int botHandRank) {
-		
-		final GameState gameState = showdownNode.getGameState();
-		final Deck deck = gameState.createDeck();
-		
-		return HandEvaluator.rankHand(
-					deck.extractRandomCard(), 
-					deck.extractRandomCard(), 
-					gameState.getTable());
+	private static final Random random = new Random();
+
+	public boolean beatsOpponent(ShowdownNode showdownNode, Player opponent, int botHandRank) {
+		return random.nextBoolean();
 	}
 
 }
