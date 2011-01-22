@@ -24,7 +24,7 @@ import mctsbot.gamestate.GameState;
 public class HHConverter {
 	
 	private static final String DEFAULT_INPUT_FILE_LOCATION = 
-		"S:\\Workspace\\MCTSBot\\weka\\histories.txt";
+		"S:\\Workspace\\MCTSBot\\weka\\histories2.txt";
 	
 	private static final String DEFAULT_OUTPUT_FILE_LOCATION = 
 		"S:\\Workspace\\MCTSBot\\weka\\output.arff";
@@ -36,7 +36,11 @@ public class HHConverter {
 	
 	private static final boolean APPEND = false;
 	
-	private static final WekaFormat format = new SBNMOMWekaFormat();
+	private static final WekaFormat format = new SimpleBotHROMWekaFormat();
+	
+	// Set this to true if you want to run the convertHistoriesToGameRecords 
+	// method when running MCTSBot in PA Pro.
+	public static final boolean CONVERT = true;
 	
 	/**
 	 * When run, this method will go through the entire file given to it and 

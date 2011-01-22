@@ -8,7 +8,7 @@ import com.biotools.meerkat.HandEvaluator;
 
 public class RandomHandRankOpponentModel implements HandRankOpponentModel {
 
-	public int getRank(ShowdownNode showdownNode, int oppSeat) {
+	public boolean beatsOpponent(ShowdownNode showdownNode, int oppSeat, int botHandRank) {
 		
 		final GameState gameState = showdownNode.getGameState();
 		final Deck deck = gameState.createDeck();

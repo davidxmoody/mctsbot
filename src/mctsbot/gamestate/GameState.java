@@ -487,6 +487,10 @@ public class GameState implements Cloneable {
 		return inactivePlayers;
 	}
 	
+	public List<Player> getActivePlayers() {
+		return activePlayers;
+	}
+	
 	public GameState goToNextStage() {
 		
 		/*System.out.println("goToNextStage called, current stage = " + 

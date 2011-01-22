@@ -53,8 +53,7 @@ public class Config {
 		this.backpropagationStrategy = new AveragingBackpropagationStrategy();
 		
 		// HandRankOpponentModel.
-		//this.handRankOpponentModel = new SimpleWekaHandRankOpponentModel();
-		this.handRankOpponentModel = new RandomHandRankOpponentModel();;
+		this.handRankOpponentModel = new SimpleWekaHandRankOpponentModel();
 		
 		// NextActionOpponentModel.
 		this.nextActionOpponentModel = null;

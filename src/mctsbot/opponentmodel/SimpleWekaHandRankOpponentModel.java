@@ -160,20 +160,26 @@ public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 	}
 
 	
-	public int getRank(ShowdownNode showdownNode, int oppSeat) {
+	public boolean beatsOpponent(ShowdownNode showdownNode, Player opponent, int botHandRank) {
 		try {
 			
-			final Instance instance = getInstance(showdownNode.getGameState(), oppSeat);
+			final Instance instance = getInstance(showdownNode, opponent, botHandRank);
 			
 			final double result = classifier.classifyInstance(instance);
 			
-			return (int)result;
+			return false;//TODO
 			
 		} catch(Exception e) {
-			throw new RuntimeException();
+			throw new RuntimeException(e);
 		}
 	}
 	
+	private Instance getInstance(ShowdownNode showdownNode, Player opponent, int botHandRank) {
+		
+		return null;
+	}
+
+
 	private static File getDataFile() {
 		File file = null;
 		try {
@@ -207,8 +213,7 @@ public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 			} // else it already existed.
 			
 		} catch(Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException();
+			throw new RuntimeException(e);
 		}
 		return file;
 	}

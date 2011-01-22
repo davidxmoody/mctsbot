@@ -67,6 +67,9 @@ public class SBNMOMWekaFormat implements WekaFormat {
 		final PlayerRecord player = gameRecord.getPlayer(SIMPLEBOT);
 		//final Hand table = gameRecord.getTable();
 		
+		//TODO: make it so that it adds a new entry every time 
+		
+		
 		// Actions.
 		for(int i=GameState.PREFLOP; i<=GameState.RIVER; i++) {
 			int raiseCount = 0;

@@ -22,6 +22,8 @@ public class MCTSBot implements Player {
 	protected GameState currentGameState;
 	private Config config;
 	
+	private static boolean convert = HHConverter.CONVERT;
+	
 	
 	public void init(Preferences prefs) {
 		setConfig(new Config(prefs));
@@ -51,29 +53,21 @@ public class MCTSBot implements Player {
 	
 	public Action getAction() {
 		
-		
-		
-		
-		
-		
-		
-		
-		try {
-			HHConverter.convertHistoriesToGameRecords();
-			System.out.println("Conversion Successful");
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Conversion Caused An Error");
+		// Perform conversion on histories.txt if the flag is set.
+		if(convert) {
+			try {
+				HHConverter.convertHistoriesToGameRecords();
+				System.out.println("Conversion Successful");
+				return null;
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println("Conversion Caused An Error");
+				return null;
+			}
 		}
 		
-		if(true) return null;
 
-		
-		
-		
-		
 		// Make root node.
-		@SuppressWarnings("unused")
 		RootNode root = new RootNode(currentGameState, config);
 		
 		// Do iterations until time limit reached.

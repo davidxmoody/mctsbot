@@ -3,6 +3,7 @@ package mctsbot.strategies.simulation;
 import java.util.Random;
 
 import mctsbot.gamestate.GameState;
+import mctsbot.gamestate.Player;
 import mctsbot.nodes.AllOpponentsFoldedNode;
 import mctsbot.nodes.BotFoldedNode;
 import mctsbot.nodes.ChanceNode;
@@ -89,22 +90,23 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 		final int botHandRank = HandEvaluator.rankHand(
 				gameState.getC1(), gameState.getC2(), gameState.getTable());
 		
-		// Work out how many opponents there are.
-		final int noOfOpponents = gameState.getNoOfActivePlayers()-1;
-
-		// For each opponent, deal them two random, non-taken cards and work 
-		// out their hand rank. If it is the maximum so far then record it.
-		int maxOpponentHandRank = 0;
-		for(int i=0; i<noOfOpponents; i++) {
-			final int opponentHandRank = handRankOpponentModel.getRank(showdownNode, 0);
-			if(opponentHandRank>maxOpponentHandRank) maxOpponentHandRank = opponentHandRank;
+		// For each opponent, use the hand rank opponent model to work out whether or not
+		// they can beat the bot's hand. If any opponent can, then the bot loses, else 
+		// the bot wins.
+		// TODO: check to see if/how much this biases the results
+		boolean botWins = true;
+		for(Player opponent: gameState.getActivePlayers()) {
+			if(opponent.getSeat()==gameState.getBotSeat()) continue;
+			if(!handRankOpponentModel.beatsOpponent(showdownNode, opponent, botHandRank)) {
+				botWins = false;
+				break;
+			}
 		}
 		
 		// Calculate the expected value of the game state depending 
-		// on whether the bot wins or loses in the random showdown.
+		// on whether the bot wins or loses in the showdown.
 		double expectedValue = gameState.getBotMoney();
-		if(botHandRank>=maxOpponentHandRank) 
-			expectedValue += gameState.getPot();
+		if(botWins)	expectedValue += gameState.getPot();
 		
 		return expectedValue;
 	}
