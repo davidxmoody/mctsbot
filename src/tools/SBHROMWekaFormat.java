@@ -40,9 +40,6 @@ public class SBHROMWekaFormat implements WekaFormat {
 	private static final String STRAIGHT_FLUSH = "straight_flush";
 	*/
 
-	//TODO remove this
-	private static final String SIMPLEBOT = "SimpleBot";
-	
 	private static final String RELATION_TITLE = "SimpleBotHROM";
 	
 	// TODO: Remember to update this.
@@ -80,14 +77,20 @@ public class SBHROMWekaFormat implements WekaFormat {
 		out.flush();
 	}
 	
-	//TODO: change names
+	
 	public void write(GameRecord gameRecord, String name, BufferedWriter out) throws Exception {
 		if(!gameRecord.endedInShowdown()) return;
 		
-		final FileOutputType fileOutputType = new FileOutputType();
+		final PlayerRecord player;
+		try {
+			player = gameRecord.getPlayer(name);
+		} catch(Exception e) {
+			return;
+		}
 		
-		final PlayerRecord player = gameRecord.getPlayer(name);
 		final Hand table = gameRecord.getTable();
+		
+		final FileOutputType fileOutputType = new FileOutputType();
 		
 		// Actions.
 		setActionValues(fileOutputType, player.getActions(GameState.PREFLOP));
@@ -173,7 +176,7 @@ public class SBHROMWekaFormat implements WekaFormat {
 		Arrays.sort(ranks);
 		
 		// Set the ranks
-		for(int i=0; i<5; i++) inst.setNextValue(Card.getRankChar(ranks[i]));
+		for(int i=0; i<5; i++) inst.setNextValue("" + Card.getRankChar(ranks[i]));
 		
 		
 		// Flop.
@@ -237,259 +240,6 @@ public class SBHROMWekaFormat implements WekaFormat {
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	public void write2(GameRecord gameRecord, BufferedWriter out) throws Exception {
-		
-		if(!gameRecord.endedInShowdown()) return;
-		
-		final PlayerRecord player = gameRecord.getPlayer(SIMPLEBOT);
-		final Hand table = gameRecord.getTable();
-		
-		// Actions.
-		for(int i=GameState.PREFLOP; i<=GameState.RIVER; i++) {
-			int raiseCount = 0;
-			int callCount = 0;
-			for(Action action: player.getActions(i)) {
-				if(action instanceof RaiseAction) raiseCount++;
-				if(action instanceof CallAction) callCount++;
-			}
-			final int totalCount = raiseCount + callCount;
-			
-			if(totalCount<=0) throw new RuntimeException("totalCount == 0");
-			
-			out.write(raiseCount + ",");
-			out.write(callCount + ",");
-		}
-		
-		
-		
-		
-		// Table cards.
-		int[] ranks = new int[5];
-		int[] suits = new int[5];
-		
-		// TODO: make this more efficient by using the array already stored in gameRecord.
-		int[] cards = table.getCardArray();
-		
-		for(int j=0; j<5; j++) {
-			ranks[j] = Card.getRank(cards[j+1]);
-			suits[j] = Card.getSuit(cards[j+1]);
-		}
-		
-		// Write card ranks
-		
-		// Sort the ranks first
-		Arrays.sort(ranks);
-		
-		for(int j=0; j<5; j++) {
-			out.write(Card.getRankChar(ranks[j]) + ",");
-		}
-		
-		// Write suits.
-		int[] suitCounts = new int[4];
-		
-		// Flop.
-		suitCounts[suits[0]]++;
-		suitCounts[suits[1]]++;
-		suitCounts[suits[2]]++;
-		
-		String numSuitedFlop = "1";
-		for(int j=0; j<4; j++) {
-			if(suitCounts[j]==3) {
-				numSuitedFlop = "3";
-				break;
-			} else if(suitCounts[j]==2) {
-				numSuitedFlop = "2";
-				break;
-			} 
-		}
-		out.write(numSuitedFlop + ",");
-		
-		// Turn.
-		suitCounts[suits[3]]++;
-		
-		String numSuitedTurn = "1";
-		for(int j=0; j<4; j++) {
-			if(suitCounts[j]==4) {
-				numSuitedTurn = "4";
-				break;
-			} else if(suitCounts[j]==3) {
-				numSuitedTurn = "3";
-				break;
-			} else if(suitCounts[j]==2) {
-				for(int k=0; k<4; k++) {
-					if(k!=j && suitCounts[k]==2) {
-						numSuitedTurn = "22";
-					} else if(suitCounts[k]==1) {
-						numSuitedTurn = "2";
-					}
-				}
-			} 
-		}
-		out.write(numSuitedTurn + ",");
-		
-		// River.
-		suitCounts[suits[4]]++;
-		
-		String numSuitedRiver = "0";
-		for(int j=0; j<4; j++) {
-			if(suitCounts[j]==5) {
-				numSuitedRiver = "5";
-				break;
-			} else if(suitCounts[j]==4) {
-				numSuitedRiver = "4";
-				break;
-			} else if(suitCounts[j]==3) {
-				numSuitedRiver = "3";
-				break;
-			}
-		}
-		out.write(numSuitedRiver + ",");
-		
-		
-		
-		final int simpleBotsHandRank = player.getHandRank();
-		
-		int otherPlayersHandRank = -1;
-		
-		for(PlayerRecord otherPlayer: gameRecord.getPlayers()) {
-			if(otherPlayer!=player) {
-				otherPlayersHandRank = otherPlayer.getHandRank();
-				break;
-			}
-		}
-		
-		if(otherPlayersHandRank<0) throw new RuntimeException("other players hand rank is -1");
-		
-		out.write(otherPlayersHandRank + ",");
-		
-		out.write(simpleBotsHandRank>=otherPlayersHandRank?"higher":"lower");
-		
-		out.write("\r");
-		
-		//final double handStrength = HandStrengthConverter.rankToStrength(handRank);
-		
-		//out.write(handStrength + "\r");
-
-		out.flush();
-
-	}
-
-	//TODO: remove unneeded methods
-	public Instance getInstance2(ShowdownNode showdownNode, Player opponent, int botHandRank) {
-
-		final Instance instance = new Instance(NUM_ATTRIBUTES);
-		int x = 0;
-		
-		final Hand table = showdownNode.getGameState().getTable();
-		
-		// Actions.
-		for(int i=GameState.PREFLOP; i<=GameState.RIVER; i++) {
-			int raiseCount = 0;
-			int callCount = 0;
-			for(Action action: opponent.getActions(i)) {
-				if(action instanceof RaiseAction) raiseCount++;
-				if(action instanceof CallAction) callCount++;
-			}
-			
-			instance.setValue(x++, raiseCount);
-			instance.setValue(x++, callCount);
-		}
-		
-		// Table cards.
-		int[] ranks = new int[5];
-		int[] suits = new int[5];
-		
-		int[] cards = table.getCardArray();
-		
-		for(int j=0; j<5; j++) {
-			ranks[j] = Card.getRank(cards[j+1]);
-			suits[j] = Card.getSuit(cards[j+1]);
-		}
-		
-		// Write card ranks
-		
-		// Sort the ranks first
-		Arrays.sort(ranks);
-		
-		for(int j=0; j<5; j++) {
-			instance.setValue(x++, Card.getRankChar(ranks[j]));
-		}
-		
-		// Write suits.
-		int[] suitCounts = new int[4];
-		
-		// Flop.
-		suitCounts[suits[0]]++;
-		suitCounts[suits[1]]++;
-		suitCounts[suits[2]]++;
-		
-		String numSuitedFlop = "1";
-		for(int j=0; j<4; j++) {
-			if(suitCounts[j]==3) {
-				numSuitedFlop = "3";
-				break;
-			} else if(suitCounts[j]==2) {
-				numSuitedFlop = "2";
-				break;
-			} 
-		}
-		instance.setValue(x++, numSuitedFlop);
-		
-		// Turn.
-		suitCounts[suits[3]]++;
-		
-		String numSuitedTurn = "1";
-		for(int j=0; j<4; j++) {
-			if(suitCounts[j]==4) {
-				numSuitedTurn = "4";
-				break;
-			} else if(suitCounts[j]==3) {
-				numSuitedTurn = "3";
-				break;
-			} else if(suitCounts[j]==2) {
-				for(int k=0; k<4; k++) {
-					if(k!=j && suitCounts[k]==2) {
-						numSuitedTurn = "22";
-					} else if(suitCounts[k]==1) {
-						numSuitedTurn = "2";
-					}
-				}
-			} 
-		}
-		instance.setValue(x++, numSuitedTurn);
-		
-		// River.
-		suitCounts[suits[4]]++;
-		
-		String numSuitedRiver = "0";
-		for(int j=0; j<4; j++) {
-			if(suitCounts[j]==5) {
-				numSuitedRiver = "5";
-				break;
-			} else if(suitCounts[j]==4) {
-				numSuitedRiver = "4";
-				break;
-			} else if(suitCounts[j]==3) {
-				numSuitedRiver = "3";
-				break;
-			}
-		}
-		instance.setValue(x++, numSuitedRiver);
-		
-		
-		instance.setValue(x++, botHandRank);
-		
-		
-		
-		return instance;
-	}
-	
 	private interface OutputType {
 		void setNextValue(double value);
 		void setNextValue(String value);
@@ -506,6 +256,7 @@ public class SBHROMWekaFormat implements WekaFormat {
 
 		public void setNextValue(String value) {
 			sb.append((empty?"":",") + value);
+			empty = false;
 		}
 		
 		public void write(BufferedWriter out) {
