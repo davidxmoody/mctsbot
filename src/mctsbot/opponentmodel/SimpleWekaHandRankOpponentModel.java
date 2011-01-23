@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
@@ -24,39 +25,34 @@ public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 		"S:\\Workspace\\MCTSBot\\weka\\output.arff";
 	
 	private static final String DEFAULT_CLASSIFIER_LOCATION = 
-		"S:\\Workspace\\MCTSBot\\weka\\mymodel.model";;
-	
+		"S:\\Workspace\\MCTSBot\\weka\\mymodel.model";
+
+	private static double HIGHER = 0.0;
+	private static double LOWER = 1.0;
 	
 	private static final SBHROMWekaFormat hROMWekaFormat = new SBHROMWekaFormat();
 	
-	private Classifier classifier;
-	private Instances data;
+	private Classifier classifier = null;
+	private Instances template = null;
 	
 	
 	public SimpleWekaHandRankOpponentModel() {
 		
 		try {
-			/*
-			//TODO
 			
-			//final DataSource source = new DataSource(FILE_LOCATION);
-			//final Instances data = source.getDataSet();
+			// Load Template.
+			template = new Instances(new BufferedReader(
+					new FileReader(DEFAULT_ARFF_HEADER_LOCATION)));
+			template.setClassIndex(template.numAttributes()-1);
 			
+			// Load Classifier if possible, if not then try to rebuild classifier.
+			try {
+				loadClassifier();
+			} catch(Exception e) {
+				e.printStackTrace();
+				rebuildClassifier();
+			}
 			
-			data = new Instances(new BufferedReader(new FileReader(FILE_LOCATION)));
-			
-			
-			
-			data.setClassIndex(data.numAttributes()-1);
-			
-			
-			classifier = new M5P();
-			
-			// Need to set classifier options here?
-			
-			classifier.buildClassifier(data);
-			
-			*/
 		} catch(Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -71,16 +67,24 @@ public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 			
 			final double result = classifier.classifyInstance(instance);
 			
-			return false;//TODO
+			if(result==HIGHER) {
+				return false;
+			} else if(result==LOWER) {
+				return true;
+			} else {
+				throw new Exception("unknown result: " + result);
+			}
 			
 		} catch(Exception e) {
+			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 	}
 	
-	public void buildClassifier() throws Exception {
+	public void rebuildClassifier() throws Exception {
 		
-		data = new Instances(new BufferedReader(new FileReader(DEFAULT_ARFF_FILE_LOCATION)));
+		final Instances data = new Instances(new BufferedReader(
+				new FileReader(DEFAULT_ARFF_FILE_LOCATION)));
 		data.setClassIndex(data.numAttributes()-1);
 		
 		classifier = new Logistic();
@@ -93,33 +97,29 @@ public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 		oos.close();
 	}
 	
+	public void loadClassifier() throws Exception {
+		final ObjectInputStream ois = new ObjectInputStream(
+				new FileInputStream(DEFAULT_CLASSIFIER_LOCATION));
+		classifier = (Classifier) ois.readObject();
+		ois.close();
+	}
+	
+	public void saveClassifier() throws IOException {
+		if(classifier==null) return;
+		
+		final ObjectOutputStream oos = new ObjectOutputStream(
+				new FileOutputStream(DEFAULT_CLASSIFIER_LOCATION));
+		oos.writeObject(classifier);
+		oos.flush();
+		oos.close();
+	}
+	
 	public static void main(String[] args) throws Exception {
 		
-//		SimpleWekaHandRankOpponentModel hrom = new SimpleWekaHandRankOpponentModel();
-//		
-//		hrom.buildClassifier();
-		
-		final ObjectInputStream ois = new ObjectInputStream(new FileInputStream(DEFAULT_CLASSIFIER_LOCATION));
-		
-		Classifier classifier = (Classifier) ois.readObject();
-		
-		Instances data = new Instances(new BufferedReader(new FileReader(DEFAULT_ARFF_FILE_LOCATION)));
-		data.setClassIndex(data.numAttributes()-1);
-		
-		for(int i=100; i<120; i++) {
-			final Instance inst = data.instance(i);
-			System.out.println(inst);
-			System.out.println(classifier.classifyInstance(inst));
-		}
-		
-		
-		
-		
-		
-		
-		
-		
-		
+		SimpleWekaHandRankOpponentModel hrom = new SimpleWekaHandRankOpponentModel();
+		hrom.rebuildClassifier();
+		hrom.saveClassifier();
+		System.out.println("Success!");
 	}
 
 }

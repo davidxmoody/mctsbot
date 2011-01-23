@@ -47,7 +47,7 @@ public class HHConverter {
 	
 	// Set this to true if you want to run the convertHistoriesToGameRecords 
 	// method when running MCTSBot in PA Pro.
-	public static final boolean CONVERT = true;
+	public static final boolean CONVERT = false;
 	
 	/**
 	 * When run, this method will go through the entire file given to it and 
