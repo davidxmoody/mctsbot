@@ -12,6 +12,7 @@ import mctsbot.gamestate.GameState;
 import mctsbot.gamestate.Player;
 import mctsbot.nodes.ShowdownNode;
 import weka.core.Instance;
+import weka.core.Instances;
 
 import com.biotools.meerkat.Card;
 import com.biotools.meerkat.Hand;
@@ -39,11 +40,18 @@ public class SBHROMWekaFormat implements WekaFormat {
 	private static final String FOUR_OF_A_KIND = "four_of_a_kind";
 	private static final String STRAIGHT_FLUSH = "straight_flush";
 	*/
-
-	private static final String RELATION_TITLE = "SimpleBotHROM";
 	
 	// TODO: Remember to update this.
 	private static final int NUM_ATTRIBUTES = 18;
+	
+	private static final String RELATION_TITLE = "SimpleBotHROM";
+	
+	private Instances template = null;
+	
+	
+	public SBHROMWekaFormat(Instances template) {
+		this.template = template;
+	}
 	
 	public void writeHeader(BufferedWriter out) throws Exception {
 		out.write("@RELATION " + RELATION_TITLE + "\r");
@@ -272,8 +280,13 @@ public class SBHROMWekaFormat implements WekaFormat {
 	
 	private class InstanceOutputType implements OutputType {
 		
-		private Instance inst = new Instance(NUM_ATTRIBUTES);
+		private Instance inst = null;
 		private int i = 0;
+		
+		public InstanceOutputType() {
+			inst = new Instance(NUM_ATTRIBUTES);
+			inst.setDataset(template);
+		}
 
 		public void setNextValue(double value) {
 			inst.setValue(i++, value);

@@ -3,7 +3,6 @@ package mctsbot;
 import mctsbot.gamestate.GameState;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.RootNode;
-import mctsbot.opponentmodel.SimpleWekaHandRankOpponentModel;
 import mctsbot.strategies.simulation.DynamicDistributionSimulationStrategy;
 import tools.HHConverter;
 
@@ -66,6 +65,7 @@ public class MCTSBot implements Player {
 			}
 		}
 		
+		/*
 		SimpleWekaHandRankOpponentModel hrom = new SimpleWekaHandRankOpponentModel();
 		try {
 			hrom.loadClassifier();
@@ -75,13 +75,9 @@ public class MCTSBot implements Player {
 		}
 		
 		if(true) return null;
-		
-		
-		
-		
+		*/
 
 		// Make root node.
-		@SuppressWarnings("unused")
 		RootNode root = new RootNode(currentGameState, config);
 		
 		// Do iterations until time limit reached.

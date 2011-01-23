@@ -47,7 +47,7 @@ public class Config {
 		
 		// SimulationStrategy.
 		this.simulationStrategy = new AveragingSimulationStrategy(
-				new StaticDistributionSimulationStrategy(), 8);
+				new StaticDistributionSimulationStrategy(), 4);
 		
 		// BackpropagationStrategy.
 		this.backpropagationStrategy = new AveragingBackpropagationStrategy();

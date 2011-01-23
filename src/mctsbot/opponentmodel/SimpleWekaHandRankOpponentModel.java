@@ -30,10 +30,9 @@ public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 	private static double HIGHER = 0.0;
 	private static double LOWER = 1.0;
 	
-	private static final SBHROMWekaFormat hROMWekaFormat = new SBHROMWekaFormat();
+	private static SBHROMWekaFormat hROMWekaFormat = null;
 	
 	private Classifier classifier = null;
-	private Instances template = null;
 	
 	
 	public SimpleWekaHandRankOpponentModel() {
@@ -41,9 +40,12 @@ public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 		try {
 			
 			// Load Template.
-			template = new Instances(new BufferedReader(
+			Instances template = new Instances(new BufferedReader(
 					new FileReader(DEFAULT_ARFF_HEADER_LOCATION)));
 			template.setClassIndex(template.numAttributes()-1);
+			
+			// Create Weka Format.
+			hROMWekaFormat = new SBHROMWekaFormat(template);
 			
 			// Load Classifier if possible, if not then try to rebuild classifier.
 			try {
@@ -76,7 +78,6 @@ public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 			}
 			
 		} catch(Exception e) {
-			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 	}

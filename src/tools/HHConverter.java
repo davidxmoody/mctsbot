@@ -43,7 +43,7 @@ public class HHConverter {
 	
 	private static final boolean APPEND = false;
 	
-	private static final WekaFormat format = new SBHROMWekaFormat();
+	private static final WekaFormat format = new SBHROMWekaFormat(null);
 	
 	// Set this to true if you want to run the convertHistoriesToGameRecords 
 	// method when running MCTSBot in PA Pro.
