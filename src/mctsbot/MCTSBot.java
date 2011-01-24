@@ -175,8 +175,9 @@ public class MCTSBot implements Player {
 		
 		for(int i=0; i<maxDepth; i++) {
 			System.out.println("Depth = " + i);
-			current.printDetails();
-			current.printChildrensDetails();
+			System.out.println();
+			current.printDetails("  ");
+			current.printChildrensDetails("    ");
 			if(current instanceof LeafNode) break;
 			if(current.getChildren()==null) break;
 			current = current.getConfig().getSelectionStrategy().select(current);
@@ -215,9 +216,9 @@ public class MCTSBot implements Player {
 			
 		} while(endTime>System.currentTimeMillis());
 		
-//		System.out.println();
-//		System.out.println("Performed " + noIterations + " iterations in " + 
-//				(System.currentTimeMillis()-startTime) + " milliseconds.");
+		System.out.println();
+		System.out.println("Performed " + noIterations + " iterations in " + 
+				(System.currentTimeMillis()-startTime) + " milliseconds.");
 	}
 	
 	

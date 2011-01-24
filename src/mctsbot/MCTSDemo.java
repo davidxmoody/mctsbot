@@ -54,7 +54,7 @@ public class MCTSDemo  {
 			System.out.println("Current Node is a " + currentNode.getClass().getSimpleName() + 
 					" and has " + currentNode.getChildren().size() + " children.");
 			System.out.println();
-			currentNode.printChildrensDetails();
+			currentNode.printChildrensDetails("");
 			
 			int input = System.in.read();
 			

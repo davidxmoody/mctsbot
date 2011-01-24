@@ -43,15 +43,16 @@ public class Config {
 		this.actionSelectionStrategy = new HighestEVActionSelectionStrategy();
 		
 		// SelectionStrategy.
-		this.selectionStrategy = new MixedSelectionStrategy(10, 
-				new RandomSelectionStrategy(), new UCTSelectionStrategy());
+//		this.selectionStrategy = new MixedSelectionStrategy(20, 
+//				new RandomSelectionStrategy(), new UCTVarSelectionStrategy());
+		this.selectionStrategy = new UCTVarSelectionStrategy();
 		
 		// SimulationStrategy.
-		this.simulationStrategy = new AveragingSimulationStrategy(
+		this.simulationStrategy = new MedianSimulationStrategy(
 				new StaticDistributionSimulationStrategy(), 5);
 		
 		// BackpropagationStrategy.
-		this.backpropagationStrategy = new AveragingBackpropagationStrategy();
+		this.backpropagationStrategy = new AveragingVarBackpropagationStrategy();
 		
 		// HandRankOpponentModel.
 		this.handRankOpponentModel = new SimpleWekaHandRankOpponentModel();

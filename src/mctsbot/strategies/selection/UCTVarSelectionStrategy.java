@@ -7,14 +7,15 @@ import java.util.Random;
 import mctsbot.nodes.ChoiceNode;
 import mctsbot.nodes.Node;
 
-public class UCTSelectionStrategy implements SelectionStrategy {
+public class UCTVarSelectionStrategy implements SelectionStrategy {
 	
 	public static double explorationTally = 0;
 	public static double exploitationTally = 0;
 	
 	//TODO: find a good value for C.
 	//TODO: make final again
-	public static double C = 3.5;
+	public static double C1 = 10.0;
+	public static double C2 = 0.2;
 	
 	private static final Random random = new Random();
 	
@@ -81,8 +82,9 @@ public class UCTSelectionStrategy implements SelectionStrategy {
 	
 	
 	private double formula(Node child, Node parent) {
-		return child.getExpectedValue() + 
-			C*Math.sqrt(Math.log(parent.getVisitCount())/child.getVisitCount());
+		return child.getExpectedValue() 
+			 + C1*Math.sqrt(Math.log(parent.getVisitCount())/child.getVisitCount()) 
+			 + C2*child.getStdDev();
 	}
 	
 	
