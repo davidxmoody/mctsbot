@@ -76,9 +76,9 @@ public class SBHROMWekaFormat implements WekaFormat {
 		out.write("@ATTRIBUTE num_suited_turn {1,2,3,4,22}\r");
 		out.write("@ATTRIBUTE num_suited_river {0,3,4,5}\r");
 		
-		out.write("@ATTRIBUTE other_players_hand_rank NUMERIC\r");
+		out.write("@ATTRIBUTE other_players_hand_strength NUMERIC\r");
 		
-		out.write("@ATTRIBUTE simplebots_hand_rank {higher,lower}\r");
+		out.write("@ATTRIBUTE simplebots_hand_strength {higher,lower}\r");
 		
 		out.write("\r");
 		out.write("@DATA\r");
@@ -109,7 +109,7 @@ public class SBHROMWekaFormat implements WekaFormat {
 		// Table Cards.
 		setTableCardValues(fileOutputType, table);
 		
-		// Other Player's Hand Rank.
+		// Other Player's Hand Strength.
 		final int playersHandRank = player.getHandRank();
 		int otherPlayersHandRank = -1;
 		//TODO: make this work better when there are more than two players.
@@ -121,9 +121,10 @@ public class SBHROMWekaFormat implements WekaFormat {
 		}
 		if(otherPlayersHandRank<0) throw new RuntimeException("other players hand rank is -1");
 		
-		fileOutputType.setNextValue(otherPlayersHandRank);
 		
-		// Player's Hand Rank is higher or lower.
+		fileOutputType.setNextValue(HandStrengthConverter.rankToStrength(otherPlayersHandRank));
+		
+		// Higher or Lower.
 		fileOutputType.setNextValue(playersHandRank>=otherPlayersHandRank?"higher":"lower");
 		
 		// Write To File.
@@ -145,8 +146,8 @@ public class SBHROMWekaFormat implements WekaFormat {
 		// Table Cards.
 		setTableCardValues(instanceOutputType, table);
 		
-		// Other Player's Hand Rank.
-		instanceOutputType.setNextValue(botHandRank);
+		// Other Player's Hand Strength.
+		instanceOutputType.setNextValue(HandStrengthConverter.rankToStrength(botHandRank));
 		
 		// Return The Instance.
 		return instanceOutputType.getInstance();

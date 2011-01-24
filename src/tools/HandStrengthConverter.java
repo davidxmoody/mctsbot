@@ -44,7 +44,7 @@ public class HandStrengthConverter {
 		double strength = 0.0;
 		
 		for(int i=0; i<HIGHEST_RANKS.length; i++) {
-			if(rank<HIGHEST_RANKS[i]) {
+			if(rank<=HIGHEST_RANKS[i]) {
 				strength += weights[i]*(rank-(i==0?0:HIGHEST_RANKS[i-1]))
 						/(HIGHEST_RANKS[i]-(i==0?0:HIGHEST_RANKS[i-1]));
 				break;

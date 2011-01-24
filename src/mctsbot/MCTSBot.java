@@ -3,6 +3,7 @@ package mctsbot;
 import mctsbot.gamestate.GameState;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.RootNode;
+import mctsbot.strategies.selection.UCTSelectionStrategy;
 import mctsbot.strategies.simulation.DynamicDistributionSimulationStrategy;
 import tools.HHConverter;
 
@@ -64,18 +65,6 @@ public class MCTSBot implements Player {
 				return null;
 			}
 		}
-		
-		/*
-		SimpleWekaHandRankOpponentModel hrom = new SimpleWekaHandRankOpponentModel();
-		try {
-			hrom.loadClassifier();
-			System.out.println("Classifier Loaded!");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		if(true) return null;
-		*/
 
 		// Make root node.
 		RootNode root = new RootNode(currentGameState, config);
@@ -87,10 +76,10 @@ public class MCTSBot implements Player {
 		final Action action = convertToMeerkatAction(
 				config.getActionSelectionStrategy().select(root));
 		
-		
+		//TODO: return a check action instead of fold 
 		
 		// Debugging stuff.
-		/*System.out.println("explorationTally = " + UCTSelectionStrategy.explorationTally);
+		System.out.println("explorationTally = " + UCTSelectionStrategy.explorationTally);
 		System.out.println("exploitationTally = " + UCTSelectionStrategy.exploitationTally);
 		System.out.println("exploration percentage = " + 
 				(100*UCTSelectionStrategy.explorationTally/
@@ -98,7 +87,7 @@ public class MCTSBot implements Player {
 								+UCTSelectionStrategy.exploitationTally)));
 		
 		UCTSelectionStrategy.exploitationTally = 0;
-		UCTSelectionStrategy.explorationTally = 0;*/
+		UCTSelectionStrategy.explorationTally = 0;
 		
 		/*System.out.print("Fold Tally = ");
 		for(int i=1; i<=4; i++) {
@@ -221,18 +210,6 @@ public class MCTSBot implements Player {
 	}
 	
 	public void stageEvent(int stage) {
-		//TODO: remove this
-		/*System.out.println("stageEvent called, stage = " + stage);
-		
-		for(int i=0; i<gi.getBoard().size(); i++) {
-			System.out.println("gi board" + i + " = " + gi.getBoard().getCard(i));
-		}
-		
-		for(int i=0; i<currentGameState.getTable().size(); i++) {
-			System.out.println("oldgamestate board" + i + " = " + 
-					currentGameState.getTable().getCard(i));
-		}*/
-		
 		if(stage>0) {
 			currentGameState = currentGameState.setTable(gi.getBoard());
 			currentGameState = currentGameState.goToNextStage();
