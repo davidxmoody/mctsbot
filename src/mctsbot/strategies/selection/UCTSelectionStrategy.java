@@ -13,7 +13,8 @@ public class UCTSelectionStrategy implements SelectionStrategy {
 	public static double exploitationTally = 0;
 	
 	//TODO: find a good value for C.
-	public static final double C = 1.5;
+	//TODO: make final again
+	public static double C = 3.5;
 	
 	private static final Random random = new Random();
 	

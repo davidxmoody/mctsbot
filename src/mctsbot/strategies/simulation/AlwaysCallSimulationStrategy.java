@@ -1,20 +1,28 @@
 package mctsbot.strategies.simulation;
 
-import mctsbot.actions.Action;
+import java.util.Random;
+
 import mctsbot.gamestate.GameState;
+import mctsbot.gamestate.Player;
 import mctsbot.nodes.AllOpponentsFoldedNode;
 import mctsbot.nodes.BotFoldedNode;
 import mctsbot.nodes.ChanceNode;
-import mctsbot.nodes.ChoiceNode;
 import mctsbot.nodes.LeafNode;
 import mctsbot.nodes.Node;
-import mctsbot.nodes.OpponentNode;
+import mctsbot.nodes.PlayerNode;
 import mctsbot.nodes.ShowdownNode;
+import mctsbot.opponentmodel.HandRankOpponentModel;
 
-import com.biotools.meerkat.Deck;
 import com.biotools.meerkat.HandEvaluator;
 
 public class AlwaysCallSimulationStrategy implements SimulationStrategy {
+	
+	private static final int[] FOLD_WEIGHTS = {1, 1, 1, 1};
+	private static final int[] CALL_WEIGHTS = {100, 100, 100, 100};
+	private static final int[] RAISE_WEIGHTS = {1, 1, 1, 1};
+	
+	
+	private static final Random random = new Random();
 
 	public double simulate(Node node) {
 		
@@ -27,18 +35,37 @@ public class AlwaysCallSimulationStrategy implements SimulationStrategy {
 				return node.getGameState().getBotMoney()+node.getGameState().getPot();
 				
 			} else if(node instanceof ShowdownNode) {
-				return simulate(node.getGameState());
-				
+				return simulateShowdown((ShowdownNode)node);
+
 			} else {
 				throw new RuntimeException("Unknown node type passed to simulate.");
 			}
 			
 			
 		} else if(node instanceof ChanceNode) {
-			return simulate(node.getGameState());
+			return simulate(((ChanceNode)node).generateChild());
 			
-		} else if((node instanceof ChoiceNode) || (node instanceof OpponentNode)) {
-			return simulate(node.getGameState());
+		} else if(node instanceof PlayerNode) {
+			
+			// Not actually correct when dealing with the person who put in the big blind.
+			//TODO: fix this
+			final boolean canCheck = node.getGameState().getMaxBetThisRound()==0.0;
+			final int stage = node.getGameState().getStage();
+			
+			final double randomDouble = random.nextDouble();
+			final double raiseProb = getRaiseProb(stage, canCheck);
+			final double callProb = getCallProb(stage, canCheck);
+			
+			if(randomDouble<raiseProb) {
+				return simulate(((PlayerNode)node).createRaiseNode());
+				
+			} else if(randomDouble<raiseProb+callProb) {
+				return simulate(((PlayerNode)node).createCallNode());
+				
+			} else {
+				return simulate(((PlayerNode)node).createFoldNode());
+			}
+
 			
 		} else {
 			throw new RuntimeException("Unknown node type passed to simulate.");
@@ -46,87 +73,68 @@ public class AlwaysCallSimulationStrategy implements SimulationStrategy {
 		
 	}
 	
-	private double simulate(GameState gameState) {
+	
+	/**
+	 * Simulates a showdown event where all opponents are dealt random 
+	 * cards and the winner is calculated.
+	 * 
+	 * @param showdownNode the node to start the simulation from.
+	 * @return the amount of money the bot has after the showdown.
+	 */
+	private double simulateShowdown(ShowdownNode showdownNode) {
+		final GameState gameState = showdownNode.getGameState();
+		final HandRankOpponentModel handRankOpponentModel = 
+			showdownNode.getConfig().getHandRankOpponentModel();
 		
-		//System.out.println("simulate about to start");
-		
-		
-		
-		Deck deck = new Deck();
-		deck.extractCard(gameState.getC1());
-		deck.extractCard(gameState.getC2());
-		deck.extractHand(gameState.getTable());
-		
-		// Simulate until showdown.
-		while(gameState.getStage()<=GameState.RIVER) {
-			
-			//gameState.printDetails();
-			
-			// Make all players call until the end of the round.
-			while(gameState.isNextPlayerToAct()) {
-				gameState = gameState.doAction(Action.CALL);
-			}
-			
-			switch (gameState.getStage()) {
-			case GameState.PREFLOP:
-				gameState = gameState.dealCard(deck.extractRandomCard());
-				gameState = gameState.dealCard(deck.extractRandomCard());
-				gameState = gameState.dealCard(deck.extractRandomCard());
-				break;
-			case GameState.FLOP:
-			case GameState.TURN:
-				gameState = gameState.dealCard(deck.extractRandomCard());
-				break;
-			}
-			
-			// Go to next stage.
-			gameState = gameState.goToNextStage();
-			
-		}
-		
-		// Calculate the hand rank of the bot.
-		
-		//System.out.println("rankHand about to be called on: ");
-		//gameState.printDetails();
-
+		// Calculate the bot's hand rank.
 		final int botHandRank = HandEvaluator.rankHand(
 				gameState.getC1(), gameState.getC2(), gameState.getTable());
 		
-		//System.out.println("rankHand successful, botHandRank = " + botHandRank);
-		
-		// Deal random hands to each other player in the game and rank them.
-		
-		final int noOfOpponents = gameState.getNoOfActivePlayers()-1;
-
-		int maxOpponentHandRank = 0;
-		
-		for(int i=0; i<noOfOpponents; i++) {
-			
-			//System.out.println("rankHand about to be called, for opponent, on: ");
-			
-			final int opponentHandRank = HandEvaluator.rankHand(
-					deck.extractRandomCard(), 
-					deck.extractRandomCard(), 
-					gameState.getTable());
-			
-			//System.out.println("rankHand successful, opponentHandRank = " + opponentHandRank);
-			
-			if(opponentHandRank>maxOpponentHandRank) maxOpponentHandRank = opponentHandRank;
+		// For each opponent, use the hand rank opponent model to work out whether or not
+		// they can beat the bot's hand. If any opponent can, then the bot loses, else 
+		// the bot wins.
+		// TODO: check to see if/how much this biases the results
+		boolean botWins = true;
+		for(Player opponent: gameState.getActivePlayers()) {
+			if(opponent.getSeat()==gameState.getBotSeat()) continue;
+			if(!handRankOpponentModel.beatsOpponent(showdownNode, opponent, botHandRank)) {
+				botWins = false;
+				break;
+			}
 		}
 		
-		//double expectedValue = gameState.getAmountInPot(gameState.getBotSeat());
+		// Calculate the expected value of the game state depending 
+		// on whether the bot wins or loses in the showdown.
 		double expectedValue = gameState.getBotMoney();
-		
-		if(botHandRank>=maxOpponentHandRank) {
-			expectedValue += gameState.getPot();
-		}
-		
-		
-		
-		//System.out.println("expectedValue = " + expectedValue);
-		
+		if(botWins)	expectedValue += gameState.getPot();
 		
 		return expectedValue;
+	}
+	
+	
+	
+	protected double getRaiseProb(int stage, boolean canCheck) {
+		if(stage<GameState.PREFLOP || stage>GameState.RIVER) throw new RuntimeException(
+				"Invalid stage passed to getRaiseProb: " + stage);
+		
+		return RAISE_WEIGHTS[stage]/
+			(RAISE_WEIGHTS[stage]+CALL_WEIGHTS[stage]+(canCheck?0:FOLD_WEIGHTS[stage]));
+	}
+	
+	protected double getCallProb(int stage, boolean canCheck) {
+		if(stage<GameState.PREFLOP || stage>GameState.RIVER) throw new RuntimeException(
+				"Invalid stage passed to getCallProb: " + stage);
+		
+		return CALL_WEIGHTS[stage]/
+			(RAISE_WEIGHTS[stage]+CALL_WEIGHTS[stage]+(canCheck?0:FOLD_WEIGHTS[stage]));
+	}
+	
+	protected double getFoldProb(int stage, boolean canCheck) {
+		if(stage<GameState.PREFLOP || stage>GameState.RIVER) throw new RuntimeException(
+				"Invalid stage passed to getFoldProb: " + stage);
+		
+		return (canCheck?0.0:(FOLD_WEIGHTS[stage]/
+			(RAISE_WEIGHTS[stage]+CALL_WEIGHTS[stage]+FOLD_WEIGHTS[stage])));
 	}
 
 }

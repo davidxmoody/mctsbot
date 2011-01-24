@@ -14,10 +14,7 @@ public class HighestEVActionSelectionStrategy implements
 		/*System.out.println("RootNode" + 
 				" has EV = " + root.getExpectedValue() + 
 				" and VC = " + root.getVisitCount());*/
-		
-		
-		
-		
+
 		
 		final List<Node> children = root.getChildren();
 		

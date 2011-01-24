@@ -4,17 +4,26 @@ import mctsbot.nodes.Node;
 
 public class MixedSelectionStrategy implements SelectionStrategy {
 	
-	private static final UCTSelectionStrategy UCTSS = new UCTSelectionStrategy();
-	private static final RandomSelectionStrategy RandomSS = new RandomSelectionStrategy();
-
+	private final SelectionStrategy firstSelectionStrategy;
+	private final SelectionStrategy secondSelectionStrategy;
+	private final int threshold;
+	
+	public MixedSelectionStrategy(int threshold, 
+			SelectionStrategy firstSelectionStrategy, 
+			SelectionStrategy secondSelectionStrategy) {
+		this.firstSelectionStrategy = firstSelectionStrategy;
+		this.secondSelectionStrategy = secondSelectionStrategy;
+		this.threshold = threshold;
+	}
+	
 	public Node select(Node node) {
 		
 		Node returnNode = null;
 		
-		if(node.getVisitCount()>24) {
-			returnNode = UCTSS.select(node);
+		if(node.getVisitCount()<threshold) {
+			returnNode = firstSelectionStrategy.select(node);
 		} else {
-			returnNode = RandomSS.select(node);
+			returnNode = secondSelectionStrategy.select(node);
 		}
 		
 		Node maxNode = returnNode;

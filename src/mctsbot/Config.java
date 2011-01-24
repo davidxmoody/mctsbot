@@ -43,11 +43,12 @@ public class Config {
 		this.actionSelectionStrategy = new HighestEVActionSelectionStrategy();
 		
 		// SelectionStrategy.
-		this.selectionStrategy = new UCTSelectionStrategy();
+		this.selectionStrategy = new MixedSelectionStrategy(10, 
+				new RandomSelectionStrategy(), new UCTSelectionStrategy());
 		
 		// SimulationStrategy.
 		this.simulationStrategy = new AveragingSimulationStrategy(
-				new StaticDistributionSimulationStrategy(), 4);
+				new StaticDistributionSimulationStrategy(), 5);
 		
 		// BackpropagationStrategy.
 		this.backpropagationStrategy = new AveragingBackpropagationStrategy();

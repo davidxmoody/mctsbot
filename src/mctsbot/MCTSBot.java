@@ -1,6 +1,7 @@
 package mctsbot;
 
 import mctsbot.gamestate.GameState;
+import mctsbot.nodes.LeafNode;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.RootNode;
 import mctsbot.strategies.selection.UCTSelectionStrategy;
@@ -52,6 +53,86 @@ public class MCTSBot implements Player {
 	}
 	
 	
+	
+	double[] C = new double [10];
+	
+	double[] total = new double [10];
+	
+	int[] trials = new int [10];
+	
+	//TODO: rename
+	public Action getAction2() {
+		UCTSelectionStrategy.C = 0.5;
+		for(int i=0; i<total.length; i++) {
+
+			getAction2();
+			
+			C[i] = UCTSelectionStrategy.C;
+			
+			UCTSelectionStrategy.C += 0.5;
+			
+			total[i] += (100*UCTSelectionStrategy.explorationTally/
+					(UCTSelectionStrategy.explorationTally
+					+UCTSelectionStrategy.exploitationTally));
+				
+			trials[i]++;
+
+			
+			// Debugging stuff.
+
+			//System.out.println("C = " + UCTSelectionStrategy.C);
+			//System.out.println("explorationTally = " + UCTSelectionStrategy.explorationTally);
+			//System.out.println("exploitationTally = " + UCTSelectionStrategy.exploitationTally);
+//			System.out.println("exploration percentage = " + 
+//					(100*UCTSelectionStrategy.explorationTally/
+//							(UCTSelectionStrategy.explorationTally
+//									+UCTSelectionStrategy.exploitationTally)));
+			
+			
+			
+			
+			
+			
+			UCTSelectionStrategy.exploitationTally = 0;
+			UCTSelectionStrategy.explorationTally = 0;
+			
+			/*System.out.print("Fold Tally = ");
+			for(int i=1; i<=4; i++) {
+				System.out.print(DynamicDistributionSimulationStrategy.foldTally[i] + " ");
+			}
+			System.out.println();
+			
+			System.out.print("Call Tally = ");
+			for(int i=1; i<=4; i++) {
+				System.out.print(DynamicDistributionSimulationStrategy.callTally[i] + " ");
+			}
+			System.out.println();
+			
+			System.out.print("Raise Tally = ");
+			for(int i=1; i<=4; i++) {
+				System.out.print(DynamicDistributionSimulationStrategy.raiseTally[i] + " ");
+			}
+			System.out.println();*/
+			
+			
+			
+			
+			
+			
+			
+		}
+		if(trials[0]==5) {
+			for(int i=0; i<total.length; i++) {
+				System.out.println("C: " + C[i] + ", expPercent: " + (total[i]/trials[i]));
+			}
+			System.out.println();
+		}
+		return null;
+	}
+	
+	
+	
+	
 	public Action getAction() {
 		
 		// Perform conversion on histories.txt if the flag is set.
@@ -76,39 +157,38 @@ public class MCTSBot implements Player {
 		final Action action = convertToMeerkatAction(
 				config.getActionSelectionStrategy().select(root));
 		
-		//TODO: return a check action instead of fold 
+		//TODO: return a check action instead of fold if possible
 		
 		// Debugging stuff.
-		System.out.println("explorationTally = " + UCTSelectionStrategy.explorationTally);
-		System.out.println("exploitationTally = " + UCTSelectionStrategy.exploitationTally);
+
+//		System.out.println("C = " + UCTSelectionStrategy.C);
+//		System.out.println("explorationTally = " + UCTSelectionStrategy.explorationTally);
+//		System.out.println("exploitationTally = " + UCTSelectionStrategy.exploitationTally);
 		System.out.println("exploration percentage = " + 
 				(100*UCTSelectionStrategy.explorationTally/
 						(UCTSelectionStrategy.explorationTally
 								+UCTSelectionStrategy.exploitationTally)));
-		
-		UCTSelectionStrategy.exploitationTally = 0;
-		UCTSelectionStrategy.explorationTally = 0;
-		
-		/*System.out.print("Fold Tally = ");
-		for(int i=1; i<=4; i++) {
-			System.out.print(DynamicDistributionSimulationStrategy.foldTally[i] + " ");
-		}
 		System.out.println();
 		
-		System.out.print("Call Tally = ");
-		for(int i=1; i<=4; i++) {
-			System.out.print(DynamicDistributionSimulationStrategy.callTally[i] + " ");
+		int maxDepth = 10;
+		Node current = root;
+		
+		for(int i=0; i<maxDepth; i++) {
+			System.out.println("Depth = " + i);
+			current.printDetails();
+			current.printChildrensDetails();
+			if(current instanceof LeafNode) break;
+			if(current.getChildren()==null) break;
+			current = current.getConfig().getSelectionStrategy().select(current);
+			System.out.println();
 		}
+		
+		
+		
+		
+		
+		
 		System.out.println();
-		
-		System.out.print("Raise Tally = ");
-		for(int i=1; i<=4; i++) {
-			System.out.print(DynamicDistributionSimulationStrategy.raiseTally[i] + " ");
-		}
-		System.out.println();*/
-		
-		
-		
 		
 		// Return the (Meerkat) Action.
 		return action;
@@ -135,9 +215,9 @@ public class MCTSBot implements Player {
 			
 		} while(endTime>System.currentTimeMillis());
 		
-		System.out.println();
-		System.out.println("Performed " + noIterations + " iterations in " + 
-				(System.currentTimeMillis()-startTime) + " milliseconds.");
+//		System.out.println();
+//		System.out.println("Performed " + noIterations + " iterations in " + 
+//				(System.currentTimeMillis()-startTime) + " milliseconds.");
 	}
 	
 	
@@ -181,8 +261,6 @@ public class MCTSBot implements Player {
 	
 	
 	public void actionEvent(int seat, Action action) {
-		//System.out.println("actionEvent called");
-		
 		if(action.isBetOrRaise()) {
 			currentGameState = currentGameState.doAction(1);
 			DynamicDistributionSimulationStrategy.actionHappened(
@@ -205,8 +283,6 @@ public class MCTSBot implements Player {
 			currentGameState = currentGameState.doBigBlind(seat);
 			
 		}
-		
-		//System.out.println("actionEvent finished");
 	}
 	
 	public void stageEvent(int stage) {

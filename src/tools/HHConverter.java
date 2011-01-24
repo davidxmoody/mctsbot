@@ -20,6 +20,7 @@ import mctsbot.actions.FoldAction;
 import mctsbot.actions.RaiseAction;
 import mctsbot.actions.SmallBlindAction;
 import mctsbot.gamestate.GameState;
+import mctsbot.opponentmodel.SimpleWekaHandRankOpponentModel;
 
 public class HHConverter {
 	
@@ -102,13 +103,26 @@ public class HHConverter {
 		System.out.println("Total time taken = " + (System.currentTimeMillis()-startTime) + "ms.");
 		
 		// Launch Weka on output.arff
-		Class<?> desktopClass = ClassLoader.getSystemClassLoader().loadClass("java.awt.Desktop");
-		Method getDesktop = desktopClass.getMethod("getDesktop", (Class[])null);
-		Object desktop = getDesktop.invoke((Object[])null, (Object[])null);
-		Method open = desktopClass.getMethod("open", new Class[] {File.class});
-		File file = new File(DEFAULT_OUTPUT_FILE_LOCATION);
-		open.invoke(desktop, file);
-		System.out.println("Launching Weka...");
+		launchWeka();
+		
+		// Rebuild Classifier.
+		SimpleWekaHandRankOpponentModel hrom = new SimpleWekaHandRankOpponentModel();
+		hrom.rebuildClassifier();
+	}
+	
+	private static void launchWeka() {
+		try {
+			Class<?> desktopClass = ClassLoader.getSystemClassLoader().loadClass("java.awt.Desktop");
+			Method getDesktop = desktopClass.getMethod("getDesktop", (Class[])null);
+			Object desktop = getDesktop.invoke((Object[])null, (Object[])null);
+			Method open = desktopClass.getMethod("open", new Class[] {File.class});
+			File file = new File(DEFAULT_OUTPUT_FILE_LOCATION);
+			open.invoke(desktop, file);
+			System.out.println("Launching Weka...");
+		} catch(Exception e) {
+			System.out.println("Could not launch Weka: ");
+			e.printStackTrace();
+		}
 	}
 	
 	
