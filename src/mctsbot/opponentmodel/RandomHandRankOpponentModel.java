@@ -9,8 +9,8 @@ public class RandomHandRankOpponentModel implements HandRankOpponentModel {
 
 	private static final Random random = new Random();
 
-	public boolean beatsOpponent(ShowdownNode showdownNode, Player opponent, int botHandRank) {
-		return random.nextBoolean();
+	public double probOfBeatingOpponent(ShowdownNode showdownNode, Player opponent, int botHandRank) {
+		return random.nextDouble();
 	}
 
 }

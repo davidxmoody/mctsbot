@@ -26,9 +26,6 @@ public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 	
 	private static final String DEFAULT_CLASSIFIER_LOCATION = 
 		"S:\\Workspace\\MCTSBot\\weka\\mymodel.model";
-
-	private static double HIGHER = 0.0;
-	private static double LOWER = 1.0;
 	
 	private static SBHROMWekaFormat hROMWekaFormat = null;
 	
@@ -62,20 +59,14 @@ public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 		
 	}
 	
-	public boolean beatsOpponent(ShowdownNode showdownNode, Player opponent, int botHandRank) {
+	public double probOfBeatingOpponent(ShowdownNode showdownNode, Player opponent, int botHandRank) {
 		try {
 			
 			final Instance instance = hROMWekaFormat.getInstance(showdownNode, opponent, botHandRank);
 			
 			final double result = classifier.classifyInstance(instance);
 			
-			if(result==HIGHER) {
-				return false;
-			} else if(result==LOWER) {
-				return true;
-			} else {
-				throw new Exception("unknown result: " + result);
-			}
+			return result;
 			
 		} catch(Exception e) {
 			throw new RuntimeException(e);

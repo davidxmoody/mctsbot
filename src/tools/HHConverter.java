@@ -33,6 +33,9 @@ public class HHConverter {
 	private static final String DEFAULT_TEMPORARY_STORAGE_LOCATION = 
 		"S:\\Workspace\\MCTSBot\\weka\\serializedGameRecords.txt";
 	
+	private static final String DEFAULT_ARFF_HEADER_LOCATION = 
+		"S:\\Workspace\\MCTSBot\\weka\\template.arff";
+	
 	private static final String[] simpleBotAliases = {"SimpleBot", 
 													  "Unknown", 
 													  "LoggingSimpleBot", 
@@ -95,9 +98,14 @@ public class HHConverter {
 			return;
 		}
 
-		
 		out.close();
 		ois.close();
+		
+		// Write The Template.
+		out = new BufferedWriter(
+				new FileWriter(DEFAULT_ARFF_HEADER_LOCATION));
+		format.writeHeader(out);
+		out.close();
 		
 		System.out.println(numSuccesses + " games successfully converted.");
 		System.out.println("Total time taken = " + (System.currentTimeMillis()-startTime) + "ms.");

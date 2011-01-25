@@ -74,13 +74,6 @@ public class AlwaysCallSimulationStrategy implements SimulationStrategy {
 	}
 	
 	
-	/**
-	 * Simulates a showdown event where all opponents are dealt random 
-	 * cards and the winner is calculated.
-	 * 
-	 * @param showdownNode the node to start the simulation from.
-	 * @return the amount of money the bot has after the showdown.
-	 */
 	private double simulateShowdown(ShowdownNode showdownNode) {
 		final GameState gameState = showdownNode.getGameState();
 		final HandRankOpponentModel handRankOpponentModel = 

@@ -78,7 +78,7 @@ public class SBHROMWekaFormat implements WekaFormat {
 		
 		out.write("@ATTRIBUTE other_players_hand_strength NUMERIC\r");
 		
-		out.write("@ATTRIBUTE simplebots_hand_strength {higher,lower}\r");
+		out.write("@ATTRIBUTE prob_of_beating_simplebot NUMERIC\r");
 		
 		out.write("\r");
 		out.write("@DATA\r");
@@ -124,8 +124,15 @@ public class SBHROMWekaFormat implements WekaFormat {
 		
 		fileOutputType.setNextValue(HandStrengthConverter.rankToStrength(otherPlayersHandRank));
 		
-		// Higher or Lower.
-		fileOutputType.setNextValue(playersHandRank>=otherPlayersHandRank?"higher":"lower");
+		// Prob of otherPlayer beating player (SimpleBot)
+		if(playersHandRank>otherPlayersHandRank) {
+			fileOutputType.setNextValue(0.0);
+		} else if(playersHandRank<otherPlayersHandRank) {
+			fileOutputType.setNextValue(1.0);
+		} else {
+			fileOutputType.setNextValue(0.5);
+		}
+		
 		
 		// Write To File.
 		fileOutputType.write(out);
