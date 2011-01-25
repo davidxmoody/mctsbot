@@ -17,6 +17,8 @@ public class GameRecord implements Serializable {
 	private int[] tableCardIndexes = new int[0];
 	private List<PlayerRecord> players = new LinkedList<PlayerRecord>();
 
+	private int tableRank = -1;
+
 	protected GameRecord() { }
 	
 	//TODO
@@ -32,6 +34,14 @@ public class GameRecord implements Serializable {
 		// Create the players
 		
 	}*/
+	
+	protected void setTableRank(int rank) {
+		this.tableRank = rank;
+	}
+	
+	protected int getTableRank() {
+		return tableRank;
+	}
 	
 	protected void setStageReached(int stageReached) {
 		this.stage = stageReached;

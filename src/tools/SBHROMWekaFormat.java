@@ -6,8 +6,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import mctsbot.actions.Action;
+import mctsbot.actions.BigBlindAction;
 import mctsbot.actions.CallAction;
+import mctsbot.actions.FoldAction;
 import mctsbot.actions.RaiseAction;
+import mctsbot.actions.SmallBlindAction;
 import mctsbot.gamestate.GameState;
 import mctsbot.gamestate.Player;
 import mctsbot.nodes.ShowdownNode;
@@ -57,14 +60,29 @@ public class SBHROMWekaFormat implements WekaFormat {
 		out.write("@RELATION " + RELATION_TITLE + "\r");
 		out.write("\r");
 		
-		out.write("@ATTRIBUTE raised_preflop NUMERIC\r");
-		out.write("@ATTRIBUTE called_preflop NUMERIC\r");
-		out.write("@ATTRIBUTE raised_flop NUMERIC\r");
-		out.write("@ATTRIBUTE called_flop NUMERIC\r");
-		out.write("@ATTRIBUTE raised_turn NUMERIC\r");
-		out.write("@ATTRIBUTE called_turn NUMERIC\r");
-		out.write("@ATTRIBUTE raised_river NUMERIC\r");
-		out.write("@ATTRIBUTE called_river NUMERIC\r");
+		out.write("@ATTRIBUTE preflop_action_1 {sb,bb,r,c,f,_}\r");
+		out.write("@ATTRIBUTE preflop_action_2 {r,c,f,_}\r");
+		out.write("@ATTRIBUTE preflop_action_3 {r,c,f,_}\r");
+		out.write("@ATTRIBUTE preflop_action_4 {r,c,f,_}\r");
+		out.write("@ATTRIBUTE preflop_action_5 {r,c,f,_}\r");
+
+		out.write("@ATTRIBUTE flop_action_1 {r,c,f,_}\r");
+		out.write("@ATTRIBUTE flop_action_2 {r,c,f,_}\r");
+		out.write("@ATTRIBUTE flop_action_3 {r,c,f,_}\r");
+		out.write("@ATTRIBUTE flop_action_4 {r,c,f,_}\r");
+		out.write("@ATTRIBUTE flop_action_5 {r,c,f,_}\r");
+		
+		out.write("@ATTRIBUTE turn_action_1 {r,c,f,_}\r");
+		out.write("@ATTRIBUTE turn_action_2 {r,c,f,_}\r");
+		out.write("@ATTRIBUTE turn_action_3 {r,c,f,_}\r");
+		out.write("@ATTRIBUTE turn_action_4 {r,c,f,_}\r");
+		out.write("@ATTRIBUTE turn_action_5 {r,c,f,_}\r");
+		
+		out.write("@ATTRIBUTE river_action_1 {r,c,f,_}\r");
+		out.write("@ATTRIBUTE river_action_2 {r,c,f,_}\r");
+		out.write("@ATTRIBUTE river_action_3 {r,c,f,_}\r");
+		out.write("@ATTRIBUTE river_action_4 {r,c,f,_}\r");
+		out.write("@ATTRIBUTE river_action_5 {r,c,f,_}\r");
 		
 		out.write("@ATTRIBUTE c_card_1_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
 		out.write("@ATTRIBUTE c_card_2_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
@@ -75,6 +93,8 @@ public class SBHROMWekaFormat implements WekaFormat {
 		out.write("@ATTRIBUTE num_suited_flop {1,2,3}\r");
 		out.write("@ATTRIBUTE num_suited_turn {1,2,3,4,22}\r");
 		out.write("@ATTRIBUTE num_suited_river {0,3,4,5}\r");
+		
+		out.write("@ATTRIBUTE table_strength NUMERIC\r");
 		
 		out.write("@ATTRIBUTE other_players_hand_strength NUMERIC\r");
 		
@@ -109,6 +129,9 @@ public class SBHROMWekaFormat implements WekaFormat {
 		// Table Cards.
 		setTableCardValues(fileOutputType, table);
 		
+		fileOutputType.setNextValue(
+				HandStrengthConverter.rankToStrength(gameRecord.getTableRank()));
+		
 		// Other Player's Hand Strength.
 		final int playersHandRank = player.getHandRank();
 		int otherPlayersHandRank = -1;
@@ -138,7 +161,7 @@ public class SBHROMWekaFormat implements WekaFormat {
 		fileOutputType.write(out);
 	}
 	
-	
+	//TODO: update this
 	public Instance getInstance(ShowdownNode showdownNode, Player opponent, int botHandRank) {
 		final InstanceOutputType instanceOutputType = new InstanceOutputType();
 		
@@ -162,16 +185,25 @@ public class SBHROMWekaFormat implements WekaFormat {
 	
 	
 	private void setActionValues(OutputType inst, List<Action> actions) {
-		int raiseCount = 0;
-		int callCount = 0;
-		
-		for(Action action: actions) {
-			if(action instanceof RaiseAction) raiseCount++;
-			if(action instanceof CallAction) callCount++;
+		if(actions==null) {
+			for(int i=0; i<5; i++) inst.setNextValue("?");
+			return;
 		}
-
-		inst.setNextValue(raiseCount);
-		inst.setNextValue(callCount);
+		
+		Action action;
+		for(int i=0; i<5; i++) {
+			try {
+				action = actions.get(i);
+				if(action instanceof RaiseAction) inst.setNextValue("r");
+				else if(action instanceof CallAction) inst.setNextValue("c");
+				else if(action instanceof FoldAction) inst.setNextValue("f");
+				else if(action instanceof SmallBlindAction) inst.setNextValue("sb");
+				else if(action instanceof BigBlindAction) inst.setNextValue("bb");
+				else inst.setNextValue("?");
+			} catch(IndexOutOfBoundsException e) {
+				inst.setNextValue("_");
+			}
+		}
 	}
 	
 	

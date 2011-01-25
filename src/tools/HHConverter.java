@@ -242,10 +242,12 @@ public class HHConverter {
 						gameRecord.stage = GameState.TURN;
 						gameRecord.setTable(inputLine.substring(7));
 						
-					// Flop.
+					// River.
 					} else if(inputLine.matches("RIVER.+")){
 						gameRecord.stage = GameState.RIVER;
 						gameRecord.setTable(inputLine.substring(8));
+						gameRecord.setTableRank(HandEvaluator.rankHand(
+								gameRecord.getTable()));
 
 					// Shows.
 					} else if(inputLine.matches("\\S+ shows .+")){
