@@ -40,16 +40,16 @@ public class Config {
 		
 		
 		// ActionSelectionStrategy.
-		this.actionSelectionStrategy = new HighestEVActionSelectionStrategy();
+		this.actionSelectionStrategy = new HighestEVMinusStdDevActionSelectionStrategy();
 		
 		// SelectionStrategy.
-		this.selectionStrategy = new UCTSelectionStrategy();
+		this.selectionStrategy = new UCTVarSelectionStrategy();
 		
 		// SimulationStrategy.
 		this.simulationStrategy = new AlwaysCallSimulationStrategy();
 		
 		// BackpropagationStrategy.
-		this.backpropagationStrategy = new AveragingBackpropagationStrategy();
+		this.backpropagationStrategy = new AveragingVarBackpropagationStrategy();
 		
 		// HandRankOpponentModel.
 		this.handRankOpponentModel = new SimpleWekaHandRankOpponentModel();

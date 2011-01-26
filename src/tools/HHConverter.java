@@ -114,8 +114,7 @@ public class HHConverter {
 		launchWeka();
 		
 		// Rebuild Classifier.
-		SimpleWekaHandRankOpponentModel hrom = new SimpleWekaHandRankOpponentModel();
-		hrom.rebuildClassifier();
+		SimpleWekaHandRankOpponentModel.main(null);
 	}
 	
 	private static void launchWeka() {

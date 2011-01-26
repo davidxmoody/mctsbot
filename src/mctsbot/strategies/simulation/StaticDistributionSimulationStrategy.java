@@ -83,30 +83,25 @@ public class StaticDistributionSimulationStrategy implements SimulationStrategy 
 	 */
 	private double simulateShowdown(ShowdownNode showdownNode) {
 		final GameState gameState = showdownNode.getGameState();
-		final HandRankOpponentModel handRankOpponentModel = 
+		final HandRankOpponentModel hrom = 
 			showdownNode.getConfig().getHandRankOpponentModel();
 		
 		// Calculate the bot's hand rank.
 		final int botHandRank = HandEvaluator.rankHand(
 				gameState.getC1(), gameState.getC2(), gameState.getTable());
 		
-		// For each opponent, use the hand rank opponent model to work out whether or not
-		// they can beat the bot's hand. If any opponent can, then the bot loses, else 
-		// the bot wins.
-		// TODO: check to see if/how much this biases the results
-		boolean botWins = true;
+		// Estimate the probability that the bot will win the game.
+		//TODO: check to see if this works OK when there are more than 
+		double cumalativeWinProbability = 1.0;
 		for(Player opponent: gameState.getActivePlayers()) {
 			if(opponent.getSeat()==gameState.getBotSeat()) continue;
-			if(!handRankOpponentModel.beatsOpponent(showdownNode, opponent, botHandRank)) {
-				botWins = false;
-				break;
-			}
+			cumalativeWinProbability *= hrom.probOfBeatingOpponent(
+					showdownNode, opponent, botHandRank);
 		}
 		
-		// Calculate the expected value of the game state depending 
-		// on whether the bot wins or loses in the showdown.
+		// Calculate the expected value of the game state.
 		double expectedValue = gameState.getBotMoney();
-		if(botWins)	expectedValue += gameState.getPot();
+		expectedValue += gameState.getPot()*cumalativeWinProbability;
 		
 		return expectedValue;
 	}

@@ -50,13 +50,17 @@ public class Player implements Cloneable {
 	public void setActions(List<Action> actions, int stage) {
 		switch (stage) {
 		case GameState.PREFLOP:
-			this.preflopActions= actions ;
+			this.preflopActions = actions ;
+			break;
 		case GameState.FLOP:
 			this.flopActions = actions;
+			break;
 		case GameState.TURN:
 			this.turnActions= actions ;
+			break;
 		case GameState.RIVER:
 			this.riverActions = actions;
+			break;
 
 		default:
 			break;
@@ -70,7 +74,7 @@ public class Player implements Cloneable {
 		
 		final Player newPlayer = this.clone();
 		
-		List<Action> newPastActions = new LinkedList<Action>();
+		final List<Action> newPastActions = new LinkedList<Action>();
 		if(getActions(stage)!=null) newPastActions.addAll(getActions(stage));
 		newPastActions.add(action);
 		newPlayer.setActions(newPastActions, stage);
@@ -85,7 +89,8 @@ public class Player implements Cloneable {
 	public Player doFoldAction(FoldAction action, int stage) {
 		final Player newPlayer = this.clone();
 		
-		final List<Action> newPastActions = new LinkedList<Action>(getActions(stage));
+		final List<Action> newPastActions = new LinkedList<Action>();
+		if(getActions(stage)!=null) newPastActions.addAll(getActions(stage));
 		newPastActions.add(action);
 		newPlayer.setActions(newPastActions, stage);
 		

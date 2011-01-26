@@ -12,7 +12,6 @@ public class AveragingBackpropagationStrategy implements
 		while((node=node.getParent())!=null) {
 			double numerator = 0.0;
 			int denominator = 0;
-			
 			for(Node child: node.getChildren()) {
 				numerator += child.getExpectedValue()*child.getVisitCount();
 				denominator += child.getVisitCount();

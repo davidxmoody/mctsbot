@@ -12,7 +12,7 @@ import mctsbot.gamestate.Player;
 import mctsbot.nodes.ShowdownNode;
 import tools.SBHROMWekaFormat;
 import weka.classifiers.Classifier;
-import weka.classifiers.functions.Logistic;
+import weka.classifiers.functions.LinearRegression;
 import weka.core.Instance;
 import weka.core.Instances;
 
@@ -59,16 +59,20 @@ public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 		
 	}
 	
+	private SimpleWekaHandRankOpponentModel(int i) { }
+	
 	public double probOfBeatingOpponent(ShowdownNode showdownNode, Player opponent, int botHandRank) {
+		Instance instance = null;
 		try {
 			
-			final Instance instance = hROMWekaFormat.getInstance(showdownNode, opponent, botHandRank);
+			instance = hROMWekaFormat.getInstance(showdownNode, opponent, botHandRank);
 			
 			final double result = classifier.classifyInstance(instance);
 			
 			return result;
 			
 		} catch(Exception e) {
+			System.out.println(instance);
 			throw new RuntimeException(e);
 		}
 	}
@@ -79,14 +83,10 @@ public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 				new FileReader(DEFAULT_ARFF_FILE_LOCATION)));
 		data.setClassIndex(data.numAttributes()-1);
 		
-		classifier = new Logistic();
+		classifier = new LinearRegression();
 		classifier.buildClassifier(data);
 		
-		final ObjectOutputStream oos = new ObjectOutputStream(
-				new FileOutputStream(DEFAULT_CLASSIFIER_LOCATION));
-		oos.writeObject(classifier);
-		oos.flush();
-		oos.close();
+		saveClassifier();
 	}
 	
 	public void loadClassifier() throws Exception {
@@ -107,11 +107,13 @@ public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		
-		SimpleWekaHandRankOpponentModel hrom = new SimpleWekaHandRankOpponentModel();
+		System.out.println("Building classifier...");
+		final long startTime = System.currentTimeMillis();
+		SimpleWekaHandRankOpponentModel hrom = new SimpleWekaHandRankOpponentModel(0);
 		hrom.rebuildClassifier();
-		hrom.saveClassifier();
-		System.out.println("Success!");
+		System.out.println("Successfully rebuilt classifier in " + 
+				(System.currentTimeMillis()-startTime) + " seconds.");
+		System.out.println("Classifier type = " + hrom.classifier.getClass().getSimpleName());
 	}
 
 }

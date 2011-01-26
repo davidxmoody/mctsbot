@@ -17,12 +17,17 @@ import com.biotools.meerkat.HandEvaluator;
 
 public class AlwaysCallSimulationStrategy implements SimulationStrategy {
 	
-	private static final int[] FOLD_WEIGHTS = {1, 1, 1, 1};
+	private static final int[] FOLD_WEIGHTS = {0, 0, 0, 0};
 	private static final int[] CALL_WEIGHTS = {100, 100, 100, 100};
-	private static final int[] RAISE_WEIGHTS = {1, 1, 1, 1};
-	
+	private static final int[] RAISE_WEIGHTS = {0, 0, 0, 0};
 	
 	private static final Random random = new Random();
+	
+	
+	public static int num = 0;
+	public static double mean = 0;
+	
+	
 
 	public double simulate(Node node) {
 		
@@ -76,30 +81,36 @@ public class AlwaysCallSimulationStrategy implements SimulationStrategy {
 	
 	private double simulateShowdown(ShowdownNode showdownNode) {
 		final GameState gameState = showdownNode.getGameState();
-		final HandRankOpponentModel handRankOpponentModel = 
+		final HandRankOpponentModel hrom = 
 			showdownNode.getConfig().getHandRankOpponentModel();
 		
 		// Calculate the bot's hand rank.
 		final int botHandRank = HandEvaluator.rankHand(
 				gameState.getC1(), gameState.getC2(), gameState.getTable());
 		
-		// For each opponent, use the hand rank opponent model to work out whether or not
-		// they can beat the bot's hand. If any opponent can, then the bot loses, else 
-		// the bot wins.
-		// TODO: check to see if/how much this biases the results
-		boolean botWins = true;
+		// Estimate the probability that the bot will win the game.
+		//TODO: check to see if this works OK when there are more than 
+		double cumalativeWinProbability = 1.0;
 		for(Player opponent: gameState.getActivePlayers()) {
 			if(opponent.getSeat()==gameState.getBotSeat()) continue;
-			if(!handRankOpponentModel.beatsOpponent(showdownNode, opponent, botHandRank)) {
-				botWins = false;
-				break;
-			}
+			cumalativeWinProbability *= hrom.probOfBeatingOpponent(
+					showdownNode, opponent, botHandRank);
 		}
 		
-		// Calculate the expected value of the game state depending 
-		// on whether the bot wins or loses in the showdown.
+//		System.out.println(cumalativeWinProbability);
+		
+		// Calculate the expected value of the game state.
 		double expectedValue = gameState.getBotMoney();
-		if(botWins)	expectedValue += gameState.getPot();
+		
+//		if(cumalativeWinProbability>0.7) {
+//			expectedValue += gameState.getPot();
+//		} else if(cumalativeWinProbability>0.5) {
+//			expectedValue += gameState.getPot()*0.5;
+//		} 
+		expectedValue += gameState.getPot()*(cumalativeWinProbability>0.6?1:0);
+		
+		mean = (mean*num + cumalativeWinProbability)/(num+1);
+		num++;
 		
 		return expectedValue;
 	}

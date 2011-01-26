@@ -19,6 +19,7 @@ import weka.core.Instances;
 
 import com.biotools.meerkat.Card;
 import com.biotools.meerkat.Hand;
+import com.biotools.meerkat.HandEvaluator;
 
 public class SBHROMWekaFormat implements WekaFormat {
 	
@@ -45,7 +46,7 @@ public class SBHROMWekaFormat implements WekaFormat {
 	*/
 	
 	// TODO: Remember to update this.
-	private static final int NUM_ATTRIBUTES = 18;
+	private static final int NUM_ATTRIBUTES = 31;
 	
 	private static final String RELATION_TITLE = "SimpleBotHROM";
 	
@@ -129,6 +130,7 @@ public class SBHROMWekaFormat implements WekaFormat {
 		// Table Cards.
 		setTableCardValues(fileOutputType, table);
 		
+		// Table Strength.
 		fileOutputType.setNextValue(
 				HandStrengthConverter.rankToStrength(gameRecord.getTableRank()));
 		
@@ -167,6 +169,18 @@ public class SBHROMWekaFormat implements WekaFormat {
 		
 		final Hand table = showdownNode.getGameState().getTable();
 		
+		
+		//TODO: remove this
+//		for(int i=0; i<4; i++) {
+//			for(Action a: opponent.getActions(i)) {
+//				System.err.print(a.getDescription() + " ");
+//			}
+//			System.err.println();
+//		}
+		
+		
+		
+		
 		// Actions.
 		setActionValues(instanceOutputType, opponent.getActions(GameState.PREFLOP));
 		setActionValues(instanceOutputType, opponent.getActions(GameState.FLOP));
@@ -175,6 +189,12 @@ public class SBHROMWekaFormat implements WekaFormat {
 		
 		// Table Cards.
 		setTableCardValues(instanceOutputType, table);
+		
+		// Table Strength.
+		//TODO: make it so that I don;t have to re-calculate the table 
+		//      strength each time if there are more than two players.
+		instanceOutputType.setNextValue(HandStrengthConverter.rankToStrength(
+				HandEvaluator.rankHand(table)));
 		
 		// Other Player's Hand Strength.
 		instanceOutputType.setNextValue(HandStrengthConverter.rankToStrength(botHandRank));
@@ -186,7 +206,7 @@ public class SBHROMWekaFormat implements WekaFormat {
 	
 	private void setActionValues(OutputType inst, List<Action> actions) {
 		if(actions==null) {
-			for(int i=0; i<5; i++) inst.setNextValue("?");
+			for(int i=0; i<5; i++) inst.setNextValueUnknown();
 			return;
 		}
 		
@@ -199,7 +219,7 @@ public class SBHROMWekaFormat implements WekaFormat {
 				else if(action instanceof FoldAction) inst.setNextValue("f");
 				else if(action instanceof SmallBlindAction) inst.setNextValue("sb");
 				else if(action instanceof BigBlindAction) inst.setNextValue("bb");
-				else inst.setNextValue("?");
+				else inst.setNextValueUnknown();
 			} catch(IndexOutOfBoundsException e) {
 				inst.setNextValue("_");
 			}
@@ -291,6 +311,7 @@ public class SBHROMWekaFormat implements WekaFormat {
 	private interface OutputType {
 		void setNextValue(double value);
 		void setNextValue(String value);
+		void setNextValueUnknown();
 	}
 	
 	private class FileOutputType implements OutputType {
@@ -307,6 +328,10 @@ public class SBHROMWekaFormat implements WekaFormat {
 			empty = false;
 		}
 		
+		public void setNextValueUnknown() {
+			setNextValue("?");
+		}
+		
 		public void write(BufferedWriter out) {
 			try {
 				out.write(sb.toString() + "\r");
@@ -315,7 +340,6 @@ public class SBHROMWekaFormat implements WekaFormat {
 				throw new RuntimeException(e);
 			}
 		}
-		
 	}
 	
 	private class InstanceOutputType implements OutputType {
@@ -329,11 +353,17 @@ public class SBHROMWekaFormat implements WekaFormat {
 		}
 
 		public void setNextValue(double value) {
+//			System.err.println(value);
 			inst.setValue(i++, value);
 		}
 
 		public void setNextValue(String value) {
+//			System.err.println(value);
 			inst.setValue(i++, value);
+		}
+		
+		public void setNextValueUnknown() {
+			inst.setMissing(i++);
 		}
 		
 		public Instance getInstance() {

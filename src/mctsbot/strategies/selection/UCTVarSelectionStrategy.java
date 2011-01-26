@@ -9,13 +9,13 @@ import mctsbot.nodes.Node;
 
 public class UCTVarSelectionStrategy implements SelectionStrategy {
 	
-	public static double explorationTally = 0;
-	public static double exploitationTally = 0;
+//	public static double explorationTally = 0;
+//	public static double exploitationTally = 0;
 	
 	//TODO: find a good value for C.
 	//TODO: make final again
 	public static double C1 = 10.0;
-	public static double C2 = 0.2;
+	public static double C2 = 0.1;
 	
 	private static final Random random = new Random();
 	
@@ -61,21 +61,21 @@ public class UCTVarSelectionStrategy implements SelectionStrategy {
 		
 		
 		
-		Node maxNode = returnNode;
-		double maxValue = returnNode.getExpectedValue();
-		
-		for(Node child: node.getChildren()) {
-			if(child.getExpectedValue()>maxValue) {
-				maxNode = child;
-				maxValue = child.getExpectedValue();
-			}
-		}
-		
-		if(maxNode!=returnNode) {
-			explorationTally++;
-		} else {
-			exploitationTally++;
-		}
+//		Node maxNode = returnNode;
+//		double maxValue = returnNode.getExpectedValue();
+//		
+//		for(Node child: node.getChildren()) {
+//			if(child.getExpectedValue()>maxValue) {
+//				maxNode = child;
+//				maxValue = child.getExpectedValue();
+//			}
+//		}
+//		
+//		if(maxNode!=returnNode) {
+//			explorationTally++;
+//		} else {
+//			exploitationTally++;
+//		}
 		
 		return returnNode;
 	}

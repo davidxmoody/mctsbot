@@ -1,7 +1,6 @@
 package mctsbot;
 
 import mctsbot.gamestate.GameState;
-import mctsbot.nodes.LeafNode;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.RootNode;
 import mctsbot.strategies.selection.UCTSelectionStrategy;
@@ -16,7 +15,7 @@ import com.biotools.meerkat.util.Preferences;
 
 public class MCTSBot implements Player {
 	
-	private static final long THINKING_TIME = 500;
+	private static final long THINKING_TIME = 1000;
 	
 	private int seat;
 	private GameInfo gi;
@@ -146,6 +145,11 @@ public class MCTSBot implements Player {
 				return null;
 			}
 		}
+		
+		// Print Cards and Table Cards.
+		System.out.println();
+		System.out.println(currentGameState.getC1().toString() + " " + 
+				currentGameState.getC2() + "   " + currentGameState.getTable().toString());
 
 		// Make root node.
 		RootNode root = new RootNode(currentGameState, config);
@@ -157,39 +161,37 @@ public class MCTSBot implements Player {
 		final Action action = convertToMeerkatAction(
 				config.getActionSelectionStrategy().select(root));
 		
-		//TODO: return a check action instead of fold if possible
-		
 		// Debugging stuff.
 
 //		System.out.println("C = " + UCTSelectionStrategy.C);
 //		System.out.println("explorationTally = " + UCTSelectionStrategy.explorationTally);
 //		System.out.println("exploitationTally = " + UCTSelectionStrategy.exploitationTally);
-		System.out.println("exploration percentage = " + 
-				(100*UCTSelectionStrategy.explorationTally/
-						(UCTSelectionStrategy.explorationTally
-								+UCTSelectionStrategy.exploitationTally)));
-		System.out.println();
+//		System.out.println("exploration percentage = " + 
+//				(100*UCTSelectionStrategy.explorationTally/
+//						(UCTSelectionStrategy.explorationTally
+//								+UCTSelectionStrategy.exploitationTally)));
+//		System.out.println();
 		
-		int maxDepth = 10;
-		Node current = root;
-		
-		for(int i=0; i<maxDepth; i++) {
-			System.out.println("Depth = " + i);
-			System.out.println();
-			current.printDetails("  ");
-			current.printChildrensDetails("    ");
-			if(current instanceof LeafNode) break;
-			if(current.getChildren()==null) break;
-			current = current.getConfig().getSelectionStrategy().select(current);
-			System.out.println();
-		}
-		
-		
-		
-		
+//		int maxDepth = 10;
+//		Node current = root;
+//		
+//		for(int i=0; i<maxDepth; i++) {
+//			System.out.println("Depth = " + i);
+//			System.out.println();
+//			current.printDetails("  ");
+//			current.printChildrensDetails("    ");
+//			if(current instanceof LeafNode) break;
+//			if(current.getChildren()==null) break;
+//			current = current.getConfig().getSelectionStrategy().select(current);
+//			System.out.println();
+//		}
+//		
+//		System.out.println(AlwaysCallSimulationStrategy.mean);
 		
 		
-		System.out.println();
+		
+		
+//		System.out.println();
 		
 		// Return the (Meerkat) Action.
 		return action;
@@ -216,7 +218,7 @@ public class MCTSBot implements Player {
 			
 		} while(endTime>System.currentTimeMillis());
 		
-		System.out.println();
+//		System.out.println();
 		System.out.println("Performed " + noIterations + " iterations in " + 
 				(System.currentTimeMillis()-startTime) + " milliseconds.");
 	}
@@ -253,7 +255,7 @@ public class MCTSBot implements Player {
 		if(action instanceof mctsbot.actions.CallAction) return Action.callAction(toCall);
 		
 		// Fold.
-		if(action instanceof mctsbot.actions.FoldAction) return Action.foldAction(toCall);
+		if(action instanceof mctsbot.actions.FoldAction) return Action.checkOrFoldAction(toCall);
 		
 		// Else something went wrong.
 		throw new RuntimeException("Invalid action type passed to convertToMeerkatAction");
