@@ -61,7 +61,7 @@ public class SBHROMWekaFormat implements WekaFormat {
 		out.write("@RELATION " + RELATION_TITLE + "\r");
 		out.write("\r");
 		
-		out.write("@ATTRIBUTE preflop_action_1 {sb,bb,r,c,f,_}\r");
+		out.write("@ATTRIBUTE preflop_action_1 {r,c,f,sb,bb,_}\r");
 		out.write("@ATTRIBUTE preflop_action_2 {r,c,f,_}\r");
 		out.write("@ATTRIBUTE preflop_action_3 {r,c,f,_}\r");
 		out.write("@ATTRIBUTE preflop_action_4 {r,c,f,_}\r");

@@ -12,15 +12,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Method;
 
-import com.biotools.meerkat.HandEvaluator;
-
 import mctsbot.actions.BigBlindAction;
 import mctsbot.actions.CallAction;
 import mctsbot.actions.FoldAction;
 import mctsbot.actions.RaiseAction;
 import mctsbot.actions.SmallBlindAction;
 import mctsbot.gamestate.GameState;
-import mctsbot.opponentmodel.SimpleWekaHandRankOpponentModel;
+
+import com.biotools.meerkat.HandEvaluator;
 
 public class HHConverter {
 	
@@ -33,8 +32,9 @@ public class HHConverter {
 	private static final String DEFAULT_TEMPORARY_STORAGE_LOCATION = 
 		"S:\\Workspace\\MCTSBot\\weka\\serializedGameRecords.txt";
 	
+	//TODO: change this
 	private static final String DEFAULT_ARFF_HEADER_LOCATION = 
-		"S:\\Workspace\\MCTSBot\\weka\\template.arff";
+		"S:\\Workspace\\MCTSBot\\weka\\nextActionTemplate.arff";
 	
 	private static final String[] simpleBotAliases = {"SimpleBot", 
 													  "Unknown", 
@@ -114,7 +114,7 @@ public class HHConverter {
 		launchWeka();
 		
 		// Rebuild Classifier.
-		SimpleWekaHandRankOpponentModel.main(null);
+		//SimpleWekaHandRankOpponentModel.main(null);
 	}
 	
 	private static void launchWeka() {

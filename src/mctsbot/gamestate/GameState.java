@@ -43,8 +43,7 @@ public class GameState implements Cloneable {
 	private static int dealerSeat;
 	
 	//TODO make sure this will update correctly
-	//TODO make private again
-	public int nextPlayerToAct;
+	private int nextPlayerToAct;
 	
 	private Action lastAction;
 	
@@ -306,7 +305,9 @@ public class GameState implements Cloneable {
 		return getPlayer(botSeat).getMoney();
 	}
 	
-	
+	public Player getNextPlayerToAct() {
+		return getPlayer(nextPlayerToAct);
+	}
 	
 	
 	
