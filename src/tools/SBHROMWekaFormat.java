@@ -119,19 +119,19 @@ public class SBHROMWekaFormat implements WekaFormat {
 		
 		final Hand table = gameRecord.getTable();
 		
-		final FileOutputType fileOutputType = new FileOutputType();
+		final FileOutputType inst = new FileOutputType();
 		
 		// Actions.
-		setActionValues(fileOutputType, player.getActions(GameState.PREFLOP));
-		setActionValues(fileOutputType, player.getActions(GameState.FLOP));
-		setActionValues(fileOutputType, player.getActions(GameState.TURN));
-		setActionValues(fileOutputType, player.getActions(GameState.RIVER));
+		setActionValues(inst, player.getActions(GameState.PREFLOP));
+		setActionValues(inst, player.getActions(GameState.FLOP));
+		setActionValues(inst, player.getActions(GameState.TURN));
+		setActionValues(inst, player.getActions(GameState.RIVER));
 		
 		// Table Cards.
-		setTableCardValues(fileOutputType, table);
+		setTableCardValues(inst, table);
 		
 		// Table Strength.
-		fileOutputType.setNextValue(
+		inst.setNextValue(
 				HandStrengthConverter.rankToStrength(gameRecord.getTableRank()));
 		
 		// Other Player's Hand Strength.
@@ -147,60 +147,48 @@ public class SBHROMWekaFormat implements WekaFormat {
 		if(otherPlayersHandRank<0) throw new RuntimeException("other players hand rank is -1");
 		
 		
-		fileOutputType.setNextValue(HandStrengthConverter.rankToStrength(otherPlayersHandRank));
+		inst.setNextValue(HandStrengthConverter.rankToStrength(otherPlayersHandRank));
 		
 		// Prob of otherPlayer beating player (SimpleBot)
 		if(playersHandRank>otherPlayersHandRank) {
-			fileOutputType.setNextValue(0.0);
+			inst.setNextValue(0.0);
 		} else if(playersHandRank<otherPlayersHandRank) {
-			fileOutputType.setNextValue(1.0);
+			inst.setNextValue(1.0);
 		} else {
-			fileOutputType.setNextValue(0.5);
+			inst.setNextValue(0.5);
 		}
 		
 		
 		// Write To File.
-		fileOutputType.write(out);
+		inst.write(out);
 	}
 	
 	//TODO: update this
 	public Instance getInstance(ShowdownNode showdownNode, Player opponent, int botHandRank) {
-		final InstanceOutputType instanceOutputType = new InstanceOutputType();
+		final InstanceOutputType inst = new InstanceOutputType();
 		
 		final Hand table = showdownNode.getGameState().getTable();
 		
-		
-		//TODO: remove this
-//		for(int i=0; i<4; i++) {
-//			for(Action a: opponent.getActions(i)) {
-//				System.err.print(a.getDescription() + " ");
-//			}
-//			System.err.println();
-//		}
-		
-		
-		
-		
 		// Actions.
-		setActionValues(instanceOutputType, opponent.getActions(GameState.PREFLOP));
-		setActionValues(instanceOutputType, opponent.getActions(GameState.FLOP));
-		setActionValues(instanceOutputType, opponent.getActions(GameState.TURN));
-		setActionValues(instanceOutputType, opponent.getActions(GameState.RIVER));
+		setActionValues(inst, opponent.getActions(GameState.PREFLOP));
+		setActionValues(inst, opponent.getActions(GameState.FLOP));
+		setActionValues(inst, opponent.getActions(GameState.TURN));
+		setActionValues(inst, opponent.getActions(GameState.RIVER));
 		
 		// Table Cards.
-		setTableCardValues(instanceOutputType, table);
+		setTableCardValues(inst, table);
 		
 		// Table Strength.
 		//TODO: make it so that I don;t have to re-calculate the table 
 		//      strength each time if there are more than two players.
-		instanceOutputType.setNextValue(HandStrengthConverter.rankToStrength(
+		inst.setNextValue(HandStrengthConverter.rankToStrength(
 				HandEvaluator.rankHand(table)));
 		
 		// Other Player's Hand Strength.
-		instanceOutputType.setNextValue(HandStrengthConverter.rankToStrength(botHandRank));
+		inst.setNextValue(HandStrengthConverter.rankToStrength(botHandRank));
 		
 		// Return The Instance.
-		return instanceOutputType.getInstance();
+		return inst.getInstance();
 	}
 	
 	

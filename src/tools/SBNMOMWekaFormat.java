@@ -3,12 +3,14 @@ package tools;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import mctsbot.actions.Action;
+import mctsbot.actions.BigBlindAction;
 import mctsbot.actions.CallAction;
+import mctsbot.actions.FoldAction;
 import mctsbot.actions.RaiseAction;
+import mctsbot.actions.SmallBlindAction;
 import mctsbot.gamestate.GameState;
 import mctsbot.gamestate.Player;
 import mctsbot.nodes.OpponentNode;
@@ -19,31 +21,11 @@ import com.biotools.meerkat.Card;
 import com.biotools.meerkat.Hand;
 
 public class SBNMOMWekaFormat implements WekaFormat {
-	
-	/*
-	private static final int HIGHEST_HIGH_CARD = 1276;
-	private static final int HIGHEST_PAIR = 4136;
-	private static final int HIGHEST_TWO_PAIRS = 4994;
-	private static final int HIGHEST_THREE_OF_A_KIND = 5852;
-	private static final int HIGHEST_STRAIGHT = 5862;
-	private static final int HIGHEST_FLUSH = 7139;
-	private static final int HIGHEST_FULL_HOUSE = 7295;
-	private static final int HIGHEST_FOUR_OF_A_KIND = 7451;
-	private static final int HIGHEST_STRAIGHT_FLUSH = 7461;
-	
-	private static final String HIGH_CARD = "high_card";
-	private static final String ONE_PAIR = "one_pair";
-	private static final String TWO_PAIRS = "two_pairs";
-	private static final String THREE_OF_A_KIND = "three_of_a_kind";
-	private static final String STRAIGHT = "straight";
-	private static final String FLUSH = "flush";
-	private static final String FULL_HOUSE = "full_house";
-	private static final String FOUR_OF_A_KIND = "four_of_a_kind";
-	private static final String STRAIGHT_FLUSH = "straight_flush";
-	*/
-	
+
 	// TODO: Remember to update this.
-	private static final int NUM_ATTRIBUTES = 31;
+	public static final int NUM_ATTRIBUTES = 13;
+	
+	public static final int NUM_ACTIONS_TO_WRITE = 3;
 	
 	private static final String RELATION_TITLE = "SimpleBotNMOM";
 	
@@ -58,41 +40,35 @@ public class SBNMOMWekaFormat implements WekaFormat {
 		out.write("@RELATION " + RELATION_TITLE + "\r");
 		out.write("\r");
 		
-		out.write("@ATTRIBUTE preflop_action_1 {r,c,f,sb,bb,_}\r");
-		out.write("@ATTRIBUTE preflop_action_2 {r,c,f,_}\r");
-		out.write("@ATTRIBUTE preflop_action_3 {r,c,f,_}\r");
-		out.write("@ATTRIBUTE preflop_action_4 {r,c,f,_}\r");
-		out.write("@ATTRIBUTE preflop_action_5 {r,c,f,_}\r");
+		out.write("@ATTRIBUTE blind {none,small,big}\r");
+		
+		out.write("@ATTRIBUTE preflop_action_1 {r,c,f}\r");
+		out.write("@ATTRIBUTE preflop_action_2 {r,c,f}\r");
+		out.write("@ATTRIBUTE preflop_action_3 {r,c,f}\r");
 
-		out.write("@ATTRIBUTE flop_action_1 {r,c,f,_}\r");
-		out.write("@ATTRIBUTE flop_action_2 {r,c,f,_}\r");
-		out.write("@ATTRIBUTE flop_action_3 {r,c,f,_}\r");
-		out.write("@ATTRIBUTE flop_action_4 {r,c,f,_}\r");
-		out.write("@ATTRIBUTE flop_action_5 {r,c,f,_}\r");
+		out.write("@ATTRIBUTE flop_action_1 {r,c,f}\r");
+		out.write("@ATTRIBUTE flop_action_2 {r,c,f}\r");
+		out.write("@ATTRIBUTE flop_action_3 {r,c,f}\r");
 		
-		out.write("@ATTRIBUTE turn_action_1 {r,c,f,_}\r");
-		out.write("@ATTRIBUTE turn_action_2 {r,c,f,_}\r");
-		out.write("@ATTRIBUTE turn_action_3 {r,c,f,_}\r");
-		out.write("@ATTRIBUTE turn_action_4 {r,c,f,_}\r");
-		out.write("@ATTRIBUTE turn_action_5 {r,c,f,_}\r");
+		out.write("@ATTRIBUTE turn_action_1 {r,c,f}\r");
+		out.write("@ATTRIBUTE turn_action_2 {r,c,f}\r");
+		out.write("@ATTRIBUTE turn_action_3 {r,c,f}\r");
 		
-		out.write("@ATTRIBUTE river_action_1 {r,c,f,_}\r");
-		out.write("@ATTRIBUTE river_action_2 {r,c,f,_}\r");
-		out.write("@ATTRIBUTE river_action_3 {r,c,f,_}\r");
-		out.write("@ATTRIBUTE river_action_4 {r,c,f,_}\r");
-		out.write("@ATTRIBUTE river_action_5 {r,c,f,_}\r");
+		out.write("@ATTRIBUTE river_action_1 {r,c,f}\r");
+		out.write("@ATTRIBUTE river_action_2 {r,c,f}\r");
+		out.write("@ATTRIBUTE river_action_3 {r,c,f}\r");
 		
-		out.write("@ATTRIBUTE c_card_1_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
-		out.write("@ATTRIBUTE c_card_2_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
-		out.write("@ATTRIBUTE c_card_3_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
-		out.write("@ATTRIBUTE c_card_4_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
-		out.write("@ATTRIBUTE c_card_5_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
-		
-		out.write("@ATTRIBUTE num_suited_flop {1,2,3}\r");
-		out.write("@ATTRIBUTE num_suited_turn {1,2,3,4,22}\r");
-		out.write("@ATTRIBUTE num_suited_river {0,3,4,5}\r");
-		
-		out.write("@ATTRIBUTE table_strength NUMERIC\r");
+//		out.write("@ATTRIBUTE c_card_1_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
+//		out.write("@ATTRIBUTE c_card_2_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
+//		out.write("@ATTRIBUTE c_card_3_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
+//		out.write("@ATTRIBUTE c_card_4_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
+//		out.write("@ATTRIBUTE c_card_5_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
+//		
+//		out.write("@ATTRIBUTE num_suited_flop {1,2,3}\r");
+//		out.write("@ATTRIBUTE num_suited_turn {1,2,3,4,22}\r");
+//		out.write("@ATTRIBUTE num_suited_river {0,3,4,5}\r");
+//		
+//		out.write("@ATTRIBUTE table_strength NUMERIC\r");
 		
 		out.write("\r");
 		out.write("@DATA\r");
@@ -107,107 +83,101 @@ public class SBNMOMWekaFormat implements WekaFormat {
 			return;
 		}
 		
-		for(int i=GameState.PREFLOP; i<=GameState.RIVER; i++) {
-			if(player.getActions(i)==null) break;
-			for(int j=0; j<player.getActions(i).size(); j++) {
-				writeOne(gameRecord, player, i, j, out);
-			}
-		}
-	}
-	
-	private void writeOne(GameRecord gameRecord, PlayerRecord player, 
-			int stage, int actionNumber, BufferedWriter out) throws Exception {
-
-		final FileOutputType fileOutputType = new FileOutputType();
+		final FileOutputType inst = new FileOutputType();
 		
 //		final Hand table = gameRecord.getTable();
 		
+		// Blind.
+		setBlindValue(inst,player.getActions(GameState.PREFLOP));
+		
 		// Actions.
-		switch (stage) {
-		case GameState.PREFLOP:
-			setActionValues(fileOutputType, new LinkedList<Action>(player.getActions(GameState.PREFLOP)));
-			break;
-
-		default:
-			break;
-		}
-		
-		
-		
-		
-		
-		setActionValues(fileOutputType, player.getActions(GameState.PREFLOP));
-		setActionValues(fileOutputType, player.getActions(GameState.FLOP));
-		setActionValues(fileOutputType, player.getActions(GameState.TURN));
-		setActionValues(fileOutputType, player.getActions(GameState.RIVER));
+		setActionValues(inst, player.getActions(GameState.PREFLOP));
+		setActionValues(inst, player.getActions(GameState.FLOP));
+		setActionValues(inst, player.getActions(GameState.TURN));
+		setActionValues(inst, player.getActions(GameState.RIVER));
 		
 		// Table Cards.
-//		setTableCardValues(fileOutputType, table);
+//		setTableCardValues(inst, table);
 		
-		// Stage.
-		fileOutputType.setNextValue((stage==GameState.PREFLOP)?"preflop":
-			(stage==GameState.FLOP)?"flop":(stage==GameState.TURN)?"turn":"river");
-
-		// Write To File.
-		fileOutputType.write(out);
+		// Table Strength.
+//		inst.setNextValue(
+//				HandStrengthConverter.rankToStrength(gameRecord.getTableRank()));
+		
+		// Write to file.
+		inst.write(out);
 	}
 	
-	//TODO: update this
 	public Instance getInstance(OpponentNode opponentNode) {
-		final InstanceOutputType instanceOutputType = new InstanceOutputType();
+		final InstanceOutputType inst = new InstanceOutputType();
 		
-		final Hand table = opponentNode.getGameState().getTable();
+//		final Hand table = opponentNode.getGameState().getTable();
 		final Player opponent = opponentNode.getGameState().getNextPlayerToAct();
 		
+		// Blind.
+		setBlindValue(inst,opponent.getActions(GameState.PREFLOP));
+		
 		// Actions.
-		setActionValues(instanceOutputType, opponent.getActions(GameState.PREFLOP));
-		setActionValues(instanceOutputType, opponent.getActions(GameState.FLOP));
-		setActionValues(instanceOutputType, opponent.getActions(GameState.TURN));
-		setActionValues(instanceOutputType, opponent.getActions(GameState.RIVER));
+		setActionValues(inst, opponent.getActions(GameState.PREFLOP));
+		setActionValues(inst, opponent.getActions(GameState.FLOP));
+		setActionValues(inst, opponent.getActions(GameState.TURN));
+		setActionValues(inst, opponent.getActions(GameState.RIVER));
 		
 		// Table Cards.
-		setTableCardValues(instanceOutputType, table);
+//		setTableCardValues(inst, table);
 		
 		// Return The Instance.
-		return instanceOutputType.getInstance();
+		return inst.getInstance();
 	}
 	
 	
-	private void setActionValues(OutputType inst, List<Action> actions) {
-//		if(actions==null) {
-//			for(int i=0; i<5; i++) inst.setNextValueUnknown();
-//			return;
-//		}
-//		
-//		Action action;
-//		for(int i=0; i<5; i++) {
-//			try {
-//				action = actions.get(i);
-//				if(action instanceof RaiseAction) inst.setNextValue("r");
-//				else if(action instanceof CallAction) inst.setNextValue("c");
-//				else if(action instanceof FoldAction) inst.setNextValue("f");
-//				else if(action instanceof SmallBlindAction) inst.setNextValue("sb");
-//				else if(action instanceof BigBlindAction) inst.setNextValue("bb");
-//				else inst.setNextValueUnknown();
-//			} catch(IndexOutOfBoundsException e) {
-//				inst.setNextValue("_");
-//			}
-//		}
-		
-		if(actions==null) {
-			inst.setNextValueUnknown();
-			inst.setNextValueUnknown();
+	
+	private void setBlindValue(OutputType inst, List<Action> actions) {
+		if(actions==null || actions.size()==0) {
+			inst.setNextValue("none");
 			return;
 		}
 		
-		int raiseCount = 0;
-		int callCount = 0;
-		for(Action action: actions) {
-			if(action instanceof RaiseAction) raiseCount++;
-			else if(action instanceof CallAction) callCount++;
+		final Action action = actions.get(0);
+		if(action instanceof SmallBlindAction) {
+			inst.setNextValue("small");
+		} else if(action instanceof BigBlindAction) {
+			inst.setNextValue("big");
+		} else {
+			inst.setNextValue("none");
 		}
-		inst.setNextValue(raiseCount);
-		inst.setNextValue(callCount);
+		
+	}
+	
+	private void setActionValues(OutputType inst, List<Action> actions) {
+		if(actions==null) {
+			for(int i=0; i<3; i++) inst.setNextValueUnknown();
+			return;
+		}
+		
+		int numActionsWritten = 0;
+		for(Action action: actions) {
+			if(action instanceof RaiseAction) {
+				inst.setNextValue("r");
+				numActionsWritten++;
+			} else if(action instanceof CallAction) {
+				inst.setNextValue("c");
+				numActionsWritten++;
+			} else if(action instanceof FoldAction) {
+				inst.setNextValue("f");
+				numActionsWritten++;
+			} else if(action instanceof SmallBlindAction) {
+				// Do nothing.
+			} else if(action instanceof BigBlindAction) {
+				// Do nothing
+			} else {
+				throw new RuntimeException("unknown action type: " + 
+						action.getClass().getSimpleName());
+			}
+		}
+		while(numActionsWritten<NUM_ACTIONS_TO_WRITE) {
+			inst.setNextValueUnknown();
+			numActionsWritten++;
+		}
 	}
 	
 	

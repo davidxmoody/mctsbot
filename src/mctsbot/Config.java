@@ -40,7 +40,7 @@ public class Config {
 		
 		
 		// ActionSelectionStrategy.
-		this.actionSelectionStrategy = new HighestEVMinusStdDevActionSelectionStrategy();
+		this.actionSelectionStrategy = new HighestEVActionSelectionStrategy();
 		
 		// SelectionStrategy.
 		this.selectionStrategy = new UCTVarSelectionStrategy();
@@ -55,7 +55,7 @@ public class Config {
 		this.handRankOpponentModel = new SimpleWekaHandRankOpponentModel();
 		
 		// NextActionOpponentModel.
-		this.nextActionOpponentModel = null;
+		this.nextActionOpponentModel = new SimpleWekaNextActionOpponentModel();
 		
 	}
 

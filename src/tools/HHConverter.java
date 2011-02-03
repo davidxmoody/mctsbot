@@ -18,6 +18,7 @@ import mctsbot.actions.FoldAction;
 import mctsbot.actions.RaiseAction;
 import mctsbot.actions.SmallBlindAction;
 import mctsbot.gamestate.GameState;
+import mctsbot.opponentmodel.SimpleWekaNextActionOpponentModel;
 
 import com.biotools.meerkat.HandEvaluator;
 
@@ -47,7 +48,7 @@ public class HHConverter {
 	
 	private static final boolean APPEND = false;
 	
-	private static final WekaFormat format = new SBHROMWekaFormat(null);
+	private static final WekaFormat format = new SBNMOMWekaFormat(null);
 	
 	// Set this to true if you want to run the convertHistoriesToGameRecords 
 	// method when running MCTSBot in PA Pro.
@@ -114,7 +115,7 @@ public class HHConverter {
 		launchWeka();
 		
 		// Rebuild Classifier.
-		//SimpleWekaHandRankOpponentModel.main(null);
+		SimpleWekaNextActionOpponentModel.main(null);
 	}
 	
 	private static void launchWeka() {

@@ -1,6 +1,5 @@
 package mctsbot.strategies.selection;
 
-import java.util.List;
 import java.util.Random;
 
 import mctsbot.gamestate.GameState;
@@ -47,21 +46,24 @@ public class RandomSelectionStrategy implements SelectionStrategy {
 //			return node.getChildren().get(selectedChildIndex);
 			
 			
+//			final List<Node> children = node.getChildren();
+//			final int stage = node.getGameState().getStage();
+//			
+//			final double randomDouble = random.nextDouble();
+//			
+//			if(randomDouble<PROB_RAISE[stage]) {
+//				return children.get(0);
+//				
+//			} else if(randomDouble<PROB_CALL[stage]+PROB_RAISE[stage]) {
+//				return children.get(1);
+//				
+//			} else {
+//				return children.get(2);
+//			}
+			
 			//TODO: put these changes into a separate class
-			final List<Node> children = node.getChildren();
-			final int stage = node.getGameState().getStage();
-			
-			final double randomDouble = random.nextDouble();
-			
-			if(randomDouble<PROB_RAISE[stage]) {
-				return children.get(0);
-				
-			} else if(randomDouble<PROB_CALL[stage]+PROB_RAISE[stage]) {
-				return children.get(1);
-				
-			} else {
-				return children.get(2);
-			}
+			//TODO: fix for choice node
+			return ((OpponentNode)node).selectChild();
 			
 			
 			
@@ -88,11 +90,13 @@ public class RandomSelectionStrategy implements SelectionStrategy {
 		(double)FOLD_WEIGHTS[1]/TOTAL_WEIGHTS[1], 
 		(double)FOLD_WEIGHTS[2]/TOTAL_WEIGHTS[2], 
 		(double)FOLD_WEIGHTS[3]/TOTAL_WEIGHTS[3]};
+	@SuppressWarnings("unused")
 	private static final double[] PROB_CALL = {
 		(double)CALL_WEIGHTS[0]/TOTAL_WEIGHTS[0], 
 		(double)CALL_WEIGHTS[1]/TOTAL_WEIGHTS[1], 
 		(double)CALL_WEIGHTS[2]/TOTAL_WEIGHTS[2], 
 		(double)CALL_WEIGHTS[3]/TOTAL_WEIGHTS[3]};
+	@SuppressWarnings("unused")
 	private static final double[] PROB_RAISE = {
 		(double)RAISE_WEIGHTS[0]/TOTAL_WEIGHTS[0], 
 		(double)RAISE_WEIGHTS[1]/TOTAL_WEIGHTS[1], 

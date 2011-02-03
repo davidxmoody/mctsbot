@@ -1,10 +1,16 @@
 package mctsbot.nodes;
 
+import java.util.Random;
+
 import mctsbot.Config;
 import mctsbot.actions.Action;
 import mctsbot.gamestate.GameState;
 
 public class OpponentNode extends PlayerNode {
+	
+	private static final Random random = new Random();
+	
+	private double[] distribution = null;
 
 	public OpponentNode(Node parent, GameState gameState, Config config) {
 		super(parent, gameState, config);
@@ -66,6 +72,28 @@ public class OpponentNode extends PlayerNode {
 				}
 			}
 
+		}
+	}
+
+
+//	public void setDistribution(double[] distribution) {
+//		this.distribution = distribution;
+//	}
+//
+//
+//	public double[] getDistribution() {
+//		return distribution;
+//	}
+	
+	public Node selectChild() {
+		if(distribution==null) distribution = config.getNextActionOpponentModel().getActionProbabilities(this);
+		final double randomDouble = random.nextDouble();
+		if(randomDouble<distribution[0]) {
+			return children.get(0);
+		} else if(randomDouble<distribution[0]+distribution[1]) {
+			return children.get(1);
+		} else {
+			return children.get(2);
 		}
 	}
 

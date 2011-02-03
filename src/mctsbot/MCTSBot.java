@@ -1,6 +1,7 @@
 package mctsbot;
 
 import mctsbot.gamestate.GameState;
+import mctsbot.nodes.LeafNode;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.RootNode;
 import mctsbot.strategies.selection.UCTSelectionStrategy;
