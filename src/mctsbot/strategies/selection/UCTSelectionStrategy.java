@@ -12,16 +12,16 @@ public class UCTSelectionStrategy implements SelectionStrategy {
 	public static double explorationTally = 0;
 	public static double exploitationTally = 0;
 	
-	//TODO: find a good value for C.
-	//TODO: make final again
-	public static double C = 3.5;
+	private final double C;
 	
 	private static final Random random = new Random();
 	
 	private static final RandomSelectionStrategy randomSelectionStrategy = 
 		new RandomSelectionStrategy();
 
-	
+	public UCTSelectionStrategy(double C) {
+		this.C = C;
+	}
 	
 	
 	public Node select(Node node) {

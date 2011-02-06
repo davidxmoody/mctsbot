@@ -1,6 +1,5 @@
 package mctsbot.nodes;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import mctsbot.Config;
@@ -8,54 +7,56 @@ import mctsbot.gamestate.GameState;
 
 public abstract class Node {
 	
-	private double expectedValue;
-	//TODO: change back to private
-	public double variance;
-	private int visitCount;
+	private double m = 0;
+	private double s = 0;
+	private int n = 0;
+	
 	private final Node parent;
-	
-	//TODO: find a more efficient way to do this.
-	public ArrayList<Double> simulationResults = new ArrayList<Double>();
-	
+	//TODO: change to private
 	protected final GameState gameState;
-	protected List<Node> children;
-	
+	protected List<Node> children = null;
 	protected final Config config;
 	
 	public Node(Node parent, GameState gameState, Config config) {
 		this.parent = parent;
 		this.gameState = gameState;
 		this.config = config;
+	}
+	/**
+	 * I found out how to do this from: 
+	 * http://www.springerlink.com/content/yqr61334242077k0/fulltext.pdf
+	 */
+	public void update(double x) {
+		n++;
+		if(n==1) {
+			m = x;
+			s = 0;
+		} else {
+			m = m + (x-m)/n;
+			s = s + (n/(n-1))*(m-x)*(m-x);
+		}
 		
-		this.expectedValue = 0.0;
-		this.variance = 0.0;
-		this.visitCount = 0;
-		
-		this.children = null;
 	}
 
+	//TODO: remove this
 	public void setExpectedValue(double expectedValue) {
-		this.expectedValue = expectedValue;
+		this.m = expectedValue;
 	}
 
 	public double getExpectedValue() {
-		return expectedValue;
+		return m;
 	}
-	
-	public double getVariance() {
-		return variance;
-	}
-	
+
 	public double getStdDev() {
-		return Math.sqrt(getVariance());
+		return Math.sqrt(s/(n-1));
 	}
 	
-	public void setVisitCount(int visitCount) {
-		this.visitCount = visitCount;
+	public void incrementVisitCount() {
+		n++;
 	}
 	
 	public int getVisitCount() {
-		return visitCount;
+		return n;
 	}
 
 	public Node getParent() {

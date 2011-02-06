@@ -43,7 +43,7 @@ public class Config {
 		this.actionSelectionStrategy = new HighestEVActionSelectionStrategy();
 		
 		// SelectionStrategy.
-		this.selectionStrategy = new UCTVarSelectionStrategy();
+		this.selectionStrategy = new UCTVarSelectionStrategy(10, 0.1);
 		
 		// SimulationStrategy.
 		this.simulationStrategy = new AlwaysCallSimulationStrategy();

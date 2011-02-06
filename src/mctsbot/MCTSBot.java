@@ -1,10 +1,8 @@
 package mctsbot;
 
 import mctsbot.gamestate.GameState;
-import mctsbot.nodes.LeafNode;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.RootNode;
-import mctsbot.strategies.selection.UCTSelectionStrategy;
 import mctsbot.strategies.simulation.DynamicDistributionSimulationStrategy;
 import tools.HHConverter;
 
@@ -61,74 +59,74 @@ public class MCTSBot implements Player {
 	int[] trials = new int [10];
 	
 	//TODO: rename
-	public Action getAction2() {
-		UCTSelectionStrategy.C = 0.5;
-		for(int i=0; i<total.length; i++) {
-
-			getAction2();
-			
-			C[i] = UCTSelectionStrategy.C;
-			
-			UCTSelectionStrategy.C += 0.5;
-			
-			total[i] += (100*UCTSelectionStrategy.explorationTally/
-					(UCTSelectionStrategy.explorationTally
-					+UCTSelectionStrategy.exploitationTally));
-				
-			trials[i]++;
-
-			
-			// Debugging stuff.
-
-			//System.out.println("C = " + UCTSelectionStrategy.C);
-			//System.out.println("explorationTally = " + UCTSelectionStrategy.explorationTally);
-			//System.out.println("exploitationTally = " + UCTSelectionStrategy.exploitationTally);
-//			System.out.println("exploration percentage = " + 
-//					(100*UCTSelectionStrategy.explorationTally/
-//							(UCTSelectionStrategy.explorationTally
-//									+UCTSelectionStrategy.exploitationTally)));
-			
-			
-			
-			
-			
-			
-			UCTSelectionStrategy.exploitationTally = 0;
-			UCTSelectionStrategy.explorationTally = 0;
-			
-			/*System.out.print("Fold Tally = ");
-			for(int i=1; i<=4; i++) {
-				System.out.print(DynamicDistributionSimulationStrategy.foldTally[i] + " ");
-			}
-			System.out.println();
-			
-			System.out.print("Call Tally = ");
-			for(int i=1; i<=4; i++) {
-				System.out.print(DynamicDistributionSimulationStrategy.callTally[i] + " ");
-			}
-			System.out.println();
-			
-			System.out.print("Raise Tally = ");
-			for(int i=1; i<=4; i++) {
-				System.out.print(DynamicDistributionSimulationStrategy.raiseTally[i] + " ");
-			}
-			System.out.println();*/
-			
-			
-			
-			
-			
-			
-			
-		}
-		if(trials[0]==5) {
-			for(int i=0; i<total.length; i++) {
-				System.out.println("C: " + C[i] + ", expPercent: " + (total[i]/trials[i]));
-			}
-			System.out.println();
-		}
-		return null;
-	}
+//	public Action getAction2() {
+//		UCTSelectionStrategy.C = 0.5;
+//		for(int i=0; i<total.length; i++) {
+//
+//			getAction2();
+//			
+//			C[i] = UCTSelectionStrategy.C;
+//			
+//			UCTSelectionStrategy.C += 0.5;
+//			
+//			total[i] += (100*UCTSelectionStrategy.explorationTally/
+//					(UCTSelectionStrategy.explorationTally
+//					+UCTSelectionStrategy.exploitationTally));
+//				
+//			trials[i]++;
+//
+//			
+//			// Debugging stuff.
+//
+//			//System.out.println("C = " + UCTSelectionStrategy.C);
+//			//System.out.println("explorationTally = " + UCTSelectionStrategy.explorationTally);
+//			//System.out.println("exploitationTally = " + UCTSelectionStrategy.exploitationTally);
+////			System.out.println("exploration percentage = " + 
+////					(100*UCTSelectionStrategy.explorationTally/
+////							(UCTSelectionStrategy.explorationTally
+////									+UCTSelectionStrategy.exploitationTally)));
+//			
+//			
+//			
+//			
+//			
+//			
+//			UCTSelectionStrategy.exploitationTally = 0;
+//			UCTSelectionStrategy.explorationTally = 0;
+//			
+//			/*System.out.print("Fold Tally = ");
+//			for(int i=1; i<=4; i++) {
+//				System.out.print(DynamicDistributionSimulationStrategy.foldTally[i] + " ");
+//			}
+//			System.out.println();
+//			
+//			System.out.print("Call Tally = ");
+//			for(int i=1; i<=4; i++) {
+//				System.out.print(DynamicDistributionSimulationStrategy.callTally[i] + " ");
+//			}
+//			System.out.println();
+//			
+//			System.out.print("Raise Tally = ");
+//			for(int i=1; i<=4; i++) {
+//				System.out.print(DynamicDistributionSimulationStrategy.raiseTally[i] + " ");
+//			}
+//			System.out.println();*/
+//			
+//			
+//			
+//			
+//			
+//			
+//			
+//		}
+//		if(trials[0]==5) {
+//			for(int i=0; i<total.length; i++) {
+//				System.out.println("C: " + C[i] + ", expPercent: " + (total[i]/trials[i]));
+//			}
+//			System.out.println();
+//		}
+//		return null;
+//	}
 	
 	
 	

@@ -7,7 +7,7 @@ public class AveragingBackpropagationStrategy implements
 
 	public void propagate(Node node, double expectedValue) {
 		node.setExpectedValue(expectedValue);
-		node.setVisitCount(node.getVisitCount()+1);
+		node.incrementVisitCount();
 		
 		while((node=node.getParent())!=null) {
 			double numerator = 0.0;
@@ -17,7 +17,7 @@ public class AveragingBackpropagationStrategy implements
 				denominator += child.getVisitCount();
 			}
 			node.setExpectedValue(numerator/denominator);			
-			node.setVisitCount(node.getVisitCount()+1);
+			node.incrementVisitCount();
 		}
 
 	}

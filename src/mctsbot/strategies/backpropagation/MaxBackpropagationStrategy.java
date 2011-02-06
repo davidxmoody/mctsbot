@@ -7,7 +7,7 @@ public class MaxBackpropagationStrategy implements BackpropagationStrategy {
 	
 	public void propagate(Node node, double expectedValue) {
 		node.setExpectedValue(expectedValue);
-		node.setVisitCount(node.getVisitCount()+1);
+		node.incrementVisitCount();
 		
 		while((node=node.getParent())!=null) {
 			
@@ -19,7 +19,7 @@ public class MaxBackpropagationStrategy implements BackpropagationStrategy {
 					}
 				}
 				node.setExpectedValue(maxEV);
-				node.setVisitCount(node.getVisitCount()+1);
+				node.incrementVisitCount();
 				
 			} else {
 				double numerator = 0.0;
@@ -30,7 +30,7 @@ public class MaxBackpropagationStrategy implements BackpropagationStrategy {
 					denominator += child.getVisitCount();
 				}
 				node.setExpectedValue(numerator/denominator);			
-				node.setVisitCount(node.getVisitCount()+1);
+				node.incrementVisitCount();
 			}
 			
 			

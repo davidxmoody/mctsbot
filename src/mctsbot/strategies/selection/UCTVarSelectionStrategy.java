@@ -9,20 +9,18 @@ import mctsbot.nodes.Node;
 
 public class UCTVarSelectionStrategy implements SelectionStrategy {
 	
-//	public static double explorationTally = 0;
-//	public static double exploitationTally = 0;
-	
-	//TODO: find a good value for C.
-	//TODO: make final again
-	public static double C1 = 10.0;
-	public static double C2 = 0.1;
+	private final double C1;
+	private final double C2;
 	
 	private static final Random random = new Random();
 	
 	private static final RandomSelectionStrategy randomSelectionStrategy = 
 		new RandomSelectionStrategy();
 
-	
+	public UCTVarSelectionStrategy(double C1, double C2) {
+		this.C1 = C1;
+		this.C2 = C2;
+	}
 	
 	
 	public Node select(Node node) {

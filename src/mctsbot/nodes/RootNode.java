@@ -25,7 +25,7 @@ public class RootNode extends ChoiceNode {
 	}
 	
 	public Node select() {
-		return children.get(random.nextInt(children.size()));
+		return children.get(random.nextInt(2));
 	}
 
 
