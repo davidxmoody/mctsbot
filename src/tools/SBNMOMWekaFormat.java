@@ -126,7 +126,9 @@ public class SBNMOMWekaFormat implements WekaFormat {
 //		setTableCardValues(inst, table);
 		
 		// Return The Instance.
-		return inst.getInstance();
+		final Instance wekaInstance = inst.getInstance();
+		wekaInstance.setMissing((1+opponentNode.getGameState().getStage())*NUM_ACTIONS_TO_WRITE);
+		return wekaInstance;
 	}
 	
 	
@@ -150,7 +152,7 @@ public class SBNMOMWekaFormat implements WekaFormat {
 	
 	private void setActionValues(OutputType inst, List<Action> actions) {
 		if(actions==null) {
-			for(int i=0; i<3; i++) inst.setNextValueUnknown();
+			for(int i=0; i<NUM_ACTIONS_TO_WRITE; i++) inst.setNextValueUnknown();
 			return;
 		}
 		
@@ -181,6 +183,7 @@ public class SBNMOMWekaFormat implements WekaFormat {
 	}
 	
 	
+	@SuppressWarnings("unused")
 	private void setTableCardValues(OutputType inst, Hand table) {
 		int[] ranks = new int[5];
 		int[] suits = new int[5];
@@ -317,7 +320,13 @@ public class SBNMOMWekaFormat implements WekaFormat {
 		}
 		
 		public void setNextValueUnknown() {
-			inst.setMissing(i++);
+			try {
+				inst.setMissing(i++);
+			} catch(Exception e) {
+				System.err.println("============================================");
+				System.err.println(inst);
+				throw new RuntimeException(e);
+			}
 		}
 		
 		public Instance getInstance() {

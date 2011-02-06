@@ -65,16 +65,25 @@ public class SimpleWekaNextActionOpponentModel implements NextActionOpponentMode
 	
 	private SimpleWekaNextActionOpponentModel(int i) { }
 	
-	//TODO: check this.
+	
 	public double[] getActionProbabilities(OpponentNode opponentNode) {
+		
+		Instance inst = null;
+		
 		try {
 		
-			final Instance inst = nMOMWekaFormat.getInstance(opponentNode);
+			inst = nMOMWekaFormat.getInstance(opponentNode);
 			
 			return getClassifier(opponentNode).distributionForInstance(inst);
 		
 		} catch(Exception e) {
-			throw new RuntimeException(e);
+			System.err.println("**************************************************************************");
+			System.err.println(inst);
+			e.printStackTrace();
+//			throw new RuntimeException(e);
+			
+			//TODO: fix this bug
+			return new double[] {0.333333, 0.333333, 0.333334};
 		}
 	}
 	
