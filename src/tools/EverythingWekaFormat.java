@@ -42,25 +42,25 @@ public class EverythingWekaFormat implements WekaFormat {
 		
 		out.write("@ATTRIBUTE blind {none,small,big}\r");
 		
-		out.write("@ATTRIBUTE preflop_can_check {yes,no}\r");
+		out.write("@ATTRIBUTE preflop_checked {yes,no}\r");
 		out.write("@ATTRIBUTE preflop_action_1 {r,c,f}\r");
 		out.write("@ATTRIBUTE preflop_action_2 {r,c,f}\r");
 		out.write("@ATTRIBUTE preflop_action_3 {r,c,f}\r");
 		out.write("@ATTRIBUTE preflop_action_4 {r,c,f}\r");
 
-		out.write("@ATTRIBUTE flop_can_check {yes,no}\r");
+		out.write("@ATTRIBUTE flop_checked {yes,no}\r");
 		out.write("@ATTRIBUTE flop_action_1 {r,c,f}\r");
 		out.write("@ATTRIBUTE flop_action_2 {r,c,f}\r");
 		out.write("@ATTRIBUTE flop_action_3 {r,c,f}\r");
 		out.write("@ATTRIBUTE flop_action_4 {r,c,f}\r");
 		
-		out.write("@ATTRIBUTE turn_can_check {yes,no}\r");
+		out.write("@ATTRIBUTE turn_checked {yes,no}\r");
 		out.write("@ATTRIBUTE turn_action_1 {r,c,f}\r");
 		out.write("@ATTRIBUTE turn_action_2 {r,c,f}\r");
 		out.write("@ATTRIBUTE turn_action_3 {r,c,f}\r");
 		out.write("@ATTRIBUTE turn_action_4 {r,c,f}\r");
 		
-		out.write("@ATTRIBUTE river_can_check {yes,no}\r");
+		out.write("@ATTRIBUTE river_checked {yes,no}\r");
 		out.write("@ATTRIBUTE river_action_1 {r,c,f}\r");
 		out.write("@ATTRIBUTE river_action_2 {r,c,f}\r");
 		out.write("@ATTRIBUTE river_action_3 {r,c,f}\r");
@@ -69,22 +69,26 @@ public class EverythingWekaFormat implements WekaFormat {
 		out.write("@ATTRIBUTE flop_card_1_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
 		out.write("@ATTRIBUTE flop_card_2_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
 		out.write("@ATTRIBUTE flop_card_3_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
-		//TODO
 		out.write("@ATTRIBUTE flop_num_suited {1,2,3}\r");
-		out.write("@ATTRIBUTE flop_num_needed_for_straight{2,3,4}\r");
-		out.write("@ATTRIBUTE flop_pair_on_table {1,2,3}\r");
+//		out.write("@ATTRIBUTE flop_num_needed_for_straight{2,3,4}\r");
+//		out.write("@ATTRIBUTE flop_pair_on_table {1,2,3}\r");
 		
 		out.write("@ATTRIBUTE turn_card_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
-		out.write("@ATTRIBUTE turn_num_suited {1,2,3}\r");
-		out.write("@ATTRIBUTE flop_num_needed_for_straight {1,2,3}\r");
+		out.write("@ATTRIBUTE turn_num_suited {1,2,3,4,22}\r");
+//		out.write("@ATTRIBUTE flop_num_needed_for_straight {1,2,3}\r");
 		
 		out.write("@ATTRIBUTE river_card_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
+		out.write("@ATTRIBUTE river_num_suited {0,3,4,5}\r");
 		
-		out.write("@ATTRIBUTE num_suited_flop {1,2,3}\r");
-		out.write("@ATTRIBUTE num_suited_turn {1,2,3,4,22}\r");
-		out.write("@ATTRIBUTE num_suited_river {0,3,4,5}\r");
+//		out.write("@ATTRIBUTE num_suited_flop {1,2,3}\r");
+//		out.write("@ATTRIBUTE num_suited_turn {1,2,3,4,22}\r");
+//		out.write("@ATTRIBUTE num_suited_river {0,3,4,5}\r");
 		
 		out.write("@ATTRIBUTE table_strength NUMERIC\r");
+		
+		out.write("@ATTRIBUTE other_players_hand_strength NUMERIC\r");
+		
+		out.write("@ATTRIBUTE game_result {win,lose,draw}\r");
 		
 		out.write("\r");
 		out.write("@DATA\r");
@@ -101,7 +105,7 @@ public class EverythingWekaFormat implements WekaFormat {
 		
 		final FileOutputType inst = new FileOutputType();
 		
-//		final Hand table = gameRecord.getTable();
+		final Hand table = gameRecord.getTable();
 		
 		// Blind.
 		setBlindValue(inst,player.getActions(GameState.PREFLOP));
@@ -113,11 +117,45 @@ public class EverythingWekaFormat implements WekaFormat {
 		setActionValues(inst, player.getActions(GameState.RIVER));
 		
 		// Table Cards.
-//		setTableCardValues(inst, table);
+		setTableCardValues(inst, table, gameRecord.getStageReached());
+		
+		// Return if not at showdown.
+		if(gameRecord.getStageReached()!=GameState.SHOWDOWN) {
+			for(int i=0; i<3; i++) inst.setNextValueUnknown();
+			inst.write(out);
+			return;
+		}
 		
 		// Table Strength.
-//		inst.setNextValue(
-//				HandStrengthConverter.rankToStrength(gameRecord.getTableRank()));
+		inst.setNextValue(
+				HandStrengthConverter.rankToStrength(gameRecord.getTableRank()));
+		
+		// Other Player's Hand Strength.
+		final int playersHandRank = player.getHandRank();
+		int otherPlayersHandRank = -1;
+		try {
+			otherPlayersHandRank = gameRecord.getPlayer("MCTSBot").getHandRank();
+		} catch(Exception e) {
+			for(PlayerRecord otherPlayer: gameRecord.getPlayers()) {
+				if(otherPlayer!=player) {
+					otherPlayersHandRank = otherPlayer.getHandRank();
+					break;
+				}
+			}
+		}
+		if(otherPlayersHandRank<0) 
+			throw new RuntimeException("other players hand rank is -1");
+		
+		inst.setNextValue(HandStrengthConverter.rankToStrength(otherPlayersHandRank));
+		
+		// Game Result.
+		if(playersHandRank>otherPlayersHandRank) {
+			inst.setNextValue("lose");
+		} else if(playersHandRank<otherPlayersHandRank) {
+			inst.setNextValue("win");
+		} else {
+			inst.setNextValue("draw");
+		}
 		
 		// Write to file.
 		inst.write(out);
@@ -126,7 +164,7 @@ public class EverythingWekaFormat implements WekaFormat {
 	public Instance getInstance(OpponentNode opponentNode) {
 		final InstanceOutputType inst = new InstanceOutputType();
 		
-//		final Hand table = opponentNode.getGameState().getTable();
+		final Hand table = opponentNode.getGameState().getTable();
 		final Player opponent = opponentNode.getGameState().getNextPlayerToAct();
 		
 		// Blind.
@@ -137,6 +175,9 @@ public class EverythingWekaFormat implements WekaFormat {
 		setActionValues(inst, opponent.getActions(GameState.FLOP));
 		setActionValues(inst, opponent.getActions(GameState.TURN));
 		setActionValues(inst, opponent.getActions(GameState.RIVER));
+		
+		//TODO: finish this
+		
 		
 		// Table Cards.
 //		setTableCardValues(inst, table);
@@ -166,7 +207,34 @@ public class EverythingWekaFormat implements WekaFormat {
 		
 	}
 	
+	private void checked(OutputType inst, List<Action> actions) {
+		if(actions==null) {
+			inst.setNextValueUnknown();
+			return;
+		}
+		
+		Action action = actions.get(0);
+		if(action instanceof SmallBlindAction 
+				|| action instanceof BigBlindAction) {
+			try {
+				action = actions.get(1);
+			} catch(Exception e) {
+				inst.setNextValueUnknown();
+				return;
+			}
+		}
+		
+		if(action instanceof CallAction && action.getAmount()==0) {
+			inst.setNextValue("yes");
+		} else {
+			inst.setNextValue("no");
+		}
+		
+	}
+	
 	private void setActionValues(OutputType inst, List<Action> actions) {
+		checked(inst, actions);
+		
 		if(actions==null) {
 			for(int i=0; i<NUM_ACTIONS_TO_WRITE; i++) inst.setNextValueUnknown();
 			return;
@@ -199,8 +267,14 @@ public class EverythingWekaFormat implements WekaFormat {
 	}
 	
 	
-	@SuppressWarnings("unused")
-	private void setTableCardValues(OutputType inst, Hand table) {
+	private void setTableCardValues(OutputType inst, Hand table, int stage) {
+		// Preflop.
+		if(stage==GameState.PREFLOP) {
+			for(int i=0; i<8; i++) inst.setNextValueUnknown();
+			return;
+		}
+		
+		// Flop.
 		int[] ranks = new int[5];
 		int[] suits = new int[5];
 		
@@ -213,14 +287,13 @@ public class EverythingWekaFormat implements WekaFormat {
 			suits[i] = Card.getSuit(cards[i+1]);
 		}
 		
-		// Sort the ranks first
-		Arrays.sort(ranks);
+		int[] flopRanks = new int[3];
+		for(int i=0; i<3; i++) flopRanks[i] = ranks[i];
+		Arrays.sort(flopRanks);
 		
-		// Set the ranks
-		for(int i=0; i<5; i++) inst.setNextValue("" + Card.getRankChar(ranks[i]));
+		// Set the first three ranks
+		for(int i=0; i<3; i++) inst.setNextValue("" + Card.getRankChar(flopRanks[i]));
 		
-		
-		// Flop.
 		suitCounts[suits[0]]++;
 		suitCounts[suits[1]]++;
 		suitCounts[suits[2]]++;
@@ -237,7 +310,14 @@ public class EverythingWekaFormat implements WekaFormat {
 		}
 		inst.setNextValue(numSuitedFlop);
 		
+		if(stage==GameState.FLOP) {
+			for(int i=0; i<4; i++) inst.setNextValueUnknown();
+			return;
+		}
+		
 		// Turn.
+		inst.setNextValue("" + Card.getRankChar(ranks[3]));
+		
 		suitCounts[suits[3]]++;
 		
 		String numSuitedTurn = "1";
@@ -260,7 +340,14 @@ public class EverythingWekaFormat implements WekaFormat {
 		}
 		inst.setNextValue(numSuitedTurn);
 		
+		if(stage==GameState.TURN) {
+			for(int i=0; i<2; i++) inst.setNextValueUnknown();
+			return;
+		}
+		
 		// River.
+		inst.setNextValue("" + Card.getRankChar(ranks[4]));
+		
 		suitCounts[suits[4]]++;
 		
 		String numSuitedRiver = "0";
