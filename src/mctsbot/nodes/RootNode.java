@@ -12,6 +12,10 @@ public class RootNode extends ChoiceNode {
 
 	public RootNode(GameState gameState, Config config) {
 		super(null, gameState, config);
+		//TODO: find a more elegant way to do this
+		this.generateChildren();
+		final double v = children.get(2).simulate();
+		children.get(2).backpropagate(v);
 	}
 	
 	public Node selectRecursively() {

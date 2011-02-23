@@ -1,6 +1,9 @@
 package mctsbot;
 
+import java.util.ArrayList;
+
 import mctsbot.gamestate.GameState;
+import mctsbot.gui.GUI;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.RootNode;
 import mctsbot.strategies.simulation.DynamicDistributionSimulationStrategy;
@@ -21,12 +24,40 @@ public class MCTSBot implements Player {
 	
 	protected GameState currentGameState;
 	private Config config;
+
+	private ArrayList<Double>[] data = null;
 	
 	private static boolean convert = HHConverter.CONVERT;
+	
+	public MCTSBot() {
+		this.data = new ArrayList[3];
+		this.data[0] = new ArrayList<Double>();
+		this.data[1] = new ArrayList<Double>();
+		this.data[2] = new ArrayList<Double>();
+	}
+	
+	
+	public ArrayList<Double>[] getData() {
+		return data;
+	}
+	
+	private void updateData(RootNode root) {
+		//TODO: find a better way to stop accessing the data from causing problems.
+//		synchronized (data) {
+			data[0].add(root.getChildren().get(0).getExpectedValue());
+			data[1].add(root.getChildren().get(1).getExpectedValue());
+			data[2].add(root.getChildren().get(2).getExpectedValue());
+//		}
+	}
+	
+//	private void updateGraph() {
+//		
+//	}
 	
 	
 	public void init(Preferences prefs) {
 		setConfig(new Config(prefs));
+		GUI.initiate();
 	}
 	
 	
@@ -52,11 +83,11 @@ public class MCTSBot implements Player {
 	
 	
 	
-	double[] C = new double [10];
-	
-	double[] total = new double [10];
-	
-	int[] trials = new int [10];
+//	double[] C = new double [10];
+//	
+//	double[] total = new double [10];
+//	
+//	int[] trials = new int [10];
 	
 	//TODO: rename
 //	public Action getAction2() {
@@ -133,6 +164,10 @@ public class MCTSBot implements Player {
 	
 	public Action getAction() {
 		
+		this.data[0] = new ArrayList<Double>();
+		this.data[1] = new ArrayList<Double>();
+		this.data[2] = new ArrayList<Double>();
+		
 		// Perform conversion on histories.txt if the flag is set.
 		if(convert) {
 			try {
@@ -205,15 +240,11 @@ public class MCTSBot implements Player {
 		
 		do {
 			iterate(root);
-			iterate(root);
-			iterate(root);
-			iterate(root);
-			iterate(root);
-			iterate(root);
-			iterate(root);
-			iterate(root);
+			updateData(root);
 			
-			noIterations+=8;
+			noIterations++;
+			
+			if(noIterations%100==0) GUI.updateGraph(data);
 			
 		} while(endTime>System.currentTimeMillis());
 		
