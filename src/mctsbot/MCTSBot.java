@@ -17,7 +17,7 @@ import com.biotools.meerkat.util.Preferences;
 
 public class MCTSBot implements Player {
 	
-	private static final long THINKING_TIME = 1000;
+	public static final long THINKING_TIME = 600;
 	
 	private int seat;
 	private GameInfo gi;
@@ -29,6 +29,7 @@ public class MCTSBot implements Player {
 	
 	private static boolean convert = HHConverter.CONVERT;
 	
+	@SuppressWarnings("unchecked")
 	public MCTSBot() {
 		this.data = new ArrayList[3];
 		this.data[0] = new ArrayList<Double>();
@@ -49,11 +50,6 @@ public class MCTSBot implements Player {
 			data[2].add(root.getChildren().get(2).getExpectedValue());
 //		}
 	}
-	
-//	private void updateGraph() {
-//		
-//	}
-	
 	
 	public void init(Preferences prefs) {
 		setConfig(new Config(prefs));
@@ -163,11 +159,7 @@ public class MCTSBot implements Player {
 	
 	
 	public Action getAction() {
-		
-		this.data[0] = new ArrayList<Double>();
-		this.data[1] = new ArrayList<Double>();
-		this.data[2] = new ArrayList<Double>();
-		
+
 		// Perform conversion on histories.txt if the flag is set.
 		if(convert) {
 			try {
@@ -180,16 +172,30 @@ public class MCTSBot implements Player {
 			}
 		}
 		
+		// Create/reset data arrays for the graph.
+		this.data[0] = new ArrayList<Double>();
+		this.data[1] = new ArrayList<Double>();
+		this.data[2] = new ArrayList<Double>();
+		
 		// Print Cards and Table Cards.
+		final String cards = currentGameState.getC1().toString() + " " + 
+			currentGameState.getC2() + "   " + currentGameState.getTable().toString();
 		System.out.println();
-		System.out.println(currentGameState.getC1().toString() + " " + 
-				currentGameState.getC2() + "   " + currentGameState.getTable().toString());
-
+		System.out.println(cards);
+		GUI.setCards(cards);
+		
 		// Make root node.
 		RootNode root = new RootNode(currentGameState, config);
 		
 		// Do iterations until time limit reached.
-		performIterations(root, getThinkingTime());
+		try {
+			performIterations(root, getThinkingTime());
+		} catch(RuntimeException e) {
+			if(e.getMessage().equals("restart")) {
+				root = null;
+				return getAction();
+			} else throw e;
+		}
 		
 		// Select the (Meerkat) Action to perform.
 		final Action action = convertToMeerkatAction(
@@ -245,6 +251,8 @@ public class MCTSBot implements Player {
 			noIterations++;
 			
 			if(noIterations%100==0) GUI.updateGraph(data);
+			if(GUI.stopThinking()) break;
+			if(GUI.startOver()) throw new RuntimeException("restart");
 			
 		} while(endTime>System.currentTimeMillis());
 		
@@ -271,7 +279,8 @@ public class MCTSBot implements Player {
 	
 	
 	private long getThinkingTime() {
-		return THINKING_TIME;
+//		return THINKING_TIME;
+		return GUI.getThinkingTime();
 	}
 	
 	
