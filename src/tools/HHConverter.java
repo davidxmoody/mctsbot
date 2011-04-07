@@ -18,6 +18,7 @@ import mctsbot.actions.FoldAction;
 import mctsbot.actions.RaiseAction;
 import mctsbot.actions.SmallBlindAction;
 import mctsbot.gamestate.GameState;
+import mctsbot.opponentmodel.SimpleWekaHandRankOpponentModel;
 import mctsbot.opponentmodel.SimpleWekaNextActionOpponentModel;
 
 import com.biotools.meerkat.HandEvaluator;
@@ -33,9 +34,8 @@ public class HHConverter {
 	private static final String DEFAULT_TEMPORARY_STORAGE_LOCATION = 
 		"S:\\Workspace\\MCTSBot\\weka\\serializedGameRecords.txt";
 	
-	//TODO: change this
 	private static final String DEFAULT_ARFF_HEADER_LOCATION = 
-		"S:\\Workspace\\MCTSBot\\weka\\nextActionTemplate.arff";
+		"S:\\Workspace\\MCTSBot\\weka\\template.arff";
 	
 	private static final String[] simpleBotAliases = {"SimpleBot", 
 													  "Unknown", 
@@ -48,7 +48,7 @@ public class HHConverter {
 	
 	private static final boolean APPEND = false;
 	
-	private static final WekaFormat format = new SBNMOMWekaFormat(null);
+	private static final WekaFormat format = new EverythingWekaFormat(null);
 	
 	// Set this to true if you want to run the convertHistoriesToGameRecords 
 	// method when running MCTSBot in PA Pro.
@@ -115,12 +115,13 @@ public class HHConverter {
 		launchWeka();
 		
 		// Rebuild Classifier.
-//		SimpleWekaHandRankOpponentModel.main(null);
+		SimpleWekaHandRankOpponentModel.main(null);
 		SimpleWekaNextActionOpponentModel.main(null);
 	}
 	
 	private static void launchWeka() {
 		try {
+			// This is a cheat to get access to the Desktop class which is only available in Java 1.6
 			Class<?> desktopClass = ClassLoader.getSystemClassLoader().loadClass("java.awt.Desktop");
 			Method getDesktop = desktopClass.getMethod("getDesktop", (Class[])null);
 			Object desktop = getDesktop.invoke((Object[])null, (Object[])null);

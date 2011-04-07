@@ -14,16 +14,18 @@ import mctsbot.actions.SmallBlindAction;
 import mctsbot.gamestate.GameState;
 import mctsbot.gamestate.Player;
 import mctsbot.nodes.OpponentNode;
+import mctsbot.nodes.ShowdownNode;
 import weka.core.Instance;
 import weka.core.Instances;
 
 import com.biotools.meerkat.Card;
 import com.biotools.meerkat.Hand;
+import com.biotools.meerkat.HandEvaluator;
 
 public class EverythingWekaFormat implements WekaFormat {
 
 	// TODO: Remember to update this.
-	public static final int NUM_ATTRIBUTES = 13;
+	public static final int NUM_ATTRIBUTES = 32;
 	
 	public static final int NUM_ACTIONS_TO_WRITE = 4;
 	
@@ -66,6 +68,7 @@ public class EverythingWekaFormat implements WekaFormat {
 		out.write("@ATTRIBUTE river_action_3 {r,c,f}\r");
 		out.write("@ATTRIBUTE river_action_4 {r,c,f}\r");
 		
+		
 		out.write("@ATTRIBUTE flop_card_1_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
 		out.write("@ATTRIBUTE flop_card_2_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
 		out.write("@ATTRIBUTE flop_card_3_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
@@ -80,9 +83,6 @@ public class EverythingWekaFormat implements WekaFormat {
 		out.write("@ATTRIBUTE river_card_rank {2,3,4,5,6,7,8,9,T,J,Q,K,A}\r");
 		out.write("@ATTRIBUTE river_num_suited {0,3,4,5}\r");
 		
-//		out.write("@ATTRIBUTE num_suited_flop {1,2,3}\r");
-//		out.write("@ATTRIBUTE num_suited_turn {1,2,3,4,22}\r");
-//		out.write("@ATTRIBUTE num_suited_river {0,3,4,5}\r");
 		
 		out.write("@ATTRIBUTE table_strength NUMERIC\r");
 		
@@ -161,7 +161,41 @@ public class EverythingWekaFormat implements WekaFormat {
 		inst.write(out);
 	}
 	
-	public Instance getInstance(OpponentNode opponentNode) {
+//	public Instance getInstance(Node node) {
+//		if(node instanceof OpponentNode) return getInstanceOpponent((OpponentNode)node);
+//		else if(node instanceof ShowdownNode) return getInstanceShowdown((ShowdownNode)node);
+//		else throw new RuntimeException(
+//			"getInstance called for invalid node type: " + node.getClass().getSimpleName());
+//	}
+	
+	public Instance getInstanceShowdown(ShowdownNode showdownNode, Player opponent, int botHandRank) {
+		final InstanceOutputType inst = new InstanceOutputType();
+		
+		final Hand table = showdownNode.getGameState().getTable();
+		
+		// Blind.
+		setBlindValue(inst,opponent.getActions(GameState.PREFLOP));
+		
+		// Actions.
+		setActionValues(inst, opponent.getActions(GameState.PREFLOP));
+		setActionValues(inst, opponent.getActions(GameState.FLOP));
+		setActionValues(inst, opponent.getActions(GameState.TURN));
+		setActionValues(inst, opponent.getActions(GameState.RIVER));
+		
+		// Table Cards.
+		setTableCardValues(inst, table, showdownNode.getGameState().getStage());
+		
+		// Table Strength.
+		inst.setNextValue(HandStrengthConverter.rankToStrength(HandEvaluator.rankHand(table)));
+		
+		// Bot Hand Strength.
+		inst.setNextValue(HandStrengthConverter.rankToStrength(botHandRank));
+		
+		// Return The Instance.
+		return inst.getInstance();
+	}
+	
+	public Instance getInstanceOpponent(OpponentNode opponentNode) {
 		final InstanceOutputType inst = new InstanceOutputType();
 		
 		final Hand table = opponentNode.getGameState().getTable();
@@ -176,15 +210,25 @@ public class EverythingWekaFormat implements WekaFormat {
 		setActionValues(inst, opponent.getActions(GameState.TURN));
 		setActionValues(inst, opponent.getActions(GameState.RIVER));
 		
-		//TODO: finish this
-		
-		
 		// Table Cards.
-//		setTableCardValues(inst, table);
+		setTableCardValues(inst, table, opponentNode.getGameState().getStage());
+		
+		// Table Strength (if applicable).
+		if(opponentNode.getGameState().getStage()>=GameState.RIVER) {
+			inst.setNextValue(HandStrengthConverter.rankToStrength(HandEvaluator.rankHand(table)));	
+		} else {
+			inst.setNextValueUnknown();
+		}
+		
+		// Bot Hand Strength.
+		inst.setNextValueUnknown();
+		
+		// Game Result.
+		inst.setNextValueUnknown();
 		
 		// Return The Instance.
 		final Instance wekaInstance = inst.getInstance();
-		wekaInstance.setMissing((1+opponentNode.getGameState().getStage())*NUM_ACTIONS_TO_WRITE);
+//		wekaInstance.setMissing((1+opponentNode.getGameState().getStage())*NUM_ACTIONS_TO_WRITE);
 		return wekaInstance;
 	}
 	

@@ -27,7 +27,7 @@ public class AlwaysCallSimulationStrategy implements SimulationStrategy {
 	public static int num = 0;
 	public static double mean = 0;
 	
-	
+	// TODO: simplify this class
 
 	public double simulate(Node node) {
 		
@@ -107,6 +107,11 @@ public class AlwaysCallSimulationStrategy implements SimulationStrategy {
 //		} else if(cumalativeWinProbability>0.5) {
 //			expectedValue += gameState.getPot()*0.5;
 //		} 
+		
+//		boolean won = random.nextDouble()<cumalativeWinProbability*cumalativeWinProbability-0.1;
+//		if(won) expectedValue += gameState.getPot();
+		
+		
 		expectedValue += gameState.getPot()*(cumalativeWinProbability>0.6?1:0);
 		
 		mean = (mean*num + cumalativeWinProbability)/(num+1);

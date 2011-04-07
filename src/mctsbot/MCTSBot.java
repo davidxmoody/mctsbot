@@ -6,6 +6,7 @@ import mctsbot.gamestate.GameState;
 import mctsbot.gui.GUI;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.RootNode;
+import mctsbot.strategies.simulation.AlwaysCallSimulationStrategy;
 import mctsbot.strategies.simulation.DynamicDistributionSimulationStrategy;
 import tools.HHConverter;
 
@@ -200,6 +201,11 @@ public class MCTSBot implements Player {
 		// Select the (Meerkat) Action to perform.
 		final Action action = convertToMeerkatAction(
 				config.getActionSelectionStrategy().select(root));
+		
+		
+		System.out.println("mean win prob = " + AlwaysCallSimulationStrategy.mean);
+		AlwaysCallSimulationStrategy.mean = 0;
+		AlwaysCallSimulationStrategy.num = 0;
 		
 		// Debugging stuff.
 

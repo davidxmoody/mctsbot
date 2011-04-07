@@ -10,9 +10,9 @@ import java.io.ObjectOutputStream;
 
 import mctsbot.gamestate.Player;
 import mctsbot.nodes.ShowdownNode;
-import tools.SBHROMWekaFormat;
-import weka.classifiers.Classifier;
-import weka.classifiers.functions.LinearRegression;
+import tools.EverythingWekaFormat;
+import weka.classifiers.DistributionClassifier;
+import weka.classifiers.bayes.NaiveBayes;
 import weka.core.Instance;
 import weka.core.Instances;
 
@@ -27,9 +27,9 @@ public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 	private static final String DEFAULT_CLASSIFIER_LOCATION = 
 		"S:\\Workspace\\MCTSBot\\weka\\mymodel.model";
 	
-	private static SBHROMWekaFormat hROMWekaFormat = null;
+	private static EverythingWekaFormat hROMWekaFormat = null;
 	
-	private Classifier classifier = null;
+	private DistributionClassifier classifier = null;
 	
 	
 	public SimpleWekaHandRankOpponentModel() {
@@ -42,7 +42,7 @@ public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 			template.setClassIndex(template.numAttributes()-1);
 			
 			// Create Weka Format.
-			hROMWekaFormat = new SBHROMWekaFormat(template);
+			hROMWekaFormat = new EverythingWekaFormat(template);
 			
 			// Load Classifier if possible, if not then try to rebuild classifier.
 			try {
@@ -62,12 +62,20 @@ public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 	private SimpleWekaHandRankOpponentModel(int i) { }
 	
 	public double probOfBeatingOpponent(ShowdownNode showdownNode, Player opponent, int botHandRank) {
+		
 		Instance instance = null;
 		try {
 			
-			instance = hROMWekaFormat.getInstance(showdownNode, opponent, botHandRank);
+			instance = hROMWekaFormat.getInstanceShowdown(showdownNode, opponent, botHandRank);
 			
-			final double result = classifier.classifyInstance(instance);
+			final double[] probabilities = classifier.distributionForInstance(instance);
+			
+//			for(int i=0; i<probabilities.length; i++){
+//				System.out.print(probabilities[i] + "  ");
+//			}
+//			System.out.println();
+			
+			final double result = probabilities[0];
 			
 			return result;
 			
@@ -83,7 +91,7 @@ public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 				new FileReader(DEFAULT_ARFF_FILE_LOCATION)));
 		data.setClassIndex(data.numAttributes()-1);
 		
-		classifier = new LinearRegression();
+		classifier = new NaiveBayes();
 		classifier.buildClassifier(data);
 		
 		saveClassifier();
@@ -92,7 +100,7 @@ public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 	public void loadClassifier() throws Exception {
 		final ObjectInputStream ois = new ObjectInputStream(
 				new FileInputStream(DEFAULT_CLASSIFIER_LOCATION));
-		classifier = (Classifier) ois.readObject();
+		classifier = (DistributionClassifier) ois.readObject();
 		ois.close();
 	}
 	
@@ -112,7 +120,7 @@ public class SimpleWekaHandRankOpponentModel implements HandRankOpponentModel {
 		SimpleWekaHandRankOpponentModel hrom = new SimpleWekaHandRankOpponentModel(0);
 		hrom.rebuildClassifier();
 		System.out.println("Successfully rebuilt classifier in " + 
-				(System.currentTimeMillis()-startTime) + " seconds.");
+				(System.currentTimeMillis()-startTime) + "ms.");
 		System.out.println("Classifier type = " + hrom.classifier.getClass().getSimpleName());
 	}
 

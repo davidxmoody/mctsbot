@@ -11,7 +11,7 @@ import java.util.List;
 
 import mctsbot.actions.Action;
 import mctsbot.nodes.OpponentNode;
-import tools.SBNMOMWekaFormat;
+import tools.EverythingWekaFormat;
 import weka.classifiers.DistributionClassifier;
 import weka.classifiers.bayes.NaiveBayes;
 import weka.core.Instance;
@@ -20,7 +20,7 @@ import weka.core.Instances;
 public class SimpleWekaNextActionOpponentModel implements NextActionOpponentModel {
 	
 	private static final String DEFAULT_ARFF_HEADER_LOCATION = 
-		"S:\\Workspace\\MCTSBot\\weka\\nextActionTemplate.arff";
+		"S:\\Workspace\\MCTSBot\\weka\\template.arff";
 	
 	private static final String DEFAULT_ARFF_FILE_LOCATION = 
 		"S:\\Workspace\\MCTSBot\\weka\\output.arff";
@@ -29,9 +29,9 @@ public class SimpleWekaNextActionOpponentModel implements NextActionOpponentMode
 		"S:\\Workspace\\MCTSBot\\weka\\nextactionmodel.model";
 	
 	private static final int NUM_CLASSIFIERS_PER_STAGE = 
-		SBNMOMWekaFormat.NUM_ACTIONS_TO_WRITE;
+		EverythingWekaFormat.NUM_ACTIONS_TO_WRITE;
 	
-	private static SBNMOMWekaFormat nMOMWekaFormat = null;
+	private static EverythingWekaFormat nMOMWekaFormat = null;
 	
 	private DistributionClassifier[][] classifiers = null;
 	
@@ -46,7 +46,7 @@ public class SimpleWekaNextActionOpponentModel implements NextActionOpponentMode
 			template.setClassIndex(template.numAttributes()-1);
 			
 			// Create Weka Format.
-			nMOMWekaFormat = new SBNMOMWekaFormat(template);
+			nMOMWekaFormat = new EverythingWekaFormat(template);
 			
 			// Load Classifier if possible, if not then try to rebuild classifier.
 			try {
@@ -72,12 +72,12 @@ public class SimpleWekaNextActionOpponentModel implements NextActionOpponentMode
 		
 		try {
 		
-			inst = nMOMWekaFormat.getInstance(opponentNode);
+			inst = nMOMWekaFormat.getInstanceOpponent(opponentNode);
 			
 			return getClassifier(opponentNode).distributionForInstance(inst);
 		
 		} catch(Exception e) {
-			System.err.println("**************************************************************************");
+			System.err.println("***************************************");
 			System.err.println(inst);
 			e.printStackTrace();
 //			throw new RuntimeException(e);
@@ -94,38 +94,56 @@ public class SimpleWekaNextActionOpponentModel implements NextActionOpponentMode
 		return classifiers[stageIndex][actionIndex];
 	}
 	
-	/*public double probOfBeatingOpponent(ShowdownNode showdownNode, Player opponent, int botHandRank) {
-		Instance instance = null;
-		try {
-			
-			instance = nMOMWekaFormat.getInstance(showdownNode, opponent, botHandRank);
-			
-			final double result = classifier.classifyInstance(instance);
-			
-			return result;
-			
-		} catch(Exception e) {
-			System.out.println(instance);
-			throw new RuntimeException(e);
-		}
-	}*/
-	
 	public void rebuildClassifier() throws Exception {
 		classifiers = new DistributionClassifier[4][NUM_CLASSIFIERS_PER_STAGE];
 		
 		final Instances data = new Instances(new BufferedReader(
 				new FileReader(DEFAULT_ARFF_FILE_LOCATION)));
 		
-		for(int stageIndex=3; stageIndex>=0; stageIndex--) {
-			for(int actionIndex=NUM_CLASSIFIERS_PER_STAGE-1; actionIndex>=0; actionIndex--) {
-				data.setClassIndex(1+stageIndex*NUM_CLASSIFIERS_PER_STAGE+actionIndex);
-				if(stageIndex!=3 || actionIndex!=NUM_CLASSIFIERS_PER_STAGE-1) 
-					data.deleteAttributeAt(1+stageIndex*NUM_CLASSIFIERS_PER_STAGE+actionIndex+1);
+//		for(int stageIndex=3; stageIndex>=0; stageIndex--) {
+//			for(int actionIndex=NUM_CLASSIFIERS_PER_STAGE-1; actionIndex>=0; actionIndex--) {
+//				data.setClassIndex(1+stageIndex*NUM_CLASSIFIERS_PER_STAGE+actionIndex);
+//				if(stageIndex!=3 || actionIndex!=NUM_CLASSIFIERS_PER_STAGE-1) 
+//					data.deleteAttributeAt(1+stageIndex*NUM_CLASSIFIERS_PER_STAGE+actionIndex+1);
+//				classifiers[stageIndex][actionIndex] = makeClassifier();
+//				classifiers[stageIndex][actionIndex].buildClassifier(data);
+////				System.out.println("classifier[" + stageIndex + "][" + actionIndex + "] has been built");
+//			}
+//		}
+		
+//		int stageIndex = 0;
+//		int actionIndex = 0;
+//		final int numAttributes = EverythingWekaFormat.NUM_ATTRIBUTES;
+		
+		// Game result, other players hand strength and table strength.
+//		data.deleteAttributeAt(numAttributes-1);
+//		data.deleteAttributeAt(numAttributes-2);
+//		data.deleteAttributeAt(numAttributes-3);
+		
+//		classifiers[stageIndex][actionIndex] = makeClassifier();
+//		classifiers[stageIndex][actionIndex].buildClassifier(data);
+		
+		int attributeIndex = 0;
+		
+		for(int stageIndex=0; stageIndex<=3; stageIndex++) {
+			
+			attributeIndex++;
+			
+			for(int actionIndex=0; actionIndex<NUM_CLASSIFIERS_PER_STAGE; actionIndex++) {
+				
+				attributeIndex++;
+				data.setClassIndex(attributeIndex);
+				
+//				if(stageIndex!=3 || actionIndex!=NUM_CLASSIFIERS_PER_STAGE-1) 
+//					data.deleteAttributeAt(1+stageIndex*NUM_CLASSIFIERS_PER_STAGE+actionIndex+1);
+				
 				classifiers[stageIndex][actionIndex] = makeClassifier();
 				classifiers[stageIndex][actionIndex].buildClassifier(data);
+				
 //				System.out.println("classifier[" + stageIndex + "][" + actionIndex + "] has been built");
+				
 			}
-		}
+		}		
 		
 		saveClassifier();
 	}
@@ -157,7 +175,7 @@ public class SimpleWekaNextActionOpponentModel implements NextActionOpponentMode
 		SimpleWekaNextActionOpponentModel nmom = new SimpleWekaNextActionOpponentModel(0);
 		nmom.rebuildClassifier();
 		System.out.println("Successfully rebuilt classifier in " + 
-				(System.currentTimeMillis()-startTime) + " seconds.");
+				(System.currentTimeMillis()-startTime) + "ms.");
 		System.out.println("Classifier type = " + nmom.classifiers[0][0].getClass().getSimpleName());
 		System.out.println();
 		
