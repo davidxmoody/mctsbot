@@ -54,6 +54,15 @@ public class OpponentNode extends PlayerNode {
 	
 	@Override
 	public Node createFoldNode() {
+		if(gameState.getMaxBetThisRound()==0 || gameState.getMaxBetThisRound()==
+				gameState.getNextPlayerToAct().getAmountInPotInCurrentRound()) {
+			try {
+				return children.get(1);
+			} catch(Exception e) {
+				return createCallNode();
+			}
+		}
+		
 		final GameState newGameState = gameState.doAction(Action.FOLD);
 		if(newGameState.isNextPlayerToAct()) {
 			if(newGameState.isBotNextPlayerToAct()) {

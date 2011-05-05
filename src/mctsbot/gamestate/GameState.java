@@ -279,6 +279,10 @@ public class GameState implements Cloneable {
 		// Fold.
 		} else if(actionType==Action.FOLD) {
 			
+//			if(maxBetThisRound==0 || 
+//					maxBetThisRound==nextPlayer.getAmountInPotInCurrentRound())
+//				return doAction(Action.CALL);
+			
 			newGameState.activePlayers = new LinkedList<Player>(activePlayers);
 			newGameState.activePlayers.remove(nextPlayer);
 			newGameState.inactivePlayers = new LinkedList<Player>(inactivePlayers);

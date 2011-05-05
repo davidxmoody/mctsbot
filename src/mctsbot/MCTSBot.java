@@ -192,6 +192,7 @@ public class MCTSBot implements Player {
 		try {
 			performIterations(root, getThinkingTime());
 		} catch(RuntimeException e) {
+			e.printStackTrace();
 			if(e.getMessage().equals("restart")) {
 				root = null;
 				return getAction();
@@ -216,8 +217,9 @@ public class MCTSBot implements Player {
 //				(100*UCTSelectionStrategy.explorationTally/
 //						(UCTSelectionStrategy.explorationTally
 //								+UCTSelectionStrategy.exploitationTally)));
-//		System.out.println();
 		
+//		System.out.println();
+//		
 //		int maxDepth = 10;
 //		Node current = root;
 //		
@@ -231,8 +233,7 @@ public class MCTSBot implements Player {
 //			current = current.getConfig().getSelectionStrategy().select(current);
 //			System.out.println();
 //		}
-//		
-//		System.out.println(AlwaysCallSimulationStrategy.mean);
+		
 		
 		
 		

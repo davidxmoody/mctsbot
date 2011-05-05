@@ -95,6 +95,10 @@ public class EverythingWekaFormat implements WekaFormat {
 		out.flush();
 	}
 	
+	public int getAttributeIndex(int stageIndex, int actionIndex) {
+		return 2 + actionIndex + 5*stageIndex;
+	}
+	
 	public void write(GameRecord gameRecord, String name, BufferedWriter out) throws Exception {
 		final PlayerRecord player;
 		try {
@@ -169,7 +173,7 @@ public class EverythingWekaFormat implements WekaFormat {
 //	}
 	
 	public Instance getInstanceShowdown(ShowdownNode showdownNode, Player opponent, int botHandRank) {
-		final InstanceOutputType inst = new InstanceOutputType();
+		final InstanceOutputType inst = new InstanceOutputType(NUM_ATTRIBUTES-1);
 		
 		final Hand table = showdownNode.getGameState().getTable();
 		
@@ -196,10 +200,13 @@ public class EverythingWekaFormat implements WekaFormat {
 	}
 	
 	public Instance getInstanceOpponent(OpponentNode opponentNode) {
-		final InstanceOutputType inst = new InstanceOutputType();
 		
 		final Hand table = opponentNode.getGameState().getTable();
 		final Player opponent = opponentNode.getGameState().getNextPlayerToAct();
+		
+		final InstanceOutputType inst = new InstanceOutputType(
+				getAttributeIndex(opponentNode.getGameState().getStage(), //TODO: fix this
+						opponent.getActions(opponentNode.getGameState().getStage()).size()));
 		
 		// Blind.
 		setBlindValue(inst,opponent.getActions(GameState.PREFLOP));
@@ -229,6 +236,9 @@ public class EverythingWekaFormat implements WekaFormat {
 		// Return The Instance.
 		final Instance wekaInstance = inst.getInstance();
 //		wekaInstance.setMissing((1+opponentNode.getGameState().getStage())*NUM_ACTIONS_TO_WRITE);
+		
+//		System.err.println(wekaInstance.classIndex());
+		
 		return wekaInstance;
 	}
 	
@@ -451,8 +461,9 @@ public class EverythingWekaFormat implements WekaFormat {
 		private Instance inst = null;
 		private int i = 0;
 		
-		public InstanceOutputType() {
+		public InstanceOutputType(int classIndex) {
 			inst = new Instance(NUM_ATTRIBUTES);
+			template.setClassIndex(classIndex);
 			inst.setDataset(template);
 		}
 
