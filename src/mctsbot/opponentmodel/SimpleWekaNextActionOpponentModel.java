@@ -79,7 +79,7 @@ public class SimpleWekaNextActionOpponentModel implements NextActionOpponentMode
 		} catch(Exception e) {
 			System.err.println("***************************************");
 			e.printStackTrace();
-			System.err.println(inst + "  i=" + inst.classIndex());
+			if(inst!=null) System.err.println(inst + "  i=" + inst.classIndex());
 //			throw new RuntimeException(e);
 			
 			//TODO: fix this bug
@@ -183,12 +183,17 @@ public class SimpleWekaNextActionOpponentModel implements NextActionOpponentMode
 		System.out.println("Classifier type = " + nmom.classifiers[0][0].getClass().getSimpleName());
 		System.out.println();
 		
-//		for(int i=0; i<4; i++) {
-//			for(int j=0; j<NUM_CLASSIFIERS_PER_STAGE; j++) {
-//				System.out.println("classifier[" + i + "][" + j + "] *********************");
-//				System.out.println(nmom.classifiers[i][j]);
-//			}
-//		}
+		for(int i=0; i<4; i++) {
+			for(int j=0; j<NUM_CLASSIFIERS_PER_STAGE; j++) {
+				System.out.println("classifier[" + i + "][" + j + "] *********************");
+				System.out.println(nmom.classifiers[i][j]);
+			}
+		}
+		
+		
+		
+		
+		
 	}
 	
 

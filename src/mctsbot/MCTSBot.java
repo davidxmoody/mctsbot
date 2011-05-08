@@ -6,7 +6,6 @@ import mctsbot.gamestate.GameState;
 import mctsbot.gui.GUI;
 import mctsbot.nodes.Node;
 import mctsbot.nodes.RootNode;
-import mctsbot.strategies.simulation.AlwaysCallSimulationStrategy;
 import mctsbot.strategies.simulation.DynamicDistributionSimulationStrategy;
 import tools.HHConverter;
 
@@ -18,7 +17,9 @@ import com.biotools.meerkat.util.Preferences;
 
 public class MCTSBot implements Player {
 	
-	public static final long THINKING_TIME = 600;
+	public static final long THINKING_TIME = 38;
+	
+	public static final boolean USE_GUI = false;
 	
 	private int seat;
 	private GameInfo gi;
@@ -54,7 +55,7 @@ public class MCTSBot implements Player {
 	
 	public void init(Preferences prefs) {
 		setConfig(new Config(prefs));
-		GUI.initiate();
+		if(USE_GUI) GUI.initiate();
 	}
 	
 	
@@ -181,9 +182,9 @@ public class MCTSBot implements Player {
 		// Print Cards and Table Cards.
 		final String cards = currentGameState.getC1().toString() + " " + 
 			currentGameState.getC2() + "   " + currentGameState.getTable().toString();
-		System.out.println();
-		System.out.println(cards);
-		GUI.setCards(cards);
+//		System.out.println();
+//		System.out.println(cards);
+		if(USE_GUI) GUI.setCards(cards);
 		
 		// Make root node.
 		RootNode root = new RootNode(currentGameState, config);
@@ -204,9 +205,9 @@ public class MCTSBot implements Player {
 				config.getActionSelectionStrategy().select(root));
 		
 		
-		System.out.println("mean win prob = " + AlwaysCallSimulationStrategy.mean);
-		AlwaysCallSimulationStrategy.mean = 0;
-		AlwaysCallSimulationStrategy.num = 0;
+//		System.out.println("mean win prob = " + AlwaysCallSimulationStrategy.mean);
+//		AlwaysCallSimulationStrategy.mean = 0;
+//		AlwaysCallSimulationStrategy.num = 0;
 		
 		// Debugging stuff.
 
@@ -253,19 +254,31 @@ public class MCTSBot implements Player {
 		
 		do {
 			iterate(root);
-			updateData(root);
+			iterate(root);
+			iterate(root);
+			iterate(root);
+			iterate(root);
+			iterate(root);
+			iterate(root);
+			iterate(root);
+			iterate(root);
+			iterate(root);
 			
-			noIterations++;
+			if(USE_GUI) updateData(root);
 			
-			if(noIterations%100==0) GUI.updateGraph(data);
-			if(GUI.stopThinking()) break;
-			if(GUI.startOver()) throw new RuntimeException("restart");
+			noIterations += 10;
+			
+			if(USE_GUI) {
+				if(noIterations%100==0) GUI.updateGraph(data);
+				if(GUI.stopThinking()) break;
+				if(GUI.startOver()) throw new RuntimeException("restart");
+			}
 			
 		} while(endTime>System.currentTimeMillis());
 		
 //		System.out.println();
-		System.out.println("Performed " + noIterations + " iterations in " + 
-				(System.currentTimeMillis()-startTime) + " milliseconds.");
+//		System.out.println("Performed " + noIterations + " iterations in " + 
+//				(System.currentTimeMillis()-startTime) + " milliseconds.");
 	}
 	
 	
@@ -286,8 +299,8 @@ public class MCTSBot implements Player {
 	
 	
 	private long getThinkingTime() {
-//		return THINKING_TIME;
-		return GUI.getThinkingTime();
+		if(USE_GUI) return GUI.getThinkingTime();
+		else return THINKING_TIME;
 	}
 	
 	

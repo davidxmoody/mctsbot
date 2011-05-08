@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.swing.JPanel;
 
@@ -54,9 +55,17 @@ public class Graph extends JPanel {
 
 	private void drawData(Graphics g) {
 		if(data[0].size()==0||data[1].size()==0||data[2].size()==0) return;
-		final double range = 2.0;
-		final double minY = data[2].get(0)-range;
-		final double maxY = data[2].get(0)+range;
+		double[] sorted = new double[] {data[0].get(data[0].size()-1), 
+										data[1].get(data[1].size()-1),
+										data[2].get(data[2].size()-1)};
+		Arrays.sort(sorted);
+		final double max = sorted[2];
+		final double med = sorted[1];
+		final double min = sorted[0];
+		final double range = (max-min);
+			
+		final double minY = med-range;
+		final double maxY = med+range;
 		final int numToDraw = data[0].size();
 		for(int i=0; i<3; i++) {
 			if(data[i].size()==0) continue;

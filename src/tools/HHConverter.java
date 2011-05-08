@@ -26,12 +26,13 @@ import com.biotools.meerkat.HandEvaluator;
 public class HHConverter {
 	
 	private static final String DEFAULT_INPUT_FILE_LOCATION = 
-		"S:\\Workspace\\MCTSBot\\weka\\histories3.txt";
-	
+		"S:\\Workspace\\MCTSBot\\weka\\histories.txt";
+//		"S:\\Workspace\\MCTSBot\\weka\\test.txt";
+		
 	private static final String DEFAULT_OUTPUT_FILE_LOCATION = 
 		"S:\\Workspace\\MCTSBot\\weka\\output.arff";
 	
-	private static final String DEFAULT_TEMPORARY_STORAGE_LOCATION = 
+	protected static final String DEFAULT_TEMPORARY_STORAGE_LOCATION = 
 		"S:\\Workspace\\MCTSBot\\weka\\serializedGameRecords.txt";
 	
 	private static final String DEFAULT_ARFF_HEADER_LOCATION = 
@@ -55,8 +56,8 @@ public class HHConverter {
 	public static final boolean CONVERT = false;
 	
 	/**
-	 * When run, this method will go through the entire file given to it and 
-	 * convert it to 
+	 * When run, this method will go through the archived GameRecords and 
+	 * convert each one to ARFF using the given WekaFormat.
 	 * 
 	 * @param args 
 	 * @throws Exception 
@@ -166,8 +167,6 @@ public class HHConverter {
 		
 		String inputLine = in.readLine();
 		
-		// TODO: fix problem where the amount in the actions is wrong
-		
 		while(inputLine!=null) {
 			
 			try {
@@ -175,6 +174,8 @@ public class HHConverter {
 				final GameRecord gameRecord = new GameRecord();
 				
 				gameRecord.stage = GameState.PREFLOP;
+				
+				double inPot = 0;
 				
 				while(!inputLine.startsWith("***")) {
 					
@@ -189,6 +190,7 @@ public class HHConverter {
 						final PlayerRecord player = new PlayerRecord(name, seat, dealer);
 						player.setCards(inputLine.substring(inputLine.length()-5));
 						gameRecord.addPlayer(player);
+						inPot = 0;
 						
 					// Small Blind.
 					} else if(inputLine.matches("\\S+ posts small blind .+")) {
@@ -197,6 +199,8 @@ public class HHConverter {
 						final String playerName = inputLine.substring(0, inputLine.indexOf(' '));
 						final PlayerRecord player = gameRecord.getPlayer(playerName);
 						player.doAction(new SmallBlindAction(amount), gameRecord.stage);
+						inPot = amount;
+						player.setAmountInPot(amount);
 						
 					// Big Blind.
 					} else if(inputLine.matches("\\S+ posts big blind .+")) {
@@ -205,12 +209,15 @@ public class HHConverter {
 						final String playerName = inputLine.substring(0, inputLine.indexOf(' '));
 						final PlayerRecord player = gameRecord.getPlayer(playerName);
 						player.doAction(new BigBlindAction(amount), gameRecord.stage);
+						inPot = amount;
+						player.setAmountInPot(amount);
 						
 					// Check.
 					} else if(inputLine.matches("\\S+ checks")){
 						final String playerName = inputLine.substring(0, inputLine.indexOf(' '));
 						final PlayerRecord player = gameRecord.getPlayer(playerName);
 						player.doAction(new CallAction(0), gameRecord.stage);
+						player.setAmountInPot(inPot);
 						
 					// Call.
 					} else if(inputLine.matches("\\S+ calls .+")){
@@ -219,15 +226,29 @@ public class HHConverter {
 						final String playerName = inputLine.substring(0, inputLine.indexOf(' '));
 						final PlayerRecord player = gameRecord.getPlayer(playerName);
 						player.doAction(new CallAction(amount), gameRecord.stage);
+						player.setAmountInPot(inPot);
 						
-					// Raise or Bet.
+					// Bet or Raise.
 					} else if(inputLine.matches("\\S+ (bets|raises) .+")){
 						final double amount = Double.parseDouble(
 								inputLine.substring(inputLine.indexOf(CURRENCY_SYMBOL)+1));
 						final String playerName = inputLine.substring(0, inputLine.indexOf(' '));
 						final PlayerRecord player = gameRecord.getPlayer(playerName);
 						player.doAction(new RaiseAction(amount), gameRecord.stage);
+						inPot += amount;
+						player.setAmountInPot(inPot);
 						
+//					// Raise.
+//					} else if(inputLine.matches("\\S+ raises .+")){
+//						final double amount = Double.parseDouble(
+//								inputLine.substring(inputLine.indexOf(CURRENCY_SYMBOL)+1));
+//						final String playerName = inputLine.substring(0, inputLine.indexOf(' '));
+//						final PlayerRecord player = gameRecord.getPlayer(playerName);
+//						player.doAction(new RaiseAction(amount), gameRecord.stage);
+//						// The raise amount is not trivial because it cannot be read from the file.
+//						inPot += amount;
+////						player.setAmountInPot(inPot);
+					
 					// Fold.
 					} else if(inputLine.matches("\\S+ folds")){
 						final String playerName = inputLine.substring(0, inputLine.indexOf(' '));
@@ -258,8 +279,34 @@ public class HHConverter {
 						final PlayerRecord player = gameRecord.getPlayer(playerName);
 						player.setHandRank(HandEvaluator.rankHand(
 								player.getC1(), player.getC2(), gameRecord.getTable()));
+						inPot = 0;
 						
-					// Something Else.
+					// Wins.
+					} else if(inputLine.matches("\\S+ wins .+")){
+						final String playerName = inputLine.substring(0, inputLine.indexOf(' '));
+						final PlayerRecord player = gameRecord.getPlayer(playerName);
+//						final double amount = Double.parseDouble(inputLine.substring(
+//								inputLine.indexOf(CURRENCY_SYMBOL)+1, 
+//								inputLine.indexOf(' ', inputLine.indexOf(CURRENCY_SYMBOL)+1)));
+						double amountWon = 0;
+						int numWinners = 1;
+						for(PlayerRecord p: gameRecord.getPlayers()) {
+							amountWon += p.getAmountInPot();
+							if(p.getAmountWon()!=0) numWinners++;
+						}
+						
+						player.setAmountWon(amountWon);
+						
+						if(numWinners!=1) {
+							for(PlayerRecord p: gameRecord.getPlayers()) {
+								if(p.getAmountWon()!=0) {
+									p.setAmountWon(amountWon/numWinners);
+								}
+							}
+						}
+						inPot = 0;
+					
+						// Something Else.
 					} else {
 						// Do Nothing.
 						

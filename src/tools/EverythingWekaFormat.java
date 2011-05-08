@@ -99,6 +99,12 @@ public class EverythingWekaFormat implements WekaFormat {
 		return 2 + actionIndex + 5*stageIndex;
 	}
 	
+	public int getAttributeIndex(GameState gs, Player opp) {
+		final List<Action> actions = opp.getActions(gs.getStage());
+		final int actionIndex = actions==null?0:actions.size();
+		return getAttributeIndex(gs.getStage(), actionIndex);
+	}
+	
 	public void write(GameRecord gameRecord, String name, BufferedWriter out) throws Exception {
 		final PlayerRecord player;
 		try {
@@ -204,9 +210,13 @@ public class EverythingWekaFormat implements WekaFormat {
 		final Hand table = opponentNode.getGameState().getTable();
 		final Player opponent = opponentNode.getGameState().getNextPlayerToAct();
 		
+//		final InstanceOutputType inst = new InstanceOutputType(
+//				getAttributeIndex(opponentNode.getGameState().getStage(), //TODO: fix this
+//						opponent.getActions(opponentNode.getGameState().getStage()).size()));
+		
 		final InstanceOutputType inst = new InstanceOutputType(
-				getAttributeIndex(opponentNode.getGameState().getStage(), //TODO: fix this
-						opponent.getActions(opponentNode.getGameState().getStage()).size()));
+				getAttributeIndex(opponentNode.getGameState(), opponent));
+		
 		
 		// Blind.
 		setBlindValue(inst,opponent.getActions(GameState.PREFLOP));

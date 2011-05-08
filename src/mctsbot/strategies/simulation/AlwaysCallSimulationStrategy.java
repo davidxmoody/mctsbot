@@ -114,8 +114,8 @@ public class AlwaysCallSimulationStrategy implements SimulationStrategy {
 		
 //		expectedValue += gameState.getPot()*(cumalativeWinProbability>0.6?1:0);
 		
-		mean = (mean*num + cumalativeWinProbability)/(num+1);
-		num++;
+//		mean = (mean*num + cumalativeWinProbability)/(num+1);
+//		num++;
 		
 		return expectedValue;
 	}

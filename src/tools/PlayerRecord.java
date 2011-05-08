@@ -21,6 +21,10 @@ public class PlayerRecord implements Serializable {
 	private int card2Index = -1;
 	
 	private int handRank = -1;
+
+	private double amountInPot = 0;
+	private double amountWon = 0; 
+//	private double profit = 0; 
 	
 	private List<Action> preflopActions = null;
 	private List<Action> flopActions = null;
@@ -132,6 +136,30 @@ public class PlayerRecord implements Serializable {
 		return handRank;
 	}
 	
+//	public void setProfit(double profit) {
+//		this.profit = profit;
+//	}
+
+	public double getProfit() {
+		return amountWon - amountInPot;
+	}
+
+	public void setAmountWon(double amountWon) {
+		this.amountWon = amountWon;
+	}
+
+	public double getAmountWon() {
+		return amountWon;
+	}
+
+	public void setAmountInPot(double amountInPot) {
+		this.amountInPot = amountInPot;
+	}
+
+	public double getAmountInPot() {
+		return amountInPot;
+	}
+
 	public void print() {
 		System.out.print(" " + seat + ") " + name + (dealer?" *  ":"    "));
 		
@@ -145,6 +173,7 @@ public class PlayerRecord implements Serializable {
 			for(Action action: actions) System.out.print(" " + action.getDescription());
 		}
 		System.out.println();
+		System.out.println("Profit: " + getProfit());
 	}
 	
 }
