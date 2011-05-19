@@ -1,16 +1,21 @@
 package mctsbot.opponentmodel;
 
-import java.util.Random;
-
 import mctsbot.gamestate.Player;
 import mctsbot.nodes.ShowdownNode;
 
+import com.biotools.meerkat.Deck;
+import com.biotools.meerkat.HandEvaluator;
+
 public class RandomHandRankOpponentModel implements HandRankOpponentModel {
 
-	private static final Random random = new Random();
-
-	public double probOfBeatingOpponent(ShowdownNode showdownNode, Player opponent, int botHandRank) {
-		return random.nextDouble();
+	public double probOfBeatingOpponent(ShowdownNode showdownNode, 
+			Player opponent, int botHandRank) {
+		
+		final Deck deck = showdownNode.getGameState().createDeck();
+		final int hr = HandEvaluator.rankHand(deck.extractRandomCard(), 
+				deck.extractRandomCard(), showdownNode.getGameState().getTable());
+		// This won't work when there is more than one opponent. 
+		return hr>botHandRank?0:1;
 	}
 
 }

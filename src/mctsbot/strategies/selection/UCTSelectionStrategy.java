@@ -60,21 +60,21 @@ public class UCTSelectionStrategy implements SelectionStrategy {
 		
 		
 		
-		Node maxNode = returnNode;
-		double maxValue = returnNode.getExpectedValue();
-		
-		for(Node child: node.getChildren()) {
-			if(child.getExpectedValue()>maxValue) {
-				maxNode = child;
-				maxValue = child.getExpectedValue();
-			}
-		}
-		
-		if(maxNode!=returnNode) {
-			explorationTally++;
-		} else {
-			exploitationTally++;
-		}
+//		Node maxNode = returnNode;
+//		double maxValue = returnNode.getExpectedValue();
+//		
+//		for(Node child: node.getChildren()) {
+//			if(child.getExpectedValue()>maxValue) {
+//				maxNode = child;
+//				maxValue = child.getExpectedValue();
+//			}
+//		}
+//		
+//		if(maxNode!=returnNode) {
+//			explorationTally++;
+//		} else {
+//			exploitationTally++;
+//		}
 		
 		return returnNode;
 	}

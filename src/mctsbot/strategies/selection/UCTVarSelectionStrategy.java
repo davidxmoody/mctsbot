@@ -79,12 +79,17 @@ public class UCTVarSelectionStrategy implements SelectionStrategy {
 	}
 	
 	
+//	private double formula(Node child, Node parent) {
+//		return child.getExpectedValue() 
+//			 + C1*Math.sqrt(Math.log(parent.getVisitCount())/child.getVisitCount()) 
+//			 + C2*child.getStdDev()/Math.sqrt((double)child.getVisitCount());
+//	}
+	
 	private double formula(Node child, Node parent) {
 		return child.getExpectedValue() 
 			 + C1*Math.sqrt(Math.log(parent.getVisitCount())/child.getVisitCount()) 
 			 + C2*child.getStdDev();
 	}
-	
 	
 	private Node argmaxFormula(List<Node> children, Node parent) {
 		double maxValue = formula(children.get(0), parent);

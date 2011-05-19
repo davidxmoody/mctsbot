@@ -17,7 +17,7 @@ import com.biotools.meerkat.util.Preferences;
 
 public class MCTSBot implements Player {
 	
-	public static final long THINKING_TIME = 38;
+	public static final long THINKING_TIME = 600;
 	
 	public static final boolean USE_GUI = false;
 	
@@ -45,7 +45,6 @@ public class MCTSBot implements Player {
 	}
 	
 	private void updateData(RootNode root) {
-		//TODO: find a better way to stop accessing the data from causing problems.
 //		synchronized (data) {
 			data[0].add(root.getChildren().get(0).getExpectedValue());
 			data[1].add(root.getChildren().get(1).getExpectedValue());
@@ -80,14 +79,12 @@ public class MCTSBot implements Player {
 	}
 	
 	
-	
 //	double[] C = new double [10];
 //	
 //	double[] total = new double [10];
 //	
 //	int[] trials = new int [10];
 	
-	//TODO: rename
 //	public Action getAction2() {
 //		UCTSelectionStrategy.C = 0.5;
 //		for(int i=0; i<total.length; i++) {
@@ -115,11 +112,6 @@ public class MCTSBot implements Player {
 ////							(UCTSelectionStrategy.explorationTally
 ////									+UCTSelectionStrategy.exploitationTally)));
 //			
-//			
-//			
-//			
-//			
-//			
 //			UCTSelectionStrategy.exploitationTally = 0;
 //			UCTSelectionStrategy.explorationTally = 0;
 //			
@@ -141,12 +133,6 @@ public class MCTSBot implements Player {
 //			}
 //			System.out.println();*/
 //			
-//			
-//			
-//			
-//			
-//			
-//			
 //		}
 //		if(trials[0]==5) {
 //			for(int i=0; i<total.length; i++) {
@@ -156,8 +142,6 @@ public class MCTSBot implements Player {
 //		}
 //		return null;
 //	}
-	
-	
 	
 	
 	public Action getAction() {
@@ -354,11 +338,7 @@ public class MCTSBot implements Player {
 		}
 		
 	}
-	
-	
-	
-	
-	
+
 	
 	public void dealHoleCardsEvent() {
 		
@@ -381,10 +361,5 @@ public class MCTSBot implements Player {
 		
 	}
 
-	
-
-	
-
-	
 
 }

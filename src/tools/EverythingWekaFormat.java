@@ -147,7 +147,7 @@ public class EverythingWekaFormat implements WekaFormat {
 			otherPlayersHandRank = gameRecord.getPlayer("MCTSBot").getHandRank();
 		} catch(Exception e) {
 			for(PlayerRecord otherPlayer: gameRecord.getPlayers()) {
-				if(otherPlayer!=player) {
+				if(otherPlayer!=player && otherPlayer.getHandRank()!=-1) {
 					otherPlayersHandRank = otherPlayer.getHandRank();
 					break;
 				}

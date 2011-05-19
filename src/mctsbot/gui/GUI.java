@@ -68,9 +68,6 @@ public class GUI {
 		frame.setPreferredSize(new Dimension(800, 800));
 		frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
 		
-//		JLabel label = new JLabel("Is it working?");
-//		frame.getContentPane().add(label);
-		
 		graph = new Graph();
 		frame.add(graph);
 		

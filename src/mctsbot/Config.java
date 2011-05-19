@@ -44,6 +44,7 @@ public class Config {
 		
 		// SelectionStrategy.
 		this.selectionStrategy = new UCTVarSelectionStrategy(10, 0.1);
+//		this.selectionStrategy = new UCTSelectionStrategy(10);
 		
 		// SimulationStrategy.
 		this.simulationStrategy = new AlwaysCallSimulationStrategy();
@@ -53,9 +54,11 @@ public class Config {
 		
 		// HandRankOpponentModel.
 		this.handRankOpponentModel = new SimpleWekaHandRankOpponentModel();
+//		this.handRankOpponentModel = new RandomHandRankOpponentModel();
 		
 		// NextActionOpponentModel.
 		this.nextActionOpponentModel = new SimpleWekaNextActionOpponentModel();
+//		this.nextActionOpponentModel = new StaticDistributionNextActionOpponentModel();
 		
 	}
 

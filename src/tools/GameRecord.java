@@ -21,7 +21,6 @@ public class GameRecord implements Serializable {
 
 	protected GameRecord() { }
 	
-	//TODO
 	/*public GameRecord(GameState gameState) {
 	 	
 		// First check to see whether gameState represents an ended game.

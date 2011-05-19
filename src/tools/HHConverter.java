@@ -26,7 +26,7 @@ import com.biotools.meerkat.HandEvaluator;
 public class HHConverter {
 	
 	private static final String DEFAULT_INPUT_FILE_LOCATION = 
-		"S:\\Workspace\\MCTSBot\\weka\\histories.txt";
+		"S:\\My Dropbox\\CompSci Work\\Part II\\Project\\Hand Histories\\SBvSB.txt";
 //		"S:\\Workspace\\MCTSBot\\weka\\test.txt";
 		
 	private static final String DEFAULT_OUTPUT_FILE_LOCATION = 
@@ -39,6 +39,9 @@ public class HHConverter {
 		"S:\\Workspace\\MCTSBot\\weka\\template.arff";
 	
 	private static final String[] simpleBotAliases = {"SimpleBot", 
+													  "SimpleBot1", 
+													  "SimpleBot2", 
+													  "SimpleBot3", 
 													  "Unknown", 
 													  "LoggingSimpleBot", 
 													  "LoggingSimpleBot1", 
@@ -59,8 +62,6 @@ public class HHConverter {
 	 * When run, this method will go through the archived GameRecords and 
 	 * convert each one to ARFF using the given WekaFormat.
 	 * 
-	 * @param args 
-	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
 		

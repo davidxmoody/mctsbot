@@ -42,7 +42,6 @@ public class GameState implements Cloneable {
 	
 	private static int dealerSeat;
 	
-	//TODO make sure this will update correctly
 	private int nextPlayerToAct;
 	
 	private Action lastAction;
@@ -56,9 +55,6 @@ public class GameState implements Cloneable {
 	private int stage;
 	
 	private int committedPlayers;
-	
-	
-	//TODO: remove unnecessary methods
 	
 	
 	protected GameState() { }
@@ -114,16 +110,12 @@ public class GameState implements Cloneable {
 	
 	
 	
-	
 	public static GameState randomDemo() {
 		final Card randomCard1 = new Card(random.nextInt(52));
 		Card randomCard2 = null;
 		while((randomCard2=new Card(random.nextInt(52))).equals(randomCard1)) {}
 		return demo(randomCard1, randomCard2, 0, random.nextInt(2), 2);
 	}
-	
-	
-	
 	
 	
 	
@@ -345,13 +337,6 @@ public class GameState implements Cloneable {
 		return deck;
 	}
 
-	
-	
-	
-	
-	
-	
-	
 	
 	public GameState setTable(Hand table) {
 		final GameState newGameState = this.clone();
