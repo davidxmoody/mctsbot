@@ -1,0 +1,162 @@
+Poker Academy Pro #22,672
+Limit Texas Holdem ($1/$2)
+Table SimpleBot Logger
+November 24, 2010 - 13:23:03 (GMT)
+
+ 1} David               (sitting out)
+ 5) LoggingSimpleBot *   $1,000  2h 5s
+ 6) SimpleBot            $1,000  Jh Js
+
+LoggingSimpleBot posts small blind $0.50
+SimpleBot posts big blind $1
+LoggingSimpleBot folds
+
+SimpleBot wins $1 uncontested
+
+******************************
+Poker Academy Pro #22,673
+Limit Texas Holdem ($1/$2)
+Table SimpleBot Logger
+November 24, 2010 - 13:23:04 (GMT)
+
+ 1} David               (sitting out)
+ 5) LoggingSimpleBot     $999.50  Js 7c
+ 6) SimpleBot *        $1,000.50  Qs 3c
+
+SimpleBot posts small blind $0.50
+LoggingSimpleBot posts big blind $1
+SimpleBot folds
+
+LoggingSimpleBot wins $1 uncontested
+
+******************************
+Poker Academy Pro #22,674
+Limit Texas Holdem ($1/$2)
+Table SimpleBot Logger
+November 24, 2010 - 13:23:04 (GMT)
+
+ 1} David               (sitting out)
+ 5) LoggingSimpleBot *   $1,000  4c 2c
+ 6) SimpleBot            $1,000  6d 2s
+
+LoggingSimpleBot posts small blind $0.50
+SimpleBot posts big blind $1
+LoggingSimpleBot folds
+
+SimpleBot wins $1 uncontested
+
+******************************
+Poker Academy Pro #22,675
+Limit Texas Holdem ($1/$2)
+Table SimpleBot Logger
+November 24, 2010 - 13:23:05 (GMT)
+
+ 1} David               (sitting out)
+ 5) LoggingSimpleBot     $999.50  Jd Kd
+ 6) SimpleBot *        $1,000.50  Td 6d
+
+SimpleBot posts small blind $0.50
+LoggingSimpleBot posts big blind $1
+SimpleBot folds
+
+LoggingSimpleBot wins $1 uncontested
+
+******************************
+Poker Academy Pro #22,676
+Limit Texas Holdem ($1/$2)
+Table SimpleBot Logger
+November 24, 2010 - 13:23:05 (GMT)
+
+ 1} David               (sitting out)
+ 5) LoggingSimpleBot *   $1,000  2h Kh
+ 6) SimpleBot            $1,000  3c 8c
+
+LoggingSimpleBot posts small blind $0.50
+SimpleBot posts big blind $1
+LoggingSimpleBot folds
+
+SimpleBot wins $1 uncontested
+
+******************************
+Poker Academy Pro #22,677
+Limit Texas Holdem ($1/$2)
+Table SimpleBot Logger
+November 24, 2010 - 13:23:07 (GMT)
+
+ 1} David               (sitting out)
+ 5) LoggingSimpleBot     $999.50  7d Qc
+ 6) SimpleBot *        $1,000.50  Th Kc
+
+SimpleBot posts small blind $0.50
+LoggingSimpleBot posts big blind $1
+SimpleBot calls $0.50 
+LoggingSimpleBot checks
+
+FLOP:  Kh 2h 9h
+LoggingSimpleBot checks
+SimpleBot bets $1
+LoggingSimpleBot raises $1
+SimpleBot calls $1 
+
+TURN:  Kh 2h 9h 4d
+LoggingSimpleBot checks
+SimpleBot bets $2
+LoggingSimpleBot folds
+
+SimpleBot wins $6 uncontested
+
+******************************
+Poker Academy Pro #22,678
+Limit Texas Holdem ($1/$2)
+Table SimpleBot Logger
+November 24, 2010 - 13:23:07 (GMT)
+
+ 1} David               (sitting out)
+ 5) LoggingSimpleBot *   $996.50  6s 9c
+ 6) SimpleBot          $1,003.50  Jc 6h
+
+LoggingSimpleBot posts small blind $0.50
+SimpleBot posts big blind $1
+LoggingSimpleBot folds
+
+SimpleBot wins $1 uncontested
+
+******************************
+Poker Academy Pro #22,679
+Limit Texas Holdem ($1/$2)
+Table SimpleBot Logger
+November 24, 2010 - 13:23:10 (GMT)
+
+ 1} David               (sitting out)
+ 5) LoggingSimpleBot       $996  5c 5d
+ 6) SimpleBot *          $1,004  4s Ts
+
+SimpleBot posts small blind $0.50
+LoggingSimpleBot posts big blind $1
+SimpleBot calls $0.50 
+LoggingSimpleBot checks
+
+FLOP:  Th 4c 6h
+LoggingSimpleBot checks
+SimpleBot bets $1
+LoggingSimpleBot calls $1 
+
+TURN:  Th 4c 6h 5s
+LoggingSimpleBot bets $2
+SimpleBot raises $2
+LoggingSimpleBot raises $2
+SimpleBot raises $2
+LoggingSimpleBot calls $2 
+
+RIVER:  Th 4c 6h 5s Jc
+LoggingSimpleBot bets $2
+SimpleBot raises $2
+LoggingSimpleBot raises $2
+SimpleBot raises $2
+LoggingSimpleBot calls $2 
+SimpleBot shows 4s Ts
+LoggingSimpleBot shows 5c 5d
+
+LoggingSimpleBot wins $36 with Three of a Kind, Fives
+
+******************************
