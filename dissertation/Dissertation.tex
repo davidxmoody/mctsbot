@@ -1,0 +1,242 @@
+\documentclass[12pt,twoside,notitlepage]{report}
+
+%\usepackage{natbib}
+\usepackage{a4}
+\usepackage{verbatim}
+\usepackage{xspace}
+\usepackage{graphicx}
+\usepackage{float}
+%\usepackage{epstopdf}
+\usepackage[justification=centering]{caption}
+\usepackage{hyperref}
+
+\input{epsf}
+
+
+\raggedbottom
+\sloppy
+\clubpenalty1000%
+\widowpenalty1000%
+
+\addtolength{\oddsidemargin}{6mm}
+\addtolength{\evensidemargin}{-8mm}
+
+\renewcommand{\baselinestretch}{1.1}
+
+\setlength{\parindent}{0.0in}
+\setlength{\parskip}{12pt}
+
+
+% This is a hack to make the appendix in the proposal work.
+\makeatletter
+\renewenvironment{thebibliography}[1]{%
+%     \section*{\refname}%
+%      \@mkboth{\MakeUppercase\refname}{\MakeUppercase\refname}%
+      \list{\@biblabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\@biblabel{#1}}%
+            \leftmargin\labelwidth
+            \advance\leftmargin\labelsep
+            \@openbib@code
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+      \sloppy
+      \clubpenalty4000
+      \@clubpenalty \clubpenalty
+      \widowpenalty4000%
+      \sfcode`\.\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \endlist}
+\makeatother
+
+
+\newcommand{\texas}{Texas Hold~`em\xspace}
+\newcommand{\texasp}{\texas Poker\xspace}
+\newcommand{\pa}{Poker Academy\xspace}
+\newcommand{\pap}{\pa Pro\xspace}
+\newcommand{\mcts}{Monte Carlo Tree Search\xspace}
+\newcommand{\sbt}{SimpleBot\xspace}
+\newcommand{\sbts}{SimpleBot's\xspace}
+\newcommand{\mbt}{MCTSBot\xspace}
+\newcommand{\mbts}{MCTSBot's\xspace}
+\newcommand{\meer}{Meerkat~API\xspace}
+\newcommand{\gs}{GameState\xspace}
+\newcommand{\gr}{GameRecord\xspace}
+\newcommand{\grs}{GameRecords\xspace}
+\newcommand{\pr}{PlayerRecord\xspace}
+\newcommand{\prs}{PlayerRecords\xspace}
+\newcommand{\player}{Player\xspace}
+\newcommand{\opp}{OpponentNode\xspace}
+\newcommand{\opps}{OpponentNodes\xspace}
+\newcommand{\choice}{ChoiceNode\xspace}
+\newcommand{\choices}{ChoiceNodes\xspace}
+\newcommand{\chance}{ChanceNode\xspace}
+\newcommand{\chances}{ChanceNodes\xspace}
+\newcommand{\playern}{PlayerNode\xspace}
+\newcommand{\playerns}{PlayerNodes\xspace}
+\newcommand{\leaf}{LeafNode\xspace}
+\newcommand{\leafs}{LeafNodes\xspace}
+\newcommand{\rootn}{RootNode\xspace}
+\newcommand{\wf}{WekaFormat\xspace}
+\newcommand{\wfs}{WekaFormats\xspace}
+
+\begin{document}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Title
+
+
+\pagestyle{empty}
+
+\hfill{\LARGE \bf David Moody}
+
+\vspace*{55mm}
+\begin{center}
+\Huge
+{\bf Monte Carlo Tree Search in \\\texasp} \\
+\vspace*{5mm}
+Computer Science Tripos, Part II \\
+\vspace*{5mm}
+Christ's College \\
+\vspace*{5mm}
+\today  % today's date
+\end{center}
+
+\cleardoublepage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Proforma, table of contents and list of figures
+
+\setcounter{page}{1}
+\pagenumbering{roman}
+\pagestyle{plain}
+
+\chapter*{Proforma}
+
+%{\large
+\begin{tabular}{ll}
+
+Name:				& \bf David Moody \\
+College:			& \bf Christ's College \\
+Project Title:		& \bf Monte Carlo Tree Search in \texasp \\
+Examination:		& \bf Computer Science Tripos, Part II, 2010-2011 \\
+Word Count:			& \bf Approximately 12,000 words \\
+Project Originator:	& Dr Sean Holden/David Moody \\
+Supervisor:			& Dr Sean Holden \\ 
+
+\end{tabular}
+%}
+
+\stepcounter{footnote}
+
+
+\section*{Original Aims of the Project}
+
+To build a computer poker player using the \mcts algorithm. The program should also implement an opponent model and have a variety of different strategies to choose from. It should be able to consistently beat an existing simple opponent, \sbt.
+
+
+\section*{Work Completed}
+
+I have successfully implemented the program as originally intended. It can play as well as I had expected and can consistently beat \sbt.
+% I have completed all of my original success criteria. 
+All work completed is described in this dissertation. 
+
+
+\section*{Special Difficulties}
+
+None.
+
+ 
+\newpage
+\section*{Declaration}
+
+I, David Moody of Christ's College, being a candidate for Part II of the Computer Science Tripos, 
+%[or the Diploma in Computer Science], 
+hereby declare that this dissertation and the work described in it are my own work, unaided except as may be specified below, and that the dissertation does not contain material that has already been used to any substantial extent for a comparable purpose.
+
+\bigskip
+\leftline{Signed }
+
+\medskip
+\leftline{Date }
+
+\cleardoublepage
+
+\tableofcontents
+
+\listoffigures
+
+%\newpage
+%\section*{Acknowledgements}
+%TODO: There are none?
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The Chapters
+
+\cleardoublepage
+\setcounter{page}{1}
+\pagenumbering{arabic}
+\pagestyle{headings}
+
+
+\chapter{Introduction}
+\input{introbody}
+
+
+\cleardoublepage
+\chapter{Preparation}
+\input{prepbody}
+
+
+\cleardoublepage
+\chapter{Implementation}
+\input{impbody}
+
+
+\cleardoublepage
+\chapter{Evaluation}
+\input{evalbody}
+
+
+\cleardoublepage
+\chapter{Conclusion}
+\input{concbody}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The Bibliography
+
+\cleardoublepage
+\chapter*{Bibliography}
+\addcontentsline{toc}{chapter}{Bibliography}
+\bibliographystyle{plain}
+\bibliography{refs}
+\cleardoublepage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The Appendices
+\appendix
+
+%\chapter{The Rules of \texasp}
+%\hypertarget{rulesoftexas}{}
+%\label{app:texrules}
+%\input{texasrules}
+
+%\cleardoublepage
+
+%\chapter{\sbt Source Code}
+%\hypertarget{simplebotsourcecode}{}
+%\label{app:sbsource}
+%\input{simplebotsource}
+
+\cleardoublepage
+
+\chapter{Project Proposal}
+\input{propbody}
+
+\end{document}

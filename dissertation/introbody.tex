@@ -1,0 +1,93 @@
+\section{My Project} 							% ----
+
+% Is this a good section title?
+% What was I trying to do?
+% Mention \pap and \sbt.
+
+My project was to build a program to play \texasp. The program uses the \mcts algorithm for searching large trees. It also incorporates an opponent model to assist in the presence of hidden information. I have successfully implemented the program as originally intended. It can play to an acceptable level and can consistently beat a simple opponent I chose in my original plan, \sbt. The program and this dissertation successfully complete all of my original success criteria. However, I did not have time to complete any of my planned extensions.
+
+
+\section{The Game of Poker}						% ----
+
+% Very brief intro to the rules of poker, mention the appendix A where a more detailed explanation is given.
+% Why poker is challenging for computers.
+% Poker is a card game. 2+ players. Objective is to win money, can be done by winning hands, that is done by being the only player left in the game or by having the best hand at the end of the game. Three possible actions, raise, call or fold. 
+% Why did I choose limit \texasp.
+
+% Mention other poker bots briefly. Say the phrase poker bot.
+% Briefly talk about the methods used by them.
+% Mention \sbt.
+% Talk about the one that I have been roughly following.
+
+Poker is a game of imperfect information, where the other players know different things and may try to deliberately mislead you. There is also an element of chance in what cards will come up next. In addition, there can be as many as 10 players in a game which can result in an enormous number of possible game states. These things make it particularly difficult for computers to play poker. 
+
+Despite this, there have been many successful attempts to build competent computer poker players (aka poker bots). Here is a brief overview of just a handful of them:
+\begin{itemize}
+\item Poki, 1999: A full-ring limit poker bot, its main problem was that it could not adapt its strategy fast enough to prevent its own exploitation~\cite{poki}.
+\item PsOpti, 2002: A heads up limit poker bot, built using a game theoretic approach~\cite{psopti}.
+\item Vexbot, 2003: A heads up limit poker bot which uses opponent modelling and the expectimax algorithm to adapt to its opponents~\cite{vexbot}.
+\item Polaris, 2007: Another heads up limit poker bot which contains a number of different strategies and chooses between them during a match~\cite{polaris}.
+\end{itemize}
+
+%The last one 
+
+
+
+\section{\mcts}									% ----
+
+% When/why is mcts used.
+% Why is it needed here.
+% Brief description of stages.
+% Brief description of strategies.
+
+\mcts is a best first search technique used to search very large trees.
+% which may be too large search exhaustively. 
+It uses stochastic simulations to help decide which action to take. It tries to focus its simulations onto the branches which it thinks will be most relevant, assuming all players play rationally. Every time it simulates a game, it backpropagates the result back through the tree so that it can make better decisions about which game to simulate next.
+
+MCTS has been successfully been applied to Go \cite{mcts-go}, Backgammon \cite{mcts-bg}, Limit and No-Limit \texas \cite{mcts-iomp} \cite{mcts-erd} as well as several other games. 
+% Something about how great mcts is. 
+
+In this project I will be using MCTS with a variety of different strategies. In the evaluation, I will compare the effectiveness of some of the different strategies and see how varying the thinking time affects performance.
+
+
+
+
+\section{Opponent Modelling}					% ----
+
+% Discovered that it is needed, at least the way in which I'd done it.
+% What is Weka?
+% Where did I get training data from.
+
+An opponent model can be used to predict the cards that the opponents hold and the actions they will take. There has been quite a lot of research on different opponent modelling techniques in poker including some models which can dynamically adapt to different players. 
+% Cite that?
+
+In this project, I will be using relatively simple opponent models which use classifiers created by an open source machine learning library called Weka. My approach is similar to that taken by \cite{mcts-erd}.
+% TODO: make the reference look better.
+
+I eventually found that opponent modelling is very important to the success of the program. Without it, the program was not able to beat \sbt.
+
+
+
+\section{Results}								% ----
+
+% Project went well.
+% Completed all of the success criteria in the original proposal.
+
+%Overall, I would say that my project was definitely a success. 
+The project has been a great success.
+The program is able to beat the simple opponent originally proposed in the project proposal, \sbt. It can also be the most successful player when played against three separate instances of \sbt. I have also shown how varying different factors, such as the thinking time or the presence of the opponent models, affects performance.
+
+The program and this dissertation complete all 7 of my original success criteria. 
+
+
+
+
+%\section{Summary}								% ****
+
+% Recap of why poker is difficult.
+% Recap of why mcts is used.
+% Recap of why opponent modelling is needed.
+% Recap of success.
+% What did I set out to do?
+
+%TODO: recap of this chapter

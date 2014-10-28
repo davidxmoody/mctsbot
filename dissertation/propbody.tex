@@ -1,0 +1,253 @@
+\begin{flushright}
+David Moody			\\
+Christ's College	\\
+dm484				\\
+\end{flushright}
+
+\vspace{16pt}
+
+\begin{center}
+{\large Diploma in Computer Science Project Proposal}		\\
+\vspace{4pt}
+{\bf \huge Monte Carlo Tree Search in \\ 
+\vspace{6pt} \texasp}\\
+\vspace{12pt}
+{\large 17 October 2010}									\\
+\end{center}
+
+\vspace{36pt}
+
+\begin{flushleft}
+{\bf Project Originator:} Sean Holden\\
+\vspace{12pt}
+{\bf Resources Required:} See attached Project Resource Form\\
+\vspace{12pt}
+{\bf Project Supervisor:} Sean Holden\\
+\vspace{12pt}
+{\bf Director of Studies:} Marcelo Fiore\\
+\vspace{12pt}
+{\bf Overseers:} Andy Rice and Jean Bacon\\
+\end{flushleft}
+
+\newpage
+
+
+\section*{Introduction and Description of the Work}
+
+There are two types of poker playing program. The first type attempts to approximate a perfect strategy using game theory. While this might be the best way to play if your opponents are also playing with an optimal strategy, it can't exploit the possible weaknesses of your opponents. The second type of  program can exploit the weaknesses in its opponents' strategies. It does this in order to try and maximize its total income and thus outperform the first type. In my project I will be looking at the second type of program.
+
+In the specific variety of poker which I will be using, \texas, each player is first dealt two cards which only they can see. There is then a round of betting in which each player in turn is given the choice to either: raise, where they place an amount of money into a shared "pot"; call, in which case they must put into the pot the same amount of money as the last person in the current round who raised (possibly nothing); or fold, in which case they forfeit the game and lose any chance to win the money in the pot. After this round of betting, three shared cards are dealt which everyone can see. Then there is another round of betting, another shared card, another round of betting, another shared card and a final round of betting. At this point, it more than one player is still in the game then the player who can make the best ``poker hand'' out of their cards and the shared cards wins the money in the pot. If all but one player folded before this point then the remaining player wins the money in the pot.
+
+There are two main varieties of \texas. In the first (no-limit), you can raise any amount that you want. In the second (limit), you can only raise by a fixed amount. While no-limit \texas might also make a good game for this project, I will be using the limit variety.
+
+Poker is usually played with somewhere between 2 to 10 players. When you have only 2 or 3 different players it is feasible to do a complete search of the game tree in order to find an estimate of what you think the optimal strategy would be. However, when you are playing with more than 3 players the game tree becomes much much larger. In a game with 10 players it would be impossible to do a complete search of the tree. 
+
+
+Thus we need to use an algorithm that can approximate the best choice without needing to search the whole tree. Monte Carlo Tree Search can do this by randomly simulating many games and using the results of those simulations to construct a partial game tree with estimates for the expected values of the nodes.
+
+The MCTS algorithm consists of 4 main stages:
+
+\begin{enumerate}
+\item Selection: In this stage, starting at the root, you need to select which branch of the tree you want to explore further. I will be investigating multiple selection strategies including random selection, Upper Confidence Bound selection and selection using a complex opponent model to predict your opponent's most likely action.
+\item Expansion: Once you reach a leaf in the stored partial tree you need to expand the tree by adding new nodes. You simply need to decide if the node of the partial tree is also a node of the full game tree and if not you need to add children representing the possible actions that could occur next.
+\item Simulation: Starting from one of the newly added children, you need to simulate the completion of the game. There are several ways in which you could do this including random simulation or simulation based on more complex heuristics. I will investigate multiple simulation strategies. Once you have simulated the game to completion you need to calculate the expected value of the game state. The opponent model will be used to attempt to estimate what the opponents' cards may be based on their previous actions, thus allowing you to estimate the expected value of the game state.
+\item Backpropagation: Once you know the expected value of the simulated game, you need to update the expected values of the nodes in the path that you took to include this information.
+\end{enumerate}
+
+These 4 steps are repeated to build up the game tree until there is no more time left for computation. An action is then chosen, usually based on the highest expected value of the children of the root node. 
+
+
+In order to take advantage in the weaknesses in our opponents' strategies we also need an opponent model capable of predicting the following two things:
+
+\begin{enumerate}
+\item The probability that an opponent will perform a specific action given their actions up to this point in the game and the shared cards currently on the table.
+\item The probability that an opponent has specific cards in their hand given their actions throughout the current game and the 5 shared cards on the table.
+\end{enumerate}
+
+I will use Weka's \cite{propweka} algorithms to create regression models for each of these.
+
+Training data for the first model will be take the following form: \\*
+\(A_1, C_1, C_2, C_3, A_2, C_4, A_3, C_5, A_4\) \\
+Where \(A_i\) is the action (fold, call or raise) taken by the opponent at step i and \(C_j\) is the \(j_{th}\) shared card to be dealt. I may experiment with different ways of representing the cards.
+
+I think I would need to have separate regression models for predicting each \(A_i\). i.e. the training data for each \(A_i\) would look like this: \\
+\(A_1, C_1, C_2, C_3, A_2, C_4, A_3, C_5, A_4\) \\*
+\(A_1, C_1, C_2, C_3, A_2, C_4, A_3\) \\*
+\(A_1, C_1, C_2, C_3, A_2\) \\*
+\(A_1\) 
+
+This would make predicting the first action rather trivial, however it might also be a rather poor way to predict the first action. I might investigate how including other fields, such as the number of players to the right and to the left of the opponent or the position of the player who first raised, affects the ability to predict the first action of an opponent.
+
+For predicting what hand the opponent might have we could use training data of this form: \\
+\(A_1, C_1, C_2, C_3, A_2, C_4, A_3, C_5, A_4, H_1, H_2\) \\
+Where \(H_1\) and \(H_2\) are the cards held by the opponent.
+
+
+This also raises the question of where I will get the records of played games (aka hand histories) from which I can extract this training data. There is 70GB of obfuscated (names of players have been changed) hand histories available at source \cite{prophh} which I think will be sufficient and I may be able to find more if required.
+
+Unfortunately this data is not in a form that will be readable by Weka so I will need to write tools able to convert it into the Attribute-Relation File Format which Weka uses.
+
+It will be possible to create training data for the first type of model from every action which takes place in the games. However for the model which predicts which cards the opponent holds, only games in which two or more players remained after the final round of betting can be used.
+
+
+Once I have a program capable of playing poker I will need to test it to see how well it can play against other poker bots. I will integrate my program with the Poker Academy Pro software and test it against the poker bots which come with the software. I will consider the project a success if it is able to consistently beat a program called SimpleBot \cite{propsb} which only considers its own hand when determining how to play. I will also be testing my program against the other poker bots available with the software, however being able to beat them will not be one of my success criteria because I don't want to be directly competing with the creators of the other poker bots. (Many of the existing poker bots were created by teams of researchers with much more experience than me.)
+
+In addition to testing my program against other programs, I can test different versions of my program against each other to investigate how effective different selection strategies/opponent models are.
+
+
+For extensions of the project, if I have time remaining after implementing what I have so far described, I would like to look at improving the selection and simulation strategies of the MCTS algorithm and improving the prediction capabilities of the regression models. If I still have time after that I will look at the possibility of changing the opponent model to be able to record statistics about specific players it has played against and alter its decisions based on those observations.
+
+
+\section*{Resources Required}
+
+\begin{itemize}
+\item Algorithms from the Weka toolbox (a free collection of algorithms under the GNU General Public License) \cite{propweka}.
+\item Records of online poker games (aka hand histories) available online for free \cite{prophh}.
+\item Poker Academy Pro and the Meerkat API for interaction with other poker bots \cite{proppa}. Poker Academy Pro is not free but I don't mind paying the \$85 required to purchase it. The software is only needed when testing the program against other poker bots so it won't be needed to understand or test the majority of the project.
+\item The core Java packages and the eclipse IDE.
+\item The use of my own computer.
+\end{itemize}
+
+
+\section*{Starting Point}
+
+I already play \texasp regularly and I think I'm familiar enough with the game to be attempting this project.
+
+The Artificial Intelligence I course from part IB contains information about best-first search techniques and machine learning techniques which will be very useful throughout the project.
+
+The Java courses and Algorithms courses from part IA and IB will also be helpful.
+
+
+\section*{Substance and Structure of the Project}
+
+The aim of this project is to create a poker playing program capable of playing Limit \texas in games with more than 3 players. The program will use Monte Carlo Tree Search to partially explore the game tree and machine learning techniques to create an opponent model capable of predicting the probabilities of an opponents next action. The program will be integrated with the Meerkat API which will allow it to play against other poker bots included with the Poker Academy Pro software.
+
+The project consists of 9 main stages:
+\begin{enumerate}
+\item Further research into opponent modeling, MCTS and different selection strategies for it, Poker Academy Pro and existing poker playing programs for it, the Weka toolkit, availability/quality of hand histories and how to convert them to ARFF, etc.
+\item Creation of the basic framework of the program and integration with the Meerkat API. Also deciding upon how to abstract away some of the unnecessary details in poker.
+\item Implementation and testing of the basic MCTS algorithm as described in the Introduction and Description of the Work section.
+\item Collection and consolidation of hand histories into Attribute-Relation File Format.
+\item Using Weka to create regression models for calculating the required probabilities and integrating those models into the opponent model.
+\item Integration of the opponent model with the MCTS algorithm.
+\item Evaluation and testing of the program against SimpleBot and other programs using Poker Academy Pro. Investigation into how effective MCTS with an opponent model is when compared to just MCTS. Investigation into the effects of varying the available search time and increasing the number of opponents.
+\item Possible extensions such as changing the opponent model to adapt to specific players and trying out and comparing different selection/simulation strategies in the MCTS algorithms. (I don't want to say exactly what I'm going to be doing right now because I don't know how much time I will have and I don't yet know what would be the most interesting to do.)
+\item Writing the dissertation.
+\end{enumerate}
+
+
+\section*{References}
+
+%\bibliographystyle{plain}
+\begin{thebibliography}{0}
+
+\bibitem{propweka}
+\url{http://www.cs.waikato.ac.nz/ml/weka/}
+
+\bibitem{prophh}
+\url{http://www.outflopped.com/questions/286/obfuscated-datamined-hand-histories} \\
+This is actually for no-limit \texas but I am reasonably confident that I will be able to convert it for use in this project. If not, I may be able to find other sources as well. Also, even if the data does turn out to be totally unusable and I can’t find anything else it won’t have too much of an affect the rest of the project so I’m not concerned.
+
+\bibitem{proppa}
+\url{http://www.poker-academy.com/community.php} \\
+Information on the Meerkat API is at the bottom of the page.
+
+\bibitem{propsb}
+\url{http://code.google.com/p/opentestbed/source/browse/src/bots/demobots/SimpleBot.java} \\
+
+\bibitem{propmctserd}
+\url{https://lirias.kuleuven.be/bitstream/123456789/245774/1/acmlpaper.pdf} \\
+
+\bibitem{propmctsiom}
+\url{http://www.personeel.unimaas.nl/m-ponsen/pubs/Ponsen-MCTSMODEL-IDTGT10.pdf} \\
+
+\bibitem{propmctscom}
+\url{http://www.unimaas.nl/games/files/msc/Gerritsen_thesis.pdf} \\
+
+\end{thebibliography}
+
+
+\section*{Success Criteria}
+
+The following should be achieved:
+\begin{enumerate}
+\item Successful implementation of the MCTS algorithm.
+\item The creation of regression models using Weka.
+\item The program should be able to play Limit \texas against other programs using the Poker Academy Pro software.
+\item The program should be able to make more money when played against SimpleBot in a run of 1000 games of 2-player Limit \texas.
+\item The program should be able to make more money than any of its opponents when played against 3 instances of SimpleBot in a run of 1000 games of 4-player Limit \texas.
+\item It should be demonstrated how much of an increase in performance a complex opponent model brings to the MCTS algorithm as opposed to a random opponent model.
+\item It should be demonstrated how increasing the number of opponents and how varying the amount of search time affects performance.
+\end{enumerate}
+I will also test my program against some of the other poker bots available with Poker Academy Pro and I might even try my program against other human players online. However, the success of my program in these situations should not be considered as success criteria for the project. 
+
+
+\section*{Timetable and Milestones}
+
+I've broken the project up into blocks of work, each of which should take me around two weeks to complete. I think I might be a bit optimistic about how quickly I'll be able to complete the work so I've left myself plenty of time near the end. On the other hand, if I am able to finish the work sooner than I have estimated then there is still plenty that I could add to the project.
+
+*Start working on project - 23 Oct*
+\begin{enumerate}
+\item Further research into: opponent modeling, MCTS and different selection/simulation strategies for it, Poker Academy Pro and existing poker playing programs for it, the Weka toolkit, availability/quality of hand histories and how to convert them to ARFF, etc.
+\item Start work on designing the Java program. Draw diagrams indicating how the different components will interact. Start work on creating the basic framework of the program using the classes from the Meerkat API. Decide how to abstract away some of the unnecessary details in poker. (This block could be run concurrently with block 1.)
+\item Start work on the MCTS algorithm. Create classes for the different kinds of nodes in the game tree. Implement the selection, expansion, simulation and backpropagation steps of the MCTS algorithm using simple selection and simulation strategies. Create a very basic opponent model (which assumes that the opponents always play randomly and has random cards) and use it to implement the simulation and selection steps. Test the MCTS algorithm.
+\end{enumerate}
+\begin{itemize}
+\item Milestone: Have a program that would be capable of playing poker (though not necessarily well).
+\end{itemize}
+*End of first term - 3 Dec*
+\begin{enumerate}
+\setcounter{enumi}{4}
+\item Test the program against SimpleBot in Poker Academy Pro. See how well it does and see whether or not/how many iterations it takes to beat SimpleBot as it is.
+\end{enumerate}
+\begin{itemize}
+\item (Possible) Milestone: Have my program beat SimpleBot.
+\end{itemize}
+\begin{enumerate}
+\setcounter{enumi}{5}
+\item Start collecting records of poker games played by humans. Write tools to convert these records into ARFF. Play around with Weka.
+\item Start work on the opponent model. Use training data and Weka to create regression models capable of predicting the required probabilities.
+\end{enumerate}
+\begin{itemize}
+\item Milestone: Create at least one regression model using Weka which can produce reasonable sounding predictions.
+\end{itemize}
+*Start of second term - 18 Jan*
+\begin{enumerate}
+\setcounter{enumi}{7}
+\item Investigate different methods for creating the regression models. Integrate the regression models into the opponent model. Test my program against SimpleBot.
+\end{enumerate}
+\begin{itemize}
+\item Milestone: Have my program beat SimpleBot.
+\end{itemize}
+\begin{enumerate}
+\setcounter{enumi}{8}
+\item Review work done so far. Write progress report/practice presentation.
+\end{enumerate}
+\begin{itemize}
+\item Milestone: Hand in progress report/give presentation.
+\end{itemize}
+*Progress report deadline - 4 Feb / Progress report presentation - 15 Feb*
+\begin{enumerate}
+\setcounter{enumi}{9}
+\item I don't know whether I'll still be on schedule by this point, I'm guessing probably not. I'll either use this time to catch up or start work on the extensions mentioned previously.
+\item Continue working on extensions for the project. Maybe start thinking about writing the dissertation. (I aim to have finished pretty much everything except for the dissertation by the end of the second term.)
+\end{enumerate}
+*End of second term - 18 Mar*
+\begin{enumerate}
+\setcounter{enumi}{11}
+\item Start writing dissertation.
+\item Continue writing dissertation/revisit areas of the project which I might have neglected.
+\item Continue writing dissertation.
+\end{enumerate}
+\begin{itemize}
+\item Milestone: Finish a complete draft of the dissertation.
+\end{itemize}
+*Start of third term - 26 Apr*
+\begin{enumerate}
+\setcounter{enumi}{14}
+\item Finish final touches on dissertation. (I will be spending the rest of the term focusing on the exams.)
+\end{enumerate}
+\begin{itemize}
+\item Milestone: Hand it in!
+\end{itemize}
+*Dissertation deadline - 20 May*
